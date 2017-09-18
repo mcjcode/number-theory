@@ -4,6 +4,12 @@ class GaussianInteger(object) :
 		self.a = a
 		self.b = b
 
+	def one(self) :
+		return GaussianInteger(1,0)
+		
+	def zero(self) :
+		return GaussianInteger(0,0)
+		
 	def __str__(self) :
 		if self.b == 0 :
 			return '%d' % self.a

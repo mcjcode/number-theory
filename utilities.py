@@ -1,6 +1,6 @@
 import gaussian_integer
-reload(gaussian_integer)
 from gaussian_integer import GaussianInteger
+import numpy as np
 
 def isprime(p) :
 	trdiv = 2
@@ -9,7 +9,17 @@ def isprime(p) :
 			return False
 		trdiv += 1
 	return True
-	
+
+def factorize(n) :
+	if n==1 :
+		return []
+	q = 2
+	while q*q <= n :
+		if n % q == 0 :
+			return [q] + factorize(n/q)
+		q += 1
+	return [n]
+		
 def order(a,p) :
 	retval = 1
 	one = type(a)(1)
@@ -50,6 +60,11 @@ def JacobiSum(chi1,chi2,p) :
 	for a in xrange(p) :
 		retval = retval + chi1(a)*chi1(1-a)
 	return retval
+	
+def round(x) :
+	
+	s=np.sign(x)
+	return s*int(s*x+0.5)
 	
 def J(p) :
 	"""
