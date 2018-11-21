@@ -1,3 +1,6 @@
+#!/usr/bin/env python -i
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import utilities; from utilities import isprime
 import finite_field; from finite_field import (

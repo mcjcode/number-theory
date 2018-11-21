@@ -1,3 +1,6 @@
+#!/usr/bin/env python -i
+# -*- coding: utf-8 -*-
+
 import gaussian_integer
 from gaussian_integer import GaussianInteger
 

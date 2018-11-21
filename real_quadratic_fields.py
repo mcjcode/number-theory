@@ -1,9 +1,16 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
+
 import math; from math import sqrt, floor
-import utilities; from utilities import factorize, prod, isprime, gcd
+import utilities; from utilities import factorize, prod, isprime, gcd, issq
 import fractions; from fractions import Fraction
 import itertools; from itertools import islice
+import quadratic_extensions
+from quadratic_extensions import (
+	QuadInt,
+	factorize_in, 
+	discriminant,
+	minkowski_bound)
 
 pi = 3.14159265358979323
 
@@ -99,96 +106,11 @@ def approximants(d) :
 		h0, k0 = h1, k1
 		h1, k1 = h,  k
 		
-def discriminant( d ) :
-	"""
-	Return the discriminant of the quadratic field Q[\sqrt{d}]
-	"""
-	factors = factorize(abs(d))
-	if d % 4 == 1 :
-		return abs(d)
-	else :
-		return 4*abs(d)
-		
-def minkowski_bound( d ) :
-	"""
-	For an integer d let K=Q[\sqrt{d}].
-	
-	All ideal classes in O_K have a representative J
-	with ||J|| <= the minkowski bound.
-	"""
-	disc = discriminant( d )
-	if d > 0 :
-		return int( 0.5 * sqrt( disc ) )
-	else :
-		return int( 0.5 * (4.0/pi) * sqrt(disc) )
-
-def factorize_in(p,d) :
-	"""
-	If d is a squarefree integer, factorize the
-	prime integer n in the ring of integers in the
-	quadratic field extension Q[\sqrt{d}].
-	"""
-	if d % 4 != 1 :
-		## the minimal polynomial is x**2 - d = 0
-		x = 0
-		while x < p :
-			if (x**2-d) % p == 0 :
-				return (p,QuadInt(d,-x,1))
-			x += 1
-		return (p,)
-	else :
-		## the minimal polynomial is x**2 - x - (d-1)/4
-		zz = (d-1)/4
-		x = 0
-		while x < p :
-			if (x*(x-1) - zz) % p == 0 :
-				return (p,QuadInt(d,-x,1))
-			x += 1
-		return (p,)
-
 def squares_mod_d(d) :
 	return sorted({(n**2)%d for n in xrange(d)})
 
 def issquare(nn) :
 	return (nn >= 0) and (int(sqrt(nn))**2 == nn)
-
-class QuadInt(object) :
-	def __init__(self, d, a, b) :
-		self.d = d
-		self.a = a
-		self.b = b
-	def __str__(self) :
-		if self.d % 4 != 1 :
-			part1 = u"%d" % (self.a)
-			sgn   = "+" if self.b > 0 else "-"
-			if abs(self.b) == 1 :
-				part2 = u"\u221A%d" % (self.d,)
-			else :
-				part2 = u"%d\u221A%d" % (abs(self.b),self.d)
-			return u" ".join([part1,sgn,part2])
-		else :
-			if self.b == 1 :
-				return u"%d + (1+\u221A%d)/2" % (self.a,self.d)
-			else :
-				return u"%d + %d(1+\u221A%d)/2" % (self.a,self.b,self.d)
-	def __repr__(self) :
-		return self.__str__()
-	def __add__(self,other) :
-		if self.d != other.d :
-			raise ValueError("integers are not from same field")
-		return QuadInt(self.d,self.a+other.a,self.b+other.b)
-	def __mul__(self,other) :
-		if self.d != other.d :
-			raise ValueError("integers are not from same field")
-		else :
-			return QuadInt(self.d,self.a*other.a-self.d*self.b*other.b, self.a*other.b-self.b*other.b)
-
-
-	def norm(self) :
-		if self.d % 4 != 1 :
-			return self.a**2 - self.d * self.b**2
-		else :
-			return self.a**2 + self.a * self.b + self.b**2 * ((1-self.d)/4)
 
 def norm_search(p,d) :
 	md = None
@@ -201,7 +123,28 @@ def norm_search(p,d) :
 						md = QuadInt(d,m2,nn)
 						break
 	return md
-					
+
+def sqrtint(xx) :
+	return int(sqrt(xx))
+	
+def fundamental_unit(d) :
+	if d <= 1 :
+		raise ValueError('%d is not >= 2' % (d,))
+	b = 1
+	while True :
+		if issq(b*b*d-4) :
+			a = sqrtint(b*b*d-4)
+			break
+		if issq(b*b*d+4) :
+			a = sqrtint(b*b*d+4)
+			break
+		b += 1
+	if d % 4 == 1 :
+		return QuadInt(d,(a-b)/2,b)
+	else :
+		return QuadInt(d,a/2,b/2) 
+	#return a/2.0 + sqrt(d)*b/2.0
+
 def class_group_info(d) :
 	mb = minkowski_bound(d)
 	disc = discriminant(d)

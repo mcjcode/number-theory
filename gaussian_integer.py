@@ -1,3 +1,6 @@
+#!/usr/bin/env python -i
+# -*- coding: utf-8 -*-
+
 class GaussianInteger(object) :
 	
 	def __init__(self,a,b=0) :

@@ -1,3 +1,6 @@
+#!/usr/bin/env python -i
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import itertools
 from utilities import factorize
@@ -201,7 +204,28 @@ class FiniteField(object) :
 		c1 = tmp.real
 		return round(c1),round(c2)		
 
+def count_projective_plane_curve_points(f,ff) :
+	N = 0
+	zero = ff.zero()
+	one = ff.one()
+	for xx in ff :
+		for yy in ff :
+			N += f(xx,yy,one) == zero
+		N += f(xx,one, zero) == zero	
+	N += f(one,zero,zero) == zero
+	return N
 	
+def projective_plane_curve_points(f,ff) :
+	pts = []
+	zero = ff.zero()
+	one = ff.one()
+	for xx in ff :
+		for yy in ff :
+			if f(xx,yy,one) == zero : pts.append((xx,yy,one))
+		if f(xx,one, zero) == zero : pts.append((xx,one,zero))
+	if  f(one,zero,zero) == zero : pts.append((one,zero,zero))
+	return pts
+
 def count_projective_curve_points(f,ff) :
 	
 	N = 0
@@ -246,16 +270,11 @@ def count_diagonal_cubic_points(ff) :
 	assert N % (ff.p**ff.n-1) == 0
 	N //= ff.p**ff.n-1
 	return N
-	
-def assert_equal(expected, actual, msg) :
-	if expected==actual :
-		print '.',
-		return True
-	else :
-		raise Exception('testing %s: %s expected, %s actual' % (msg, expected, actual))
+
+
 		
 if __name__ == '__main__' :
-	import utilities; from utilities import isprime
+	import utilities; from utilities import assert_equal
 	
 	ff = FiniteField(7,2)
 	L = list(ff)
@@ -267,6 +286,15 @@ if __name__ == '__main__' :
 		assert_equal(xx*ff.zero(),ff.zero(),msg='X*0=0')
 		
 	assert_equal(L[8]**2,L[8]*L[8],msg='X**2==X*X')
+	print
 	
-	print count_diagonal_cubic_points(ff)
+	##print count_diagonal_cubic_points(ff)
+	##print count_projective_curve_points(lambda x,y,z : x**3+y**3+z**3,ff)
+	##print count_projective_plane_curve_points(lambda x,y,z : x**3+y**3+z**3,ff)
 	
+	##p = 5
+	##for i in xrange(1,4) :
+	##	ff = FiniteField(p,i)
+	##	pts = count_projective_plane_curve_points(lambda x,y,z : y**2*z - x**3 + x*z**2,ff)
+	##	print ff, pts
+		
