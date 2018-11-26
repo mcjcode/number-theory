@@ -1,18 +1,28 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-import math; from math import sqrt, floor
-import utilities; from utilities import factorize, prod, isprime, gcd, issq
-import fractions; from fractions import Fraction
-import itertools; from itertools import islice
+import math
+from math import sqrt, floor
+import utilities
+from utilities import (
+	factorize,
+	prod,
+	isprime,
+	gcd,
+	issq,
+	squarefree,
+	)
+import fractions
+from fractions import Fraction
+import itertools
+from itertools import islice
 import quadratic_extensions
 from quadratic_extensions import (
 	QuadInt,
 	factorize_in, 
 	discriminant,
-	minkowski_bound)
-
-pi = 3.14159265358979323
+	minkowski_bound,
+	)
 
 """
 """
@@ -74,20 +84,21 @@ def floor_custom(a,b,c,d) :
 	
 def cont_frac_quad(a,b,c,d) :
 	"""
-	Return the continued fraction of (a+b*sqrt(d))/c
+	Yield the continued fraction for (a+b*sqrt(d))/c
 	"""
+	sqd = sqrt(d)
 	while True :
 		## a,b and c may be large, but a/c and b/c
 		## should be reasonable, so do int division
 		## first before trying to convert to floats
 		
-		m = int(divint(a,c,15) + sqrt(d)*divint(b,c,15))
-		## m = int(floor( (a+b*sqrt(d))/c ))
+		m = int(divint(a,c,15) + sqd*divint(b,c,15))
 		yield m
 		a1 = c*(a-c*m)
 		b1 = -c*b
-		c1 = ((a-c*m)**2 - d*b**2)
-		a, b, c = a1, b1, c1
+		c1 = (a-c*m)**2 - d*b**2
+		g = gcd(gcd(a1,b1),c1)
+		a, b, c = a1/g, b1/g, c1/g
 
 def approximants(d) :
 	h0, k0 = 0, 1
@@ -99,7 +110,7 @@ def approximants(d) :
 		h = ai*h1 + h0	
 		k = ai*k1 + k0
 		c = h**2 - d*k**2
-		yield QuadInt(d,h-k,2*k) if ((d%4) == 1) else QuadInt(d,h,k)
+		yield QuadInt(d,h-k,2*k) if (d%4) == 1 else QuadInt(d,h,k)
 
 		if c == 1 :
 			break
@@ -127,7 +138,7 @@ def norm_search(p,d) :
 def sqrtint(xx) :
 	return int(sqrt(xx))
 	
-def fundamental_unit(d) :
+def fundamental_unit_old(d) :
 	if d <= 1 :
 		raise ValueError('%d is not >= 2' % (d,))
 	b = 1
@@ -143,8 +154,22 @@ def fundamental_unit(d) :
 		return QuadInt(d,(a-b)/2,b)
 	else :
 		return QuadInt(d,a/2,b/2) 
-	#return a/2.0 + sqrt(d)*b/2.0
 
+def fundamental_unit(d) :
+	if d % 4 == 3 or d % 4 == 2 :
+			return next(aa for aa in approximants(d) if abs(aa.norm())==1)
+	else :
+		if d == 5 :
+			return QuadInt(5,0,1)
+		aa = next(aa for aa in approximants(d) if abs(aa.norm()) in [1,4])
+		if abs(aa.norm()) == 1 :
+			return aa
+		else :
+			if aa.a % 2 == 0 and aa.b % 2 == 0 :
+				aa.a /= 2
+				aa.b /= 2
+			return aa
+		
 def class_group_info(d) :
 	mb = minkowski_bound(d)
 	disc = discriminant(d)
@@ -187,3 +212,10 @@ def class_group_info(d) :
 				md = norm_search(p,d)
 				print(p,md)
 	
+def ff() :
+	for d in xrange(2,100) :
+		if squarefree(d) :
+			u = fundamental_unit(d)
+			u2 = fundamental_unit2(d)
+			print '%4d %20s %20s' % (d, u, u2)
+			
