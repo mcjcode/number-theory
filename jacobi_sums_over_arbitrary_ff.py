@@ -29,7 +29,7 @@ for p in [7,13] :
 			#print
 			#print ff.rpoly
 			#print
-			c0,c1=ff.J(3)
+			c0,c1=ff.jacobi_sum(3)
 			#print c0,c1
 			#Nk = count_projective_curve_points(lambda x,y,z:x**3+y**3+z**3, ff)
 			Nk = count_diagonal_cubic_points(ff)

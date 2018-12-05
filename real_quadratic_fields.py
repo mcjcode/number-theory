@@ -1,221 +1,210 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-import math
 from math import sqrt, floor
-import utilities
+
 from utilities import (
-	factorize,
-	prod,
-	isprime,
-	gcd,
-	issq,
-	squarefree,
-	)
-import fractions
-from fractions import Fraction
-import itertools
-from itertools import islice
-import quadratic_extensions
+    isprime,
+    gcd,
+    issq,
+    )
+
 from quadratic_extensions import (
-	QuadInt,
-	factorize_in, 
-	discriminant,
-	minkowski_bound,
-	)
+    QuadInt,
+    factorize_in,
+    discriminant,
+    minkowski_bound,
+    )
 
 """
 """
 
-def cont_frac(m) :
-	"""
-	For a positive floating point number 'm',
-	return a generator for the sequence of
-	integers that give the continued fraction
-	representation of
-	the number.
-	
-	          1    1    1
-	m = a0 + —-   —-   —-
-	         a1 + a2 + a3 + ...
-	         
-	You probably shouldn’t use this
-	if you really care about all of the terms
-	since rounding eventually corrupts the
-	process.
-	
-	For numbers in quadratic number fields,
-	use ‘cont_frac_quad’ instead.
-	"""
-	while True :
-		f = int(floor(m))
-		yield f
-		if m==f :
-			return
-		m = 1./(m-f)
 
-def divint(num,denom,prec=15) :
-	"""
-	Return a floating point number representing num/denom
-	accurate to prec decimal digits of accuracy.
-	
-	Use this when the integers num and denom are not
-	representable as floating point numbers (too big) but
-	the quotient is.
-	
-	Don’t bother using prec>15 as the arithmetic is
-	single precision floats.
-	"""
-	ans = 0.0
-	for i in xrange(prec) :
-		q, r = divmod(num,denom)
-		ans += q/(10.0**i)
-		num = (10*r)
-	return ans
-	
-def floor_rem(x) :
-	fl = floor(x)
-	return int(fl), x - fl
-	
-def floor_custom(a,b,c,d) :
-	j, epsj = floor_rem(sqrt(d))
-	k, epsk = floor_rem(floor((a+b*j)/c))
-	
-	
-def cont_frac_quad(a,b,c,d) :
-	"""
-	Yield the continued fraction for (a+b*sqrt(d))/c
-	"""
-	sqd = sqrt(d)
-	while True :
-		## a,b and c may be large, but a/c and b/c
-		## should be reasonable, so do int division
-		## first before trying to convert to floats
-		
-		m = int(divint(a,c,15) + sqd*divint(b,c,15))
-		yield m
-		a1 = c*(a-c*m)
-		b1 = -c*b
-		c1 = (a-c*m)**2 - d*b**2
-		g = gcd(gcd(a1,b1),c1)
-		a, b, c = a1/g, b1/g, c1/g
+def cont_frac(m):
+    """
+    For a positive floating point number 'm',
+    return a generator for the sequence of
+    integers that give the continued fraction
+    representation of
+    the number.
 
-def approximants(d) :
-	h0, k0 = 0, 1
-	h1, k1 = 1, 0
-	
-	m = sqrt(d)
-	
-	for ai in cont_frac_quad(0,1,1,d) :
-		h = ai*h1 + h0	
-		k = ai*k1 + k0
-		c = h**2 - d*k**2
-		yield QuadInt(d,h-k,2*k) if (d%4) == 1 else QuadInt(d,h,k)
+              1    1    1
+    m = a0 + --   --   --
+             a1 + a2 + a3 + ...
 
-		if c == 1 :
-			break
-		h0, k0 = h1, k1
-		h1, k1 = h,  k
-		
-def squares_mod_d(d) :
-	return sorted({(n**2)%d for n in xrange(d)})
+    You probably shouldn’t use this
+    if you really care about all of the terms
+    since rounding eventually corrupts the
+    process.
 
-def issquare(nn) :
-	return (nn >= 0) and (int(sqrt(nn))**2 == nn)
+    For numbers in quadratic number fields,
+    use ‘cont_frac_quad’ instead.
+    """
+    while True:
+        f = int(floor(m))
+        yield f
+        if m == f:
+            return
+        m = 1./(m-f)
 
-def norm_search(p,d) :
-	md = None
-	if (d % 4) != 1 :
-		for nn in range(1,20000) :
-			for mm in [nn**2*d+p,nn**2*d-p] :
-				if issquare(mm) :
-					m2 = int(sqrt(mm))
-					if (gcd(nn,p)==1) or (gcd(m2,p)==1) :
-						md = QuadInt(d,m2,nn)
-						break
-	return md
 
-def sqrtint(xx) :
-	return int(sqrt(xx))
-	
-def fundamental_unit_old(d) :
-	if d <= 1 :
-		raise ValueError('%d is not >= 2' % (d,))
-	b = 1
-	while True :
-		if issq(b*b*d-4) :
-			a = sqrtint(b*b*d-4)
-			break
-		if issq(b*b*d+4) :
-			a = sqrtint(b*b*d+4)
-			break
-		b += 1
-	if d % 4 == 1 :
-		return QuadInt(d,(a-b)/2,b)
-	else :
-		return QuadInt(d,a/2,b/2) 
+def divint(num, denom, prec=15):
+    """
+    Return a floating point number representing num/denom
+    accurate to prec decimal digits of accuracy.
 
-def fundamental_unit(d) :
-	if d % 4 == 3 or d % 4 == 2 :
-			return next(aa for aa in approximants(d) if abs(aa.norm())==1)
-	else :
-		if d == 5 :
-			return QuadInt(5,0,1)
-		aa = next(aa for aa in approximants(d) if abs(aa.norm()) in [1,4])
-		if abs(aa.norm()) == 1 :
-			return aa
-		else :
-			if aa.a % 2 == 0 and aa.b % 2 == 0 :
-				aa.a /= 2
-				aa.b /= 2
-			return aa
-		
-def class_group_info(d) :
-	mb = minkowski_bound(d)
-	disc = discriminant(d)
-	print("Discriminant = %d"%disc)
-	print("Minkowski Bound = %d" % (mb,))
-	split_primes = []
-	for p in [pp for pp in range(2,mb+1) if isprime(pp)] :
-		fact = factorize_in(p,d)
-		if fact == (p,) :
-			print(fact)
-		else :
-			md = norm_search(p,d)
-			print(fact,md)
-			if md == None :
-				split_primes.append(p)
-	
-	if (d%4) != 1 and d>0 :
-		print("approximant based elts and norms")
-		print([(xx,xx.norm()) for xx in approximants(d)])
-	
-	if split_primes == [] :
-		print "No non principal primes under the Minkowski bound!"
-		return
-	print("Split primes")
-	print(split_primes)
-	print("Split primes that are not squares mod %d" % (d,))
-	sq = squares_mod_d(d)
-	print( [ pp for pp in split_primes if (pp not in sq) and ((d-pp) not in sq)])
+    Use this when the integers num and denom are not
+    representable as floating point numbers (too big) but
+    the quotient is.
 
-	for ii in range(len(split_primes)) :
-		for jj in range(ii,len(split_primes)) :
-			p = split_primes[ii]*split_primes[jj]
-			md = norm_search(p,d)
-			print(p,md)
+    Don’t bother using prec>15 as the arithmetic is
+    single precision floats.
+    """
+    ans = 0.0
+    for i in range(prec):
+        q, r = divmod(num, denom)
+        ans += q/(10.0**i)
+        num = (10*r)
+    return ans
 
-	for ii in range(len(split_primes)) :
-		for jj in range(ii,len(split_primes)) :
-			for kk in range(jj,len(split_primes)) :		
-				p = split_primes[ii]*split_primes[jj]*split_primes[kk]
-				md = norm_search(p,d)
-				print(p,md)
-	
-def ff() :
-	for d in xrange(2,100) :
-		if squarefree(d) :
-			u = fundamental_unit(d)
-			u2 = fundamental_unit2(d)
-			print '%4d %20s %20s' % (d, u, u2)
-			
+
+def floor_rem(x):
+    fl = floor(x)
+    return int(fl), x - fl
+
+
+def cont_frac_quad(a, b, c, d):
+    """
+    Yield the continued fraction for (a+b*sqrt(d))/c
+    """
+    sqd = sqrt(d)
+    while True:
+        # a,b and c may be large, but a/c and b/c
+        # should be reasonable, so do int division
+        # first before trying to convert to floats
+
+        m = int(divint(a, c, 15) + sqd*divint(b, c, 15))
+        yield m
+        a1 = c*(a-c*m)
+        b1 = -c*b
+        c1 = (a-c*m)**2 - d*b**2
+        g = gcd(gcd(a1, b1), c1)
+        a, b, c = a1/g, b1/g, c1/g
+
+
+def approximants(d):
+    h0, k0 = 0, 1
+    h1, k1 = 1, 0
+
+    for ai in cont_frac_quad(0, 1, 1, d):
+        h = ai*h1 + h0
+        k = ai*k1 + k0
+        c = h**2 - d*k**2
+        yield QuadInt(d, h-k, 2*k) if (d % 4) == 1 else QuadInt(d, h, k)
+
+        if c == 1:
+            break
+        h0, k0 = h1, k1
+        h1, k1 = h,  k
+
+
+def squares_mod_d(d):
+    return sorted({(n**2) % d for n in range(d)})
+
+
+def issquare(nn):
+    return (nn >= 0) and (int(sqrt(nn))**2 == nn)
+
+
+def norm_search(p, d):
+    md = None
+    if (d % 4) != 1:
+        for nn in range(1, 20000):
+            for mm in [nn**2*d+p, nn**2*d-p]:
+                if issquare(mm):
+                    m2 = int(sqrt(mm))
+                    if (gcd(nn, p) == 1) or (gcd(m2, p) == 1):
+                        md = QuadInt(d, m2, nn)
+                        break
+    return md
+
+
+def sqrtint(xx):
+    return int(sqrt(xx))
+
+
+def fundamental_unit_old(d):
+    if d <= 1:
+        raise ValueError('%d is not >= 2' % (d,))
+    b = 1
+    while True:
+        if issq(b*b*d-4):
+            a = sqrtint(b*b*d-4)
+            break
+        if issq(b*b*d+4):
+            a = sqrtint(b*b*d+4)
+            break
+        b += 1
+    if d % 4 == 1:
+        return QuadInt(d, (a-b)/2, b)
+    else:
+        return QuadInt(d, a/2, b/2)
+
+
+def fundamental_unit(d):
+    if d % 4 == 3 or d % 4 == 2:
+            return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
+    else:
+        if d == 5:
+            return QuadInt(5, 0, 1)
+        aa = next(aa for aa in approximants(d) if abs(aa.norm()) in [1, 4])
+        if abs(aa.norm()) == 1:
+            return aa
+        else:
+            if aa.a % 2 == 0 and aa.b % 2 == 0:
+                aa.a /= 2
+                aa.b /= 2
+            return aa
+
+
+def class_group_info(d):
+    mb = minkowski_bound(d)
+    disc = discriminant(d)
+    print('Discriminant = %d' % disc)
+    print('Minkowski Bound = %d' % (mb,))
+    split_primes = []
+    for p in [pp for pp in range(2, mb+1) if isprime(pp)]:
+        fact = factorize_in(p, d)
+        if fact == (p,):
+            print(fact)
+        else:
+            md = norm_search(p, d)
+            print(fact, md)
+            if md is None:
+                split_primes.append(p)
+
+    if (d % 4) != 1 and d > 0:
+        print('approximant based elements and norms')
+        print([(xx, xx.norm()) for xx in approximants(d)])
+
+    if not split_primes:
+        print('No non principal primes under the Minkowski bound!')
+        return
+    print('Split primes')
+    print(split_primes)
+    print('Split primes that are not squares mod %d' % (d,))
+    sq = squares_mod_d(d)
+    print([pp for pp in split_primes if (pp not in sq) and ((d-pp) not in sq)])
+
+    for ii in range(len(split_primes)):
+        for jj in range(ii, len(split_primes)):
+            p = split_primes[ii]*split_primes[jj]
+            md = norm_search(p, d)
+            print(p, md)
+
+    for ii in range(len(split_primes)):
+        for jj in range(ii, len(split_primes)):
+            for kk in range(jj, len(split_primes)):
+                p = split_primes[ii] * split_primes[jj] * split_primes[kk]
+                md = norm_search(p, d)
+                print(p, md)

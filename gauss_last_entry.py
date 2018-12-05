@@ -1,13 +1,15 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-import utilities; from utilities import isprime
-import finite_field; from finite_field import (
-	FiniteField,
-	count_curve_points_affine
-	)
+from __future__ import print_function
 
-print u"""
+from utilities import isprime
+from finite_field import (
+    FiniteField,
+    count_curve_points_affine
+    )
+
+print(u"""
 For the curve given by the affine equation
 
 x\u00B2 + y\u00B2 + x\u00B2y\u00B2 = 1
@@ -29,11 +31,11 @@ p-1-2a.
 
 Do a brute force calculation and verify this for
 such primes up to 199.
-"""
+""")
 
-for p in xrange(5,200,4) :
-	if isprime(p) :
-		ff = FiniteField(p,1)
-		Np = count_curve_points_affine(lambda x,y:x**2+y**2+x**2*y**2-ff.one(), ff)
-		js = ff.J(4)
-		print '%4d %5d+2 = p-1%+3d, J=%+2.0f%+2.0fi' % (p, Np, (Np+2-p+1),js[0],js[1])
+for p in range(5, 200, 4):
+    if isprime(p):
+        ff = FiniteField(p, 1)
+        Np = count_curve_points_affine(lambda x, y: x**2+y**2+x**2*y**2-ff.one(), ff)
+        js = ff.jacobi_sum(4)
+        print('%4d %5d+2 = p-1%+3d, J=%+2.0f%+2.0fi' % (p, Np, (Np+2-p+1), js[0], js[1]))
