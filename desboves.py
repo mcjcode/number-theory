@@ -137,19 +137,24 @@ class DesbovesCurvePoint(object):
 
     def __init__(self, a, xyz):
         if xyz[0]**3 + xyz[1]**3 != a * xyz[2]**3:
-            raise ValueError('(%s does not lie on $x**3 + y**3 = %d * z**3' % (xyz, a))
+            raise ValueError('(%s does not lie on x**3 + y**3 = %d * z**3' % (xyz, a))
         else:
             self.xyz = xyz
             self.a = a
 
 
 class DesbovesUnitTest(unittest.TestCase):
-    def runTest(self):
+    def test_one(self):
         zero = DesbovesCurvePoint(13, (1, -1, 0))
         p = DesbovesCurvePoint(13, (2, 7, 3))
         self.assertEqual(zero, zero)
         self.assertEqual(zero+p, p)
         self.assertEqual(p+zero, p)
         self.assertEqual(p+(-p), zero)
+
+    def test_integerMult(self):
+        p = DesbovesCurvePoint(13, (2, 7, 3))
+        self.assertEqual(1*p, p)
+        self.assertEqual(2*p, p+p)
         self.assertEqual(3*p, p+p+p)
 
