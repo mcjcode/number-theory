@@ -16,9 +16,6 @@ from quadratic_extensions import (
     minkowski_bound,
     )
 
-"""
-"""
-
 
 def cont_frac(m):
     """
@@ -93,6 +90,9 @@ def cont_frac_quad(a, b, c, d):
 
 
 def approximants(d):
+    """
+    Yield the approximants for sqrt(d)
+    """
     h0, k0 = 0, 1
     h1, k1 = 1, 0
 
@@ -112,16 +112,12 @@ def squares_mod_d(d):
     return sorted({(n**2) % d for n in range(d)})
 
 
-def issquare(nn):
-    return (nn >= 0) and (int(sqrt(nn))**2 == nn)
-
-
 def norm_search(p, d):
     md = None
     if (d % 4) != 1:
         for nn in range(1, 20000):
             for mm in [nn**2*d+p, nn**2*d-p]:
-                if issquare(mm):
+                if issq(mm):
                     m2 = int(sqrt(mm))
                     if (gcd(nn, p) == 1) or (gcd(m2, p) == 1):
                         md = QuadInt(d, m2, nn)
@@ -152,6 +148,9 @@ def fundamental_unit_old(d):
 
 
 def fundamental_unit(d):
+    if d <= 1:
+        raise ValueError('%d is not >= 2' % (d,))
+
     if d % 4 == 3 or d % 4 == 2:
             return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
     else:

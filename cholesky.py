@@ -1,11 +1,13 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import unittest
+
 import numpy as np
 from fractions import Fraction
 
 
-def ch(mm):
+def cholesky(mm):
     """
     Take a symmetric matrix m and calculate an upper
     triangular matrix a s.t. tr(a)*m*a is diagonal.
@@ -15,9 +17,6 @@ def ch(mm):
     a = np.array([[Fraction(0, 1)]*n]*n, dtype=Fraction)
     for i in range(n):
         a[i, i] = Fraction(1, 1)
-    
-    print(a)
-    
     for i in range(n-1):
         for j in range(i+1, n):
             r1 = Fraction(mat[j, i], mat[i, i])
@@ -28,10 +27,12 @@ def ch(mm):
     return mat, a
 
 
-def test_ch():
-    aa = map(lambda L: map(Fraction, L), [[5, 3, 3],
-                                          [3, 3, 3],
-                                          [3, 3, 8]])
-    mm = np.array(aa)
-    m, a = ch(mm)
-    assert a.transpose().dot(mm).dot(a) == m
+class CholeskyTest(unittest.TestCase):
+    def runTest(self):
+        aa = map(lambda L: map(Fraction, L), [[5, 3, 3],
+                                              [3, 3, 3],
+                                              [3, 3, 8]])
+        m = np.array(aa)
+        d, a = cholesky(m)
+        atma = a.transpose().dot(m).dot(a)
+        self.assertEqual(sum((atma-d).ravel()), Fraction(0,1))

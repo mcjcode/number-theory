@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import unittest
+
 from fractions import Fraction
 
 __all__ = ['desbovesp']
@@ -76,7 +78,7 @@ def desbovesp(p, q):
     # law.  Return the identity element.
     #
     if pequal([p[1], p[0], p[2]], q):
-        return [1, -1, 0]
+        return 1, -1, 0
     
     if pequal(p, q):
         x, y, z = desboves_tangent(*p)
@@ -95,3 +97,59 @@ def desbovesp(p, q):
     d = gcd(x, gcd(y, z))
 
     return x/d, y/d, z/d
+
+
+class DesbovesCurvePoint(object):
+
+    def __eq__(self, other):
+        return self.a == other.a and self.xyz == other.xyz
+
+    def __repr__(self):
+        return 'DesbovesCurvePoint(%d, %s)' % (self.a, self.xyz)
+
+    def __str__(self):
+        return '%s' % (self.xyz,)
+
+    def __add__(self, other):
+        if self.a != other.a:
+            raise ValueError('points are not on the same curve')
+        return DesbovesCurvePoint(self.a, desbovesp(self.xyz, other.xyz))
+
+    def __rmul__(self, other):
+        if other == 0:
+            ans = DesbovesCurvePoint(self.a, (1, -1, 0))
+        elif other < 0:
+            ans = (-other)*(-self)
+        else:
+            ans = DesbovesCurvePoint(self.a, (1, -1, 0))
+            while other != 0:
+                ans = ans + self
+                other -= 1
+        return ans
+
+    def __neg__(self):
+        return DesbovesCurvePoint(self.a, (self.xyz[1], self.xyz[0], self.xyz[2]))
+
+    def __sub__(self, other):
+        if self.a != other.a:
+            raise ValueError('points are not on the same curve')
+        return self + (-other)
+
+    def __init__(self, a, xyz):
+        if xyz[0]**3 + xyz[1]**3 != a * xyz[2]**3:
+            raise ValueError('(%s does not lie on $x**3 + y**3 = %d * z**3' % (xyz, a))
+        else:
+            self.xyz = xyz
+            self.a = a
+
+
+class DesbovesUnitTest(unittest.TestCase):
+    def runTest(self):
+        zero = DesbovesCurvePoint(13, (1, -1, 0))
+        p = DesbovesCurvePoint(13, (2, 7, 3))
+        self.assertEqual(zero, zero)
+        self.assertEqual(zero+p, p)
+        self.assertEqual(p+zero, p)
+        self.assertEqual(p+(-p), zero)
+        self.assertEqual(3*p, p+p+p)
+

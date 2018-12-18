@@ -15,21 +15,6 @@ def maptochar(x, pi):
             return root
 
 
-maxp = 75
-
-
-def flip(gint):
-    return GaussianInteger(gint.real(), abs(gint.imag()))
-
-
-qprimes = [(flip(jacobi_sum_quartic(qq)) if (qq % 4 == 1) else GaussianInteger(qq))
-           for qq in range(3, maxp, 2) if isprime(qq)]
-
-pprimes = qprimes  # [GaussianInteger(0,1), GaussianInteger(1,1)] + qprimes
-
-# qprimes = [qq for qq in qprimes if qq.imag()==0]
-
-
 def biquad(pi1, pi2):
     if type(pi2) == int:
         pi2 = GaussianInteger(pi2)
@@ -70,46 +55,42 @@ def jacobi_sum(chi1, chi2, p):
     return retval
 
 
-pi = GaussianInteger(-3, 2)
+def flip(gint):
+    return GaussianInteger(gint.real(), abs(gint.imag()))
 
-q2primes = [flip(jacobi_sum_quartic(qq)) for qq in range(5, maxp, 4) if isprime(qq)]
 
-for pi1 in q2primes:
-    for pi in [pi1, GaussianInteger(pi1.real(), -pi1.imag()),
-               GaussianInteger(-pi1.imag(), pi1.real()),
-               GaussianInteger(-pi1.real(), -pi1.imag()),
-               GaussianInteger(pi1.imag(), -pi1.real()),
-               GaussianInteger(pi1.real(), -pi1.imag()),
-               GaussianInteger(pi1.imag(), pi1.real()),
-               GaussianInteger(-pi1.real(), pi1.imag()),
-               GaussianInteger(-pi1.imag(), -pi1.real())]:
+def table2():
+    maxp = 75
+    q2primes = [flip(jacobi_sum_quartic(qq)) for qq in range(5, maxp, 4) if isprime(qq)]
 
-        chi = Character(pi)
-        chi2 = chi*chi
-        # chi3 = chi*chi*chi
-        # chi4 = chi*chi*chi*chi
+    for pi1 in q2primes:
+        for pi in [pi1, GaussianInteger(pi1.real(), -pi1.imag()),
+                   GaussianInteger(-pi1.imag(), pi1.real()),
+                   GaussianInteger(-pi1.real(), -pi1.imag()),
+                   GaussianInteger(pi1.imag(), -pi1.real()),
+                   GaussianInteger(pi1.real(), -pi1.imag()),
+                   GaussianInteger(pi1.imag(), pi1.real()),
+                   GaussianInteger(-pi1.real(), pi1.imag()),
+                   GaussianInteger(-pi1.imag(), -pi1.real())]:
 
-        for a in [GaussianInteger(xx) for xx in range(pi.norm())]:
-            pass
-            # print a, chi(a)
-            # print '%10s %10s %10s %10s %10s' % (a, chi(a), chi2(a), chi3(a), chi4(a))
-        print('%10s %10s %10s %10s' % (pi, chi(GaussianInteger(-1)), jacobi_sum(chi, chi, pi.norm()),
-                                       jacobi_sum(chi, chi2, pi.norm())))
+            chi = Character(pi)
+            chi2 = chi*chi
 
-# q2primes = [flip(J(qq)) for qq in xrange(5, maxp,4) if isprime(qq)]
+            print('%10s %10s %10s %10s' % (pi, chi(GaussianInteger(-1)), jacobi_sum(chi, chi, pi.norm()),
+                                           jacobi_sum(chi, chi2, pi.norm())))
 
-# for pi in q2primes:
-#     print pi
-#     chi = Character(GaussianInteger(-1,2))
-#     chi2 = chi*chi
-#     print '%10s %10s' %(pi, jacobi_sum(chi, chi, pi.norm()))
-# print '%10s %10s %10s' %(pi, jacobi_sum(chi, chi, pi.norm()), jacobi_sum(chi, chi2, pi.norm()))
 
-if True:
+def biquadratic_residue_table():
     print("""A table of biquadratic residues.  Each column shows
     the values of the character associated with the prime at the
     top of the column
     """)
+
+    maxp = 75
+    qprimes = [(flip(jacobi_sum_quartic(qq)) if (qq % 4 == 1) else GaussianInteger(qq))
+               for qq in range(3, maxp, 2) if isprime(qq)]
+    pprimes = qprimes
+
     print('%5s' % ' ', end=' ')
     for pi2 in qprimes:
         print('%4s' % (GaussianInteger(pi2.real(), 0),), end=' ')

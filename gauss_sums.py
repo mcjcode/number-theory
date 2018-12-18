@@ -1,6 +1,8 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import unittest
+
 import numpy as np
 
 from utilities import (
@@ -130,3 +132,13 @@ def test_ideal_class_number():
     for d in range(3000):
         if squarefree(d) and d != 0:
             print('%4d %3d ' % (d, ideal_class_number(d)))
+
+
+class GaussSumTest(unittest.TestCase):
+    def test_1(self):
+        class_number = ideal_class_number(1)
+        self.assertEqual(class_number, 1, 'Class number of Q should be 1.  Was %d.' % class_number)
+
+    def test_2(self):
+        class_number = ideal_class_number(-1)
+        self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)

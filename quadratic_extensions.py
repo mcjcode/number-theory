@@ -1,6 +1,8 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import unittest
+
 import numpy as np
 
 from math import sqrt
@@ -9,7 +11,6 @@ from utilities import (
     squarefree,
     gcd,
     isprime,
-    assert_equal,
     factorize,
     )
 
@@ -191,11 +192,8 @@ def factorize_in(p, d):
         return p,
 
 
-def test_legendre_ch():
-    ch = legendre_ch(3)
-    for xx in range(12):
-        assert_equal(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')
-
-
-if __name__ == '__main__':
-    test_legendre_ch()
+class LegendreCharacterTest(unittest.TestCase):
+    def test_12(self):
+        ch = legendre_ch(3)
+        for xx in range(12):
+            self.assertEqual(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')

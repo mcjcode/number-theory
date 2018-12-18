@@ -1,6 +1,8 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import unittest
+
 
 class GaussianInteger(object):
 
@@ -94,3 +96,17 @@ class GaussianInteger(object):
 
         div = self / other
         return self - div * other
+
+
+class GaussianIntegerTest(unittest.TestCase):
+    def runTest(self):
+        one_elem = GaussianInteger.one()
+        zero_elem = GaussianInteger.zero()
+        xx = GaussianInteger(2, 3)
+        self.assertEqual(one_elem * xx, xx)
+        self.assertEqual(zero_elem + xx, xx)
+        self.assertEqual(xx.conj().conj(), xx)
+        self.assertEqual(xx - zero_elem, xx)
+        self.assertEqual(-(-xx), xx)
+        self.assertEqual(xx**2, xx*xx)
+        self.assertEqual((xx * xx.conj()).imag(), 0)

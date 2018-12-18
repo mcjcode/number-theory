@@ -1,14 +1,15 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import unittest
+
 from math import sqrt
 from gaussian_integer import GaussianInteger
-from testing import assert_equal, assert_exception
 
 
 def isprime(p):
     if type(p) != int:
-        raise ValueError('%s is %s, but should be int' % (p, type(p)))
+        raise TypeError('%s is %s, but should be int' % (p, type(p)))
 
     if p < 0:
         p = -p
@@ -54,6 +55,9 @@ def squarefree(mm):
 
 
 def order(a, p):
+    """
+    Return the order of a in the multiplicative group (Z/pZ)^*.
+    """
     one = type(a)(1)
     cnt = 1
     b = a
@@ -64,18 +68,17 @@ def order(a, p):
 
 
 def primitive_root(p):
+    """
+    Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
+    """
     for a in range(2, p):
         if order(a, p) == p - 1:
             return a
 
 
-# def prod(lst):
-#     return reduce(lambda x, y: x * y, lst, 1)
-
-
 def modpow(a, k, p):
     """
-    Return a**k (mod p)
+    Return a**k (mod p).
 
     a can be of any type that has a multiplicative
     identity and supports multiplication and modding.
@@ -89,6 +92,9 @@ def modpow(a, k, p):
 
 
 def modpow2(a, k, p):
+    """
+    Return a**k (mod p).
+    """
     if k == 0:
         return type(a)(1)
     tail = (modpow2(a, k / 2, p) ** 2) % p
@@ -132,11 +138,6 @@ def jacobi_sum(chi1, chi2, p):
     return retval
 
 
-# def round(x):
-#     s = np.sign(x)
-#     return s * int(s * x + 0.5)
-
-
 def jacobi_sum_quartic(p):
     """
     Returns the Jacobi sum J(chi,chi) associated with the
@@ -157,6 +158,9 @@ def jacobi_sum_quartic(p):
 
 
 def gcd(a, b):
+    """
+    Return the greatest common divisor of a and b.
+    """
     if a == 0 or b == 0:
         return a + b
     while a % b != 0:
@@ -164,16 +168,48 @@ def gcd(a, b):
     return b
 
 
-if __name__ == '__main__':
-    assert_equal(False, isprime(0), 'zero is not a (maximal) prime')
-    assert_equal(False, isprime(1), 'units are not prime')
-    assert_equal(True, isprime(7), 'yes, 7 is a prime')
-    assert_equal(False, isprime(49), 'a non-unit square is not prime')
-    assert_equal(False, isprime(91), '91=7*13 is not prime')
-    assert_equal(True, isprime(-7), '(some) negative numbers are prime')
-    assert_equal(True, squarefree(1), '1 is square free')
-    assert_equal(True, squarefree(-1), '-1 is square free')
-    assert_equal(False, squarefree(4), '4 is not square free')
-    assert_equal(False, squarefree(18), '18 is not square free')
-    assert_exception(lambda: isprime(7.0), 'isprime should throw an exception if passed a non-int')
-    print('')
+def euclidean_algorithm(a, b):
+    """
+    Return x,y such that x*a + y*b = gcd(a,b).
+    """
+    q, r = divmod(a, b)  # a = q * b + r
+
+    if r == 0:
+        return 0, 1
+    # d = gcd(a, b) = gcd(b, r)
+    #
+    # Suppose xb+yr = d
+    #
+    #  xb + y(a-qb) = d
+    #
+    #  ya + (x-yq)b = d
+
+    x, y = euclidean_algorithm(b, r)
+    return y, (x-y*q)
+
+
+class UtilitiesTest(unittest.TestCase):
+
+    def test_isprime(self):
+        self.assertEqual(False, isprime(0), 'zero is not a (maximal) prime')
+        self.assertEqual(False, isprime(1), 'units are not prime')
+        self.assertEqual(True, isprime(7), 'yes, 7 is a prime')
+        self.assertEqual(False, isprime(49), 'a non-unit square is not prime')
+        self.assertEqual(False, isprime(91), '91=7*13 is not prime')
+        self.assertEqual(True, isprime(-7), '(some) negative numbers are prime')
+        self.assertRaises(TypeError, isprime, 7.0)
+
+    def test_squarefree(self):
+        self.assertEqual(True, squarefree(1), '1 is square free')
+        self.assertEqual(True, squarefree(-1), '-1 is square free')
+        self.assertEqual(False, squarefree(4), '4 is not square free')
+        self.assertEqual(False, squarefree(18), '18 is not square free')
+
+    def test_gcd(self):
+        self.assertEquals(gcd(2*3*5, 3*5*7), 3*5)
+
+    def test_euclidean_algorithm(self):
+        a = 89
+        b = 55
+        x, y = euclidean_algorithm(a, b)
+        self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
