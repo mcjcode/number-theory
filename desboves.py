@@ -10,7 +10,7 @@ __all__ = ['desbovesp']
 
 def gcd(a, b):
     while b != 0:
-        a, b = b, a-(a/b)*b
+        a, b = b, a-(a//b)*b
     return a
 
 
@@ -23,7 +23,7 @@ def desboves_tangent(x, y, z):
     x, y, z = x*(x**3+2*y**3), -y*(y**3+2*x**3), -z*(y**3-x**3)
 
     d = gcd(gcd(x, y), z)
-    return x/d, y/d, z/d
+    return x // d, y // d, z // d
 
 
 def desboves_secant_x(x1, y1, x2, y2):
@@ -96,7 +96,7 @@ def desbovesp(p, q):
     # return the answer with no common factors.
     d = gcd(x, gcd(y, z))
 
-    return x/d, y/d, z/d
+    return x//d, y//d, z//d
 
 
 class DesbovesCurvePoint(object):
@@ -126,8 +126,8 @@ class DesbovesCurvePoint(object):
             ans = DesbovesCurvePoint(self.a, (1, -1, 0))
             while other != 0:
 
-                print(self.__repr__())
-                print(ans.__repr__())
+                # print(self.__repr__())
+                # print(ans.__repr__())
 
                 ans = ans + self
                 other -= 1
