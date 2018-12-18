@@ -206,7 +206,7 @@ class UtilitiesTest(unittest.TestCase):
         self.assertEqual(False, squarefree(18), '18 is not square free')
 
     def test_gcd(self):
-        self.assertEquals(gcd(2*3*5, 3*5*7), 3*5)
+        self.assertEqual(gcd(2*3*5, 3*5*7), 3*5)
 
     def test_euclidean_algorithm(self):
         a = 89

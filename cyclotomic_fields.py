@@ -91,4 +91,4 @@ class CyclotomicIntegerTest(unittest.TestCase):
     def test_norm(self):
         nn = 13
         xx = CyclotomicInteger.one(nn) - CyclotomicInteger.zeta(nn)
-        self.assertEquals(xx.norm(), nn)
+        self.assertEqual(xx.norm(), nn)
