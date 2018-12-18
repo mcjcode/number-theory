@@ -116,6 +116,8 @@ class DesbovesCurvePoint(object):
         return DesbovesCurvePoint(self.a, desbovesp(self.xyz, other.xyz))
 
     def __rmul__(self, other):
+        if type(other) != int:
+            raise TypeError('can only multiply DesboveCurvePoints by ints')
         if other == 0:
             ans = DesbovesCurvePoint(self.a, (1, -1, 0))
         elif other < 0:
@@ -123,6 +125,10 @@ class DesbovesCurvePoint(object):
         else:
             ans = DesbovesCurvePoint(self.a, (1, -1, 0))
             while other != 0:
+
+                print(self.__repr__())
+                print(ans.__repr__())
+
                 ans = ans + self
                 other -= 1
         return ans
@@ -153,7 +159,9 @@ class DesbovesUnitTest(unittest.TestCase):
         self.assertEqual(p+(-p), zero)
 
     def test_integerMult(self):
+        zero = DesbovesCurvePoint(13, (1, -1, 0))
         p = DesbovesCurvePoint(13, (2, 7, 3))
+        self.assertEqual(0*p, zero)
         self.assertEqual(1*p, p)
         self.assertEqual(2*p, p+p)
         self.assertEqual(3*p, p+p+p)
