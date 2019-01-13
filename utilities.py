@@ -6,6 +6,7 @@ import unittest
 from math import sqrt
 from gaussian_integer import GaussianInteger
 
+import numpy as np
 
 def isprime(p):
     if type(p) != int:
@@ -162,20 +163,25 @@ def gcd(a, b):
     Return the greatest common divisor of a and b.
     """
     if a == 0 or b == 0:
-        return a + b
+        return abs(a + b)
     while a % b != 0:
         a, b = b, a % b
-    return b
+    return abs(b)
 
 
 def euclidean_algorithm(a, b):
     """
     Return x,y such that x*a + y*b = gcd(a,b).
     """
+    
+    if b==0:
+        return np.sign(a), 0
+
     q, r = divmod(a, b)  # a = q * b + r
 
     if r == 0:
-        return 0, 1
+        return 0, np.sign(b)
+
     # d = gcd(a, b) = gcd(b, r)
     #
     # Suppose xb+yr = d
@@ -190,6 +196,9 @@ def euclidean_algorithm(a, b):
 
 class UtilitiesTest(unittest.TestCase):
 
+    def runTest(self):
+        pass
+        
     def test_isprime(self):
         self.assertEqual(False, isprime(0), 'zero is not a (maximal) prime')
         self.assertEqual(False, isprime(1), 'units are not prime')
@@ -213,3 +222,10 @@ class UtilitiesTest(unittest.TestCase):
         b = 55
         x, y = euclidean_algorithm(a, b)
         self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
+        
+    def test_euclidean_algorithm2(self):
+        for a in range(-100,+100):
+            for b in range(-100,+100):
+                x, y = euclidean_algorithm(a, b)
+                print a, b, x, y
+                self.assertEqual(gcd(a,b), x*a + y*b,'gcd != x*a+y*b')
