@@ -136,7 +136,6 @@ class EisensteinTest(unittest.TestCase):
 
     def _test_modularity(self,f):
         z = self._random_pt()
-        print z
         for kk in [4,5]:
             self.assertAlmostEqual(f(kk, z+1), f(kk,z))
             self.assertAlmostEqual(f(kk,-1/z), z**(2*kk)*f(kk,z))
@@ -155,10 +154,9 @@ class EisensteinTest(unittest.TestCase):
         self._test_modularity(lambda kk, zz: unrestricted_eisenstein(kk,zz))
         self._test_modularity(lambda kk, zz: unrestricted_eisenstein(kk,zz))
 
-        zz = tst._random_pt()
+        zz = self._random_pt()
         for kk in range(3,7):
             zeta2k = sum( 1./n**(2*kk) for n in range(100000,0,-1) )
-            print 'zeta2k=%f' % zeta2k
             self.assertAlmostEqual(unrestricted_eisenstein(kk, zz), zeta2k*eisenstein(kk,zz))
     
     def test_poincare(self):
