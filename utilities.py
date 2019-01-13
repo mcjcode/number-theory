@@ -227,5 +227,4 @@ class UtilitiesTest(unittest.TestCase):
         for a in range(-100,+100):
             for b in range(-100,+100):
                 x, y = euclidean_algorithm(a, b)
-                print a, b, x, y
                 self.assertEqual(gcd(a,b), x*a + y*b,'gcd != x*a+y*b')
