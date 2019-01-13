@@ -4,6 +4,8 @@
 from math import atan, sin, cos, exp
 import numpy as np
 
+import matplotlib
+
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
