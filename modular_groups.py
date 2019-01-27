@@ -355,7 +355,17 @@ def coset_reps(qq):
     Yield coset representatives for Gamma(q) in SL(2,Z).
     """
     zq2 = itertools.product(range(qq), range(qq))
-    f=lambda (cc,dd):gcd(cc,gcd(dd,qq))==1
+    #
+    # this pattern matching no longer seems to work in python 3.6
+    #
+    # f=lambda (cc,dd):gcd(cc,gcd(dd,qq))==1
+    #
+    # so replace it with this:
+    #
+    def f(pair):
+        cc, dd = pair
+        return gcd(cc,gcd(dd,qq))==1
+        
     for (cc,dd) in filter(f, zq2):
         ii = 0
         if cc==0:
