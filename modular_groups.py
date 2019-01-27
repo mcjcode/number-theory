@@ -1,19 +1,24 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-from math import atan, sin, cos, exp
+import unittest
+import itertools
+from math import atan, sin, cos, exp, floor, sqrt
 import numpy as np
 
 import matplotlib
-
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 
-from utilities import gcd, euclidean_algorithm
+from utilities import (
+    gcd,
+    euclidean_algorithm,
+    factorize,
+    isprime,
+)
+    
 from base_complex import infj
-
-import unittest
 
 def c2xy(z):
     """
@@ -64,10 +69,34 @@ def U(corners):
     return list(map(Uz, corners))
 
 
-def z1z2_to_pts(z1, z2, n):
+def halfplane_to_poincare_disk(zz):
+    """
+    Send zs —> (zs-i)/(-i*zs+1) = (i*zs+1)/(zs+i) = i + 2/(zs+i)
+    """
+    if zz==-1.0j:
+        return infj
+    elif zz==infj:
+        return 1.0j
+    else:
+        return (zz-1.0j)/(-1.0j*zz+1)
+
+
+def poincare_disk_to_halfplane(ww):
+    """
+    send ws -> (ws+i)/(i*ws+1) = (-i*ws+1)/(ws-i) = -i + 2/(ws-i)
+    """
+    if ww==1.0j:
+        return infj
+    elif ww==infj:
+        return -1.0j
+    else:
+        return (ww+1.0j)/(1.0j*ww+1)
+
+
+def z1z2_to_pts(z1, z2, n, model):
     """
     Return a sequence of n+1 points along the geodesic from z1 to z2.
-	  """
+    """
     x1, y1 = c2xy(z1)
     x2, y2 = c2xy(z2)
 
@@ -77,47 +106,56 @@ def z1z2_to_pts(z1, z2, n):
     #
     if abs(x1 - x2) < 0.00000001:
         dy = (y2 - y1) / n
-        return [(x1, y1 + ii * dy) for ii in range(n + 1)]
-    #
-    # compute the point on the real axis
-    # equidistant from z1 and z2
-    #
-    x = (abs(z1) ** 2 - abs(z2) ** 2) / (2.0 * (x1 - x2))
-    radius = np.sqrt((x1 - x) ** 2.0 + y1 ** 2.0)
-
-    if y1 == 0 and y2 == 0:
-        if x1 > x2:
-            theta1 = 0.0
-            theta2 = np.pi
-        else:
-            theta1 = np.pi
-            theta2 = 0.0
-
-    if y1 == 0:
-        if x1 < x2:
-            theta1 = np.pi
-        else:
-            theta1 = 0.0
+        hp_pts = [(x1, y1 + ii * dy) for ii in range(n + 1)]
     else:
-        theta1 = atan(y1 / (x1 - x))
-        if theta1 < 0:
-            theta1 = np.pi + theta1
-
-    if y2 == 0:
-        if x2 < x1:
-            theta2 = np.pi
+        #
+        # compute the point on the real axis
+        # equidistant from z1 and z2
+        #
+        x = (abs(z1) ** 2 - abs(z2) ** 2) / (2.0 * (x1 - x2))
+        radius = np.sqrt((x1 - x) ** 2.0 + y1 ** 2.0)
+    
+        if y1 == 0 and y2 == 0:
+            if x1 > x2:
+                theta1 = 0.0
+                theta2 = np.pi
+            else:
+                theta1 = np.pi
+                theta2 = 0.0
+    
+        if y1 == 0:
+            if x1 < x2:
+                theta1 = np.pi
+            else:
+                theta1 = 0.0
         else:
-            theta2 = 0.0
+            theta1 = atan(y1 / (x1 - x))
+            if theta1 < 0:
+                theta1 = np.pi + theta1
+    
+        if y2 == 0:
+            if x2 < x1:
+                theta2 = np.pi
+            else:
+                theta2 = 0.0
+        else:
+            theta2 = atan(y2 / (x2 - x))
+            if theta2 < 0:
+                theta2 = np.pi + theta2
+    
+        dtheta = (theta2 - theta1) / n
+        hp_pts = [(x + cos(theta1 + ii * dtheta) * radius, 
+                  0 + sin(theta1 + ii * dtheta) * radius) for ii in range(n + 1)]
+
+    if model=='halfplane':
+        return hp_pts
     else:
-        theta2 = atan(y2 / (x2 - x))
-        if theta2 < 0:
-            theta2 = np.pi + theta2
-
-    dtheta = (theta2 - theta1) / n
-    return [(x + cos(theta1 + ii * dtheta) * radius, sin(theta1 + ii * dtheta) * radius) for ii in range(n + 1)]
+        zs = [xi+1.0j*yi for (xi,yi) in hp_pts]
+        zs = map(halfplane_to_poincare_disk,zs)
+        return [(zz.real,zz.imag) for zz in zs]
 
 
-def tile_patch(corners, **kwdargs):
+def tile_patch(corners, model='halfplane', **kwdargs):
     """
     Given the three corners of a tile (a fundamental
     region for G, the full modular group), return the
@@ -129,37 +167,98 @@ def tile_patch(corners, **kwdargs):
     so its color, transparency, edge properties can
     all be specified here.
     """
-    z1, z2, z3 = corners
-    k = 20
 
+    k = 30
+
+    z1, z2, z3 = corners        
     if z1 == infj or z2 == infj or z3 == infj:
         if z2 == infj:
             z1, z2, z3 = z2, z3, z1
         elif z3 == infj:
             z1, z2, z3 = z3, z1, z2
-        pth = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO]
-        x2, y2 = c2xy(z2)
-        x3, y3 = c2xy(z3)
-        pts = [(x2, y2), (x2, 2.0), (x3, 2.0), (x3, y3)]
+        assert(z1 == infj); assert(z2 != infj); assert(z3 != infj)
+        
+        if model=='disk':
+            
+            w2 = halfplane_to_poincare_disk(z2)
+            #print 'w2 = ', w2
+            s, t = w2.real, w2.imag
+            cx, cy = (s**2+(t-1)**2)/(2*s), 1.0
+            rr = abs(cx)
+            if s<0:
+                th1 = -atan(-(t-cy)/(s-cx))
+                th2 = 0.0
+                while th1 > 0:
+                    th1 -= np.pi
+            else: # s>0
+                th1 = atan((t-cy)/(s-cx))
+                th2 = np.pi
+                while th1 < np.pi:
+                    th1 += np.pi
+            #print '(cx,cy)=(%f,%f)' % (cx,cy)
+            #print 'th1 = ', th1*180/np.pi
+            #print 'th2 = ', th2*180/np.pi
+            dth = (th2-th1)/(2*k+1)
+            pts = [(cx+rr*cos(th),cy+rr*sin(th)) for th in np.arange(th1,th2+0.5*dth,dth)]
+            pth = [Path.MOVETO] + [Path.CURVE3]*(len(pts)-1)
+            assert(len(pts)==len(pth))
+            
+            w3 = halfplane_to_poincare_disk(z3)
+            #print 'w3 = ', w3
+            s, t = w3.real, w3.imag
+            cx, cy = (s**2+(t-1)**2)/(2*s), 1.0
+            rr = abs(cx)
+            if s<0:
+                th1 = 0.0
+                th2 = -atan(-(t-cy)/(s-cx))
+                while th2 > 0:
+                    th2 -= np.pi
+            else: # s>0
+                th1 = np.pi
+                th2 = atan((t-cy)/(s-cx))
+                while th2 < np.pi:
+                    th2 += np.pi
+            #print '(cx,cy)=(%f,%f)' % (cx,cy)
+            #print 'th1 = ', th1*180/np.pi
+            #print 'th2 = ', th2*180/np.pi
+            dth = (th2-th1)/(2*k)
+            pts1 = [(cx+rr*cos(th),cy+rr*sin(th)) for th in np.arange(th1,th2+0.5*dth,dth)]
+            pts += pts1
+            pth += [Path.CURVE3]*len(pts1)
+            assert(len(pts)==len(pth))
+        else:
+            pth = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO]
+            x2, y2 = c2xy(z2)
+            x3, y3 = c2xy(z3)
+            pts = [(x2, y2), (x2, 1.5), (x3, 1.5), (x3, y3)]
 
-        pts += z1z2_to_pts(z3, z2, 2 * k + 1)[1:]
+        pts += z1z2_to_pts(z3, z2, 2 * k + 1, model)[1:]
         pth += ([Path.CURVE3] * (2 * k)) + [Path.CLOSEPOLY]
         verts, codes = pts, pth
     else:
         pth1 = [Path.MOVETO] + ([Path.CURVE3] * (2 * k)) + [Path.LINETO]
         pth2 = ([Path.CURVE3] * (2 * k)) + [Path.LINETO]
         pth3 = ([Path.CURVE3] * (2 * k)) + [Path.CLOSEPOLY]
-        pts1 = z1z2_to_pts(z1, z2, 2 * k + 1)
-        pts2 = z1z2_to_pts(z2, z3, 2 * k + 1)
-        pts3 = z1z2_to_pts(z3, z1, 2 * k + 1)
+        pts1 = z1z2_to_pts(z1, z2, 2 * k + 1, model)
+        pts2 = z1z2_to_pts(z2, z3, 2 * k + 1, model)
+        pts3 = z1z2_to_pts(z3, z1, 2 * k + 1, model)
         verts, codes = pts1 + pts2[1:] + pts3[1:], pth1 + pth2 + pth3
+    
+    #print len(verts)
+    #print len(codes)
+    
+    #for vert in verts: print vert
+    #for code in codes: print code
 
+    assert (len(verts)==len(codes))        
     path = Path(verts, codes)
     patch = mpatches.PathPatch(path, **kwdargs)
     return patch
 
+                  
 rho = np.exp(2*np.pi*1.0j/6.0)
 D = (rho, rho**2, 0.0+0.0j)
+
 
 def parse_to_mat(ss):
     M = np.array([[1,0],[0,1]],dtype=int)
@@ -174,6 +273,7 @@ def parse_to_mat(ss):
             A = np.array([[1,0],[0,1]],dtype=int)
         M = M.dot(A)
     return M
+
 
 def mat_to_fcn(M):
     def ffz(z):
@@ -192,6 +292,7 @@ def mat_to_fcn(M):
         return map(ffz,zs)
     return ff
 
+
 def parse_word(ss):
     M = parse_to_mat(ss)
     return mat_to_fcn(M)
@@ -205,42 +306,86 @@ def invert_word(ss):
     return ''.join(invert_letter(s) for s in reversed(ss))
 
 
+def _inv22(mm):
+    a = mm[0,0];  b = mm[0,1]
+    c = mm[1,0];  d = mm[1,1]    
+    return np.array([[ d,-b],
+                     [-c, a]],dtype=int)
+
+
+def _eq(m1,m2,qq):
+    [a,b,c,d] = (m1.dot(_inv22(m2))).ravel()
+    return ((a%qq==1 and b%qq==0 and c%qq==0 and d%qq==1) or
+            ((a+1)%qq==0 and b%qq==0 and c%qq==0 and (d+1)%qq==0))
+
+
+def coset_reps_alt(qq):
+    """
+    Yield coset representatives for Gamma(q) in SL(2,Z).
+    """
+        
+    I = np.array([[1,0],[0,1]],dtype=int)
+    S = np.array([[0,-1],[1,0]],dtype=int)
+    T = np.array([[1,1],[0,1]],dtype=int)
+    U = _inv22(T)
+
+    retval = [I]
+
+    i = 0
+    while i<len(retval):
+        mm = retval[i]
+        mminv = _inv22(retval[i])
+        for A in [S,S.dot(T).dot(S),S.dot(U).dot(S)]:
+            mat1 = mm.dot(A)
+            if mat1[0,0] < 0:
+                mat1 = -mat1
+            found = False
+            for mat2 in retval:
+                if _eq(mat1,mat2,qq):
+                    found = True
+                    break
+            if not found:
+                retval.append(mat1)
+        i+=1
+    return retval
+
+
 def coset_reps(qq):
     """
     Yield coset representatives for Gamma(q) in SL(2,Z).
     """
-    
-    for cc in range(qq):
-        for dd in range(qq):
-            if gcd(cc,gcd(dd,qq))==1:
-                ii = 0
-                if cc==0:
-                    cc=qq
-                while True:
-                    if gcd(cc,dd+ii*qq) == 1:
-                        dd += ii*qq
+    zq2 = itertools.product(range(qq), range(qq))
+    f=lambda (cc,dd):gcd(cc,gcd(dd,qq))==1
+    for (cc,dd) in filter(f, zq2):
+        ii = 0
+        if cc==0:
+            if dd!=1:
+                cc=qq
+        while True:
+            if gcd(cc,dd-ii*qq) == 1:
+                dd -= ii*qq
+                break
+            elif gcd(cc,dd+ii*qq) == 1:
+                dd += ii*qq
+                break
+            ii += 1
+        # cc and dd are now relatively prime.
+        zq2 = itertools.product(range(qq), range(qq))
+        for (aa,bb) in zq2:
+            quot, rem = divmod(aa*dd-bb*cc,qq)
+            if rem==1:
+                # now aa*dd-bb*cc = 1 (mod qq)
+                for (ee,ff) in [(ee,ff) for ee in range(-2*qq,2*qq) for ff in range(-2*qq,2*qq)]:
+                    if (aa+ee*qq)*dd-(bb+ff*qq)*cc==1:
+                        yieldval = np.array([[aa+ee*qq,bb+ff*qq],[cc,dd]],dtype=int)
+                        # now normalize so that the image of D under this
+                        # transformation lies between -1/2 and q-1/2.
+                        f = mat_to_fcn(yieldval)
+                        mm = int(floor(f([0.5j])[0].real))
+                        yieldval = np.array([[1,mm%qq-mm],[0,1]],dtype=int).dot(yieldval)
+                        yield yieldval
                         break
-                    elif gcd(cc,dd-ii*qq) == 1:
-                        dd -= ii*qq
-                        break
-                    ii += 1
-                for aa in range(qq):
-                    for bb in range(qq):
-                        quot, rem = divmod(aa*dd-bb*cc,qq)
-                        if rem==1:
-                            for (ee,ff) in [(ee,ff) for ee in range(2*qq) for ff in range(2*qq)]:
-                                if (aa+ee*qq)*dd-(bb+ff*qq)*cc==1:
-                                    yield np.array([[aa+ee*qq,bb+ff*qq],[cc,dd]],dtype=int)
-                                    break
-                                elif (aa+ee*qq)*dd-(bb-ff*qq)*cc==1:
-                                    yield np.array([[aa+ee*qq,bb-ff*qq],[cc,dd]],dtype=int)
-                                    break                                    
-                                elif (aa-ee*qq)*dd-(bb+ff*qq)*cc==1:
-                                    yield np.array([[aa-ee*qq,bb+ff*qq],[cc,dd]],dtype=int)
-                                    break                                                                            
-                                elif (aa-ee*qq)*dd-(bb-ff*qq)*cc==1:
-                                    yield np.array([[aa-ee*qq,bb-ff*qq],[cc,dd]],dtype=int)
-                                    break                                    
+
 
 def name_to_latex(name):
     retval = '$'
@@ -293,6 +438,7 @@ def plot_regions(tile_names, center, shift_name, transform_names):
     shift_inv_name = invert_word(shift_name)
     
     #transfs = [lambda tt: shift(parse_word(tname)(shift_inv(tt))) for tname in tile_names]
+    #transfs = [lambda tt: shift_inv(parse_word(tname)(shift(tt))) for tname in tile_names]
     transfs = [parse_word( shift_name+tname+shift_inv_name ) for tname in tile_names]
     tiles = [transf(D2) for transf in transfs]
 
@@ -315,7 +461,7 @@ def plot_regions(tile_names, center, shift_name, transform_names):
                         
     for f, c, name in zip(transforms, 'rgbccgbrgbccgbr', names) :
         for tile in map(f, tiles) :
-            ax.add_patch(tile_patch(tile, facecolor=c))
+            ax.add_patch(tile_patch(tile, model='halfplane', facecolor=c))
             x, y = c2xy(f([center2])[0])
             latex_name = name_to_latex(name)
             ax.text(x, y, latex_name,color='w',
@@ -333,6 +479,75 @@ def plot_regions(tile_names, center, shift_name, transform_names):
 
     plt.show()
 
+
+def plot_mat(tile_mats, model='halfplane'):
+    """
+    Plot a fundamental domain and neighbors for a subgroup G of SL(2,Z).
+    """
+    rho = np.exp(2*np.pi*1.0j/6.0)
+    D = (rho, rho**2, 0.0+0.0j)
+    transfs = [mat_to_fcn(tile_mat) for tile_mat in tile_mats]
+    
+    tiles = [f(D) for f in transfs]
+
+    vert_xcoords = []
+    vert_ycoords = []
+    for tile in tiles:
+        vert_xcoords += [zz.real for zz in tile]
+        vert_ycoords += [(1.25 if zz==infj else zz.imag) for zz in tile]
+
+    xmax = np.amax(np.array(vert_xcoords))
+    xmin = np.amin(np.array(vert_xcoords))
+
+    ymax = np.amax(np.array(vert_ycoords))
+    ymin = 0
+    
+    x_to_y_ratio = (xmax-xmin)/1.5
+    
+    #xmin = -0.75
+    #xmax = -0.35
+    
+    if model=='halfplane':
+        ymax = 1.25
+        ymin = 0.0
+        x_to_y_ratio = 16.0/3.0
+    else:
+        xmin = -2.0
+        xmax = +2.0
+        ymin = -2.0
+        ymax = +2.0
+        x_to_y_ratio = 1.0
+        
+    fig = plt.figure(figsize=(x_to_y_ratio*3,3))
+    ax = plt.subplot(111)
+    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+
+    ax.set_xticks([])           
+    ax.set_yticks([])
+    #ax.margins(0,0)
+    
+    labeli = 0
+    for tile, f in zip(tiles,transfs) :
+        ax.add_patch(tile_patch(tile, model=model, facecolor='#ff8000', linewidth=0.3))
+        zz = f([0.75j])[0]
+        xx, yy = zz.real, zz.imag
+        #plt.text(xx,yy,'%d'%(labeli,))
+        labeli += 1
+        
+    ax.grid()
+    if model=='halfplane':
+        ax.set_xlim([xmin,xmax])
+        ax.set_ylim([ymin,ymax])
+    else:
+        ax.set_xlim([-1.25,+1.25])
+        ax.set_ylim([-1.25,+1.25])
+        tics = list(np.arange(-1.25,+1.49,0.25))
+        ax.set_xticks(tics)    
+        ax.set_yticks(tics)
+        ax.grid(True)
+    plt.show()
+
+
 def plot_gamma_2():
     """
     Plot the fundamental region for Gamma(2), the principal
@@ -340,15 +555,145 @@ def plot_gamma_2():
     """
     plot_regions(['I', 'T', 'S', 'TS', 'TSTS', 'TST'],
                   np.exp(2*np.pi*1.0j/6.0),
-                  'SUUS', 
+                  'I',
+                  #'SUUS', 
                   ['I','TT','UU','STTS','TTSTTS','TSTTSU','SUUS'])
+
 
 def plot_gamma_3():
     plot_regions(['I'],0.75j,'I',['I','T','U','S','TS','US','ST','STS','USUUS','TSTS','TSTTS','TST'])
 
-class CosetRepsUnitTest(unittest.TestCase):
-    def coset_reps_test(self):
-        for q in [2,3,5,7,11]:
-            nn = len(list(coset_reps))
-            self.assertEqual(nn, (q**3-q))
 
+def plot_gammak(k,model='halfplane'):
+    reps=list(coset_reps_alt(k))
+    plot_mat(reps,model=model)
+
+
+def psl2q_order(qq):
+    ps = list(set(factorize(qq)))
+    if qq==2:
+        return 6
+    else:
+        retval = qq**3
+        for pp in ps:
+            retval *= pp**2-1
+            retval /= pp**2
+        return retval/2
+
+
+def plot_arc(a1,a2):
+    z1 = np.exp(a1*1.0j*np.pi/180)
+    z2 = np.exp(a2*1.0j*np.pi/180)
+    
+    x1, y1 = c2xy(z1)
+    x2, y2 = c2xy(z2)
+    
+    det = x1*y2-x2*y1
+    
+    cx = (y2-y1)/det
+    cy = (x1-x2)/det
+    
+    radius = sqrt((x1-cx)**2+(y1-cy)**2)
+    
+    while a2<a1:
+        a2 += 360
+    if a2-a1<180:
+        theta1 = a1 - 90
+        theta2 = a2 + 90
+    else:
+        theta1 = a1 + 90
+        theta2 = a2 - 90
+
+    while theta2 > theta1:
+        theta2 -= 360
+    
+    reverseQ = theta1-theta2>180
+    arc_patch=mpatches.Arc((cx,cy),width=2*radius,
+                           height=2*radius,fill=False,theta1=theta2,theta2=theta1)
+    path = arc_patch.get_path()
+    verts = radius*path.vertices + [cx,cy]
+    if reverseQ :
+        verts = verts[-1::-1,:]
+    path2 = Path(verts, path.codes)
+    
+    fig = plt.figure(figsize=(3,3),facecolor='grey')
+    ax = fig.gca()
+    
+    ax.add_patch(mpatches.Circle((0,0),1,fill=True,alpha=0.5,color='grey'))
+    ax.add_patch(mpatches.Circle((cx,cy),radius,fill=False,color='g',alpha=0.1))
+    ax.add_patch(mpatches.Arrow(0,0,x1,y1,width=0.01))
+    ax.add_patch(mpatches.Arrow(0,0,x2,y2,width=0.01))
+    ax.add_patch(mpatches.Arrow(x1,y1,cx-x1,cy-y1,width=0.01))
+    ax.add_patch(mpatches.Arrow(x2,y2,cx-x2,cy-y2,width=0.01))
+    ax.add_patch(arc_patch)
+    ax.add_patch(mpatches.PathPatch(path2))
+    
+    plt.xlim([-2,+2])
+    plt.ylim([-2,+2])
+    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+    
+    plt.show()    
+    return path2
+   
+       
+def plot_one(q,model='disk'):
+    #reps=[np.array([[1,0],[0,1]],dtype=int),
+    #      np.array([[0,-1],[1,0]],dtype=int)]
+    #reps=map(parse_to_mat,tts)
+    #reps=[np.array([[0,-1],[1,0]],dtype=int)]
+    #reps=map(parse_to_mat,['UUUU','UUU','UU','U','I','T','TT','TTT','TTTT'])#, 'TS', 'TSTS', 'TST'])
+    reps = coset_reps_alt(q)  
+    plot_mat(reps,model=model)
+
+
+def plot_complex(zs,**kwargs):
+    xs = zs.real
+    ys = zs.imag
+    plt.plot(xs,ys,**kwargs)
+
+   
+def plot_vert():
+    fig = plt.figure(figsize=(4,4))
+    ax = plt.gca()
+    ax.set_xlim(-1.0,+1.0)
+    ax.set_ylim(-1.0,+1.0)
+    y = 0.0
+    circ_patch = mpatches.Circle((0,0),1.0,linewidth=0.1)
+    
+    ax.add_patch(circ_patch)
+    for x in np.arange(-5.5,6.0,1.0):
+        zs = np.array([x+1.0j*(y+t) for t in np.arange(0.0,100.0,0.1)])
+        ws = np.array(list(map(halfplane_to_poincare_disk,zs)))
+        plot_complex(ws,color='k',linewidth=0.2)
+    plt.show()
+
+    
+def random_complex_gaussian():
+    x = np.random.normal()
+    y = np.random.normal()
+    return x + 1.0j*y
+
+    
+class CosetRepsUnitTest(unittest.TestCase):
+    def runTest(self):
+        for q in range(2,12):
+            expected = psl2q_order(q)
+            actual1 = len(list(coset_reps(q))) / (1 if q==2 else 2)
+            actual2 = len(coset_reps_alt(q))
+            self.assertEqual(expected, actual1)
+            self.assertEqual(expected, actual2)
+
+
+class HalfplaneToDiskUnitTest(unittest.TestCase):
+    def runTest(self):
+        for i in range(100):
+            z1 = random_complex_gaussian()
+            z1 = z1.real + 1.0j*abs(z1.imag)
+            z2 = poincare_disk_to_halfplane(halfplane_to_poincare_disk(z1))
+            self.assertAlmostEqual(z1, z2)
+        for i in range(100):
+            th = np.random.uniform()*2*np.pi
+            rr = np.sqrt(np.random.uniform())
+            z1 = rr * (np.cos(th) + 1.0j*np.sin(th))
+            z2 = halfplane_to_poincare_disk(poincare_disk_to_halfplane(z1))
+            self.assertAlmostEqual(z1, z2)

@@ -193,7 +193,15 @@ def euclidean_algorithm(a, b):
     x, y = euclidean_algorithm(b, r)
     return y, (x-y*q)
 
-
+def ea3(a,b,c):
+    """
+    Return x, y, z such that x*a + y*b + z*c = gcd(a,b,c).
+    """
+    x, y = euclidean_algorithm(a, b)
+    # now x*a+y*b=gcd(a,b)
+    s, t = euclidean_algorithm(gcd(a,b), c)
+    return s*x, s*y, t
+    
 class UtilitiesTest(unittest.TestCase):
 
     def runTest(self):
