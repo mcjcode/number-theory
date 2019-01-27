@@ -289,7 +289,7 @@ def mat_to_fcn(M):
         else:
             return num/den
     def ff(zs):
-        return map(ffz,zs)
+        return list(map(ffz,zs))
     return ff
 
 
