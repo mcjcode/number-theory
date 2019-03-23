@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
+import unittest
+
 from math import sqrt
 import numpy as np
 from utilities import (
@@ -193,3 +196,10 @@ def ideal_class_group_info(d):
     for p in filter(isprime, range(2, mb+1)):
         fact = factorize_in(p, -d)
         print(fact)
+
+
+class QuadraticFormTests(unittest.TestCase):
+    def test_one(self):
+        for disc in range(-4, -50, -4):
+            for form in all_reduced_forms(disc):
+                self.assertEqual(proper_reduced_form(*form), form)
