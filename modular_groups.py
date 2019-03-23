@@ -256,8 +256,8 @@ def tile_patch(corners, model='halfplane', **kwdargs):
     return patch
 
                   
-rho = np.exp(2*np.pi*1.0j/6.0)
-D = (rho, rho**2, 0.0+0.0j)
+#rho = np.exp(2*np.pi*1.0j/6.0)
+#D = (rho, rho**2, 0.0+0.0j)
 
 
 def parse_to_mat(ss):
@@ -315,11 +315,15 @@ def _inv22(mm):
 
 def _eq(m1,m2,qq):
     [a,b,c,d] = (m1.dot(_inv22(m2))).ravel()
-    return ((a%qq==1 and b%qq==0 and c%qq==0 and d%qq==1) or
-            ((a+1)%qq==0 and b%qq==0 and c%qq==0 and (d+1)%qq==0))
+    if qq>0:
+        return ((a%qq==1 and b%qq==0 and c%qq==0 and d%qq==1) or
+                ((a+1)%qq==0 and b%qq==0 and c%qq==0 and (d+1)%qq==0))
+    else: #qq=0
+        return ((a==1 and b==0 and c==0 and d==1) or
+                (a==-1 and b==0 and c==0 and d==-1))
 
 
-def coset_reps_alt(qq):
+def coset_reps_alt(qq, return_generators=False):
     """
     Yield coset representatives for Gamma(q) in SL(2,Z).
     """
@@ -329,25 +333,41 @@ def coset_reps_alt(qq):
     T = np.array([[1,1],[0,1]],dtype=int)
     U = _inv22(T)
 
+    gens = []
     retval = [I]
 
     i = 0
     while i<len(retval):
         mm = retval[i]
-        mminv = _inv22(retval[i])
-        for A in [S,S.dot(T).dot(S),S.dot(U).dot(S)]:
+        mminv = _inv22(mm)
+        for A in [S,T,U]: #[S,S.dot(T).dot(S),S.dot(U).dot(S)]:
             mat1 = mm.dot(A)
-            if mat1[0,0] < 0:
-                mat1 = -mat1
+            #if mat1[0,0] < 0:
+            #    mat1 = -mat1
+            #elif mat1[0,0]==0 and mat1[0,1]>0:
+            #    mat1 = -mat1
             found = False
             for mat2 in retval:
                 if _eq(mat1,mat2,qq):
                     found = True
+                    if not _eq(mat1,mat2,0):
+                        found2=False
+                        #mat3=mminv.dot(A).dot(mm)
+                        #mat3=mat2.dot(_inv22(mat1))
+                        mat3=mat1.dot(_inv22(mat2))
+                        for mat4 in gens:           
+                            if _eq(mat3,mat4,0):
+                                found2=True
+                        if not found2:
+                            gens.append(mat3)
                     break
             if not found:
                 retval.append(mat1)
         i+=1
-    return retval
+    if return_generators:
+        return retval, gens
+    else:
+        return retval
 
 
 def coset_reps(qq):
@@ -490,71 +510,73 @@ def plot_regions(tile_names, center, shift_name, transform_names):
     plt.show()
 
 
-def plot_mat(tile_mats, model='halfplane'):
+def plot_mat(tile_mats, shifts=[np.array([[1,0],[0,1]],dtype=int)], model='halfplane'):
     """
     Plot a fundamental domain and neighbors for a subgroup G of SL(2,Z).
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
-    D = (rho, rho**2, 0.0+0.0j)
-    transfs = [mat_to_fcn(tile_mat) for tile_mat in tile_mats]
-    
-    tiles = [f(D) for f in transfs]
+    D = (rho, rho**2, infj)
 
     vert_xcoords = []
     vert_ycoords = []
-    for tile in tiles:
-        vert_xcoords += [zz.real for zz in tile]
-        vert_ycoords += [(1.25 if zz==infj else zz.imag) for zz in tile]
+    
+    tile_groups =[]
+    for g in shifts:
+        transfs = [mat_to_fcn(g.dot(tile_mat)) for tile_mat in tile_mats]
+        tiles = [f(D) for f in transfs]
+        for tile in tiles:
+            vert_xcoords += [zz.real for zz in tile]
+            vert_ycoords += [(1.25 if zz==infj else zz.imag) for zz in tile]
+        tile_groups.append(tiles)
 
     xmax = np.amax(np.array(vert_xcoords))
     xmin = np.amin(np.array(vert_xcoords))
-
-    ymax = np.amax(np.array(vert_ycoords))
-    ymin = 0
-    
     x_to_y_ratio = (xmax-xmin)/1.5
     
-    #xmin = -0.75
-    #xmax = -0.35
-    
     if model=='halfplane':
-        ymax = 1.25
+        ymax = 1.5
         ymin = 0.0
         x_to_y_ratio = 16.0/3.0
     else:
-        xmin = -2.0
-        xmax = +2.0
-        ymin = -2.0
-        ymax = +2.0
+        boxrad = 1.25
+        xmin = -boxrad
+        xmax = +boxrad
+        ymin = -boxrad
+        ymax = +boxrad
         x_to_y_ratio = 1.0
         
     fig = plt.figure(figsize=(x_to_y_ratio*3,3))
     ax = plt.subplot(111)
-    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
-
+    plt.subplots_adjust(left=0, bottom=0, right=1,
+                        top=1, wspace=0, hspace=0)
     ax.set_xticks([])           
     ax.set_yticks([])
-    #ax.margins(0,0)
+    ax.set_xlim([xmin,xmax])
+    ax.set_ylim([ymin,ymax])
+    ax.grid(True)
+    
+    colors=['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    nc=len(colors)
     
     labeli = 0
-    for tile, f in zip(tiles,transfs) :
-        ax.add_patch(tile_patch(tile, model=model, facecolor='#ff8000', linewidth=0.3))
-        zz = f([0.75j])[0]
-        xx, yy = zz.real, zz.imag
-        #plt.text(xx,yy,'%d'%(labeli,))
-        labeli += 1
-        
-    ax.grid()
-    if model=='halfplane':
-        ax.set_xlim([xmin,xmax])
-        ax.set_ylim([ymin,ymax])
-    else:
-        ax.set_xlim([-1.25,+1.25])
-        ax.set_ylim([-1.25,+1.25])
-        tics = list(np.arange(-1.25,+1.49,0.25))
-        ax.set_xticks(tics)    
-        ax.set_yticks(tics)
-        ax.grid(True)
+    for (groupi,group) in enumerate(tile_groups):
+        if groupi==0:
+            color = '#704800'
+        else:
+            color = '#3e2e8e'
+        for tile, f in zip(group,transfs):
+            ax.add_patch(tile_patch(tile,
+                                    model=model,
+                                    facecolor=color, 
+                                    linewidth=0.2))
+            if model=='halfplane':
+                zz = f([1.3333j])[0]
+            else:
+                zz = halfplane_to_poincare_disk(f([1.3333j])[0])
+            xx, yy = zz.real, zz.imag
+            #plt.text(xx,yy,'%d'%(labeli,))
+            labeli += 1
+    
     plt.show()
 
 
@@ -575,11 +597,21 @@ def plot_gamma_3():
 
 
 def plot_gammak(k,model='halfplane'):
-    reps=list(coset_reps_alt(k))
-    plot_mat(reps,model=model)
+    """
+    Plot the fundamental domain of Gamma(k).
+    
+    model - 'halfplane' or 'disk'
+            'halfplane' - plot it in the upper halfplane model.
+            'disk'      - plot it in the poincare disk.
+    """
+    reps, shifts =coset_reps_alt(k,True)
+    plot_mat(reps,[np.array([[1,0],[0,1]],dtype=int)]+shifts,model=model)
 
 
 def psl2q_order(qq):
+    """
+    Return the order of PSL(2,Z/qZ).
+    """
     ps = list(set(factorize(qq)))
     if qq==2:
         return 6
@@ -644,41 +676,27 @@ def plot_arc(a1,a2):
     
     plt.show()    
     return path2
-   
-       
-def plot_one(q,model='disk'):
-    #reps=[np.array([[1,0],[0,1]],dtype=int),
-    #      np.array([[0,-1],[1,0]],dtype=int)]
-    #reps=map(parse_to_mat,tts)
-    #reps=[np.array([[0,-1],[1,0]],dtype=int)]
-    #reps=map(parse_to_mat,['UUUU','UUU','UU','U','I','T','TT','TTT','TTTT'])#, 'TS', 'TSTS', 'TST'])
-    reps = coset_reps_alt(q)  
-    plot_mat(reps,model=model)
 
 
 def plot_complex(zs,**kwargs):
+    """
+    Plot complex numbers in the complex plane.
+    
+    zs     - the np.array of complex numbers to be plotted
+    kwargs - passed along to plt.plot
+    """
     xs = zs.real
     ys = zs.imag
     plt.plot(xs,ys,**kwargs)
 
-   
-def plot_vert():
-    fig = plt.figure(figsize=(4,4))
-    ax = plt.gca()
-    ax.set_xlim(-1.0,+1.0)
-    ax.set_ylim(-1.0,+1.0)
-    y = 0.0
-    circ_patch = mpatches.Circle((0,0),1.0,linewidth=0.1)
-    
-    ax.add_patch(circ_patch)
-    for x in np.arange(-5.5,6.0,1.0):
-        zs = np.array([x+1.0j*(y+t) for t in np.arange(0.0,100.0,0.1)])
-        ws = np.array(list(map(halfplane_to_poincare_disk,zs)))
-        plot_complex(ws,color='k',linewidth=0.2)
-    plt.show()
-
     
 def random_complex_gaussian():
+    """
+    Generate a random complex number.
+    
+    The real and imaginary parts of the generated number
+    are iid normal.
+    """
     x = np.random.normal()
     y = np.random.normal()
     return x + 1.0j*y
