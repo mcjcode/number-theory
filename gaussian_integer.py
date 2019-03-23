@@ -3,6 +3,7 @@
 
 import unittest
 
+import numpy as np
 
 class GaussianInteger(object):
 
@@ -17,6 +18,11 @@ class GaussianInteger(object):
     @staticmethod
     def zero():
         return GaussianInteger(0, 0)
+
+    @staticmethod
+    def random():
+        xx, yy = np.random.randint(0, 20, (2,)).tolist()
+        return GaussianInteger(xx, yy)
 
     def __str__(self):
         if self.b == 0:
@@ -99,12 +105,22 @@ class GaussianInteger(object):
 
 
 class GaussianIntegerTest(unittest.TestCase):
-    def runTest(self):
+    def test_axioms(self):
         one_elem = GaussianInteger.one()
         zero_elem = GaussianInteger.zero()
-        xx = GaussianInteger(2, 3)
+        xx = GaussianInteger.random()
+        yy = GaussianInteger.random()
+        zz = GaussianInteger.random()
+
         self.assertEqual(one_elem * xx, xx)
         self.assertEqual(zero_elem + xx, xx)
+        self.assertEqual(xx + yy, yy + xx)
+        self.assertEqual(xx * yy, yy * xx)
+        self.assertEqual(xx * (yy + zz), xx * yy + xx * zz)
+
+    def test_two(self):
+        zero_elem = GaussianInteger.zero()
+        xx = GaussianInteger.random()
         self.assertEqual(xx.conj().conj(), xx)
         self.assertEqual(xx - zero_elem, xx)
         self.assertEqual(-(-xx), xx)
