@@ -2,11 +2,41 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import itertools
 
 from math import sqrt
 from gaussian_integer import GaussianInteger
 
 import numpy as np
+
+
+def multiplicities(L):
+    """
+    :param L: a list of elements
+    :return: the list of unique items in L and how often they appear in L
+    """
+    items = sorted(list(set(L)))
+    counts = []
+    for item in items:
+        counts.append(len([LL for LL in L if LL==item]))
+    return items, counts
+
+
+def symmetric_function(k, LL, zero=0, one=1):
+    """
+    :param k:  the degree of the symmetric function
+    :param LL: the list of elements
+    :return:   the value of the kth symmetric function evaluated on LL
+    :zero:     the zero of the elements of
+    """
+    retval = zero
+    for comb in itertools.combinations(LL, k):
+        term = one
+        for elt in comb:
+            term = term * elt
+        retval = retval + term
+    return retval
+
 
 def isprime(p):
     if type(p) != int:
@@ -72,8 +102,9 @@ def primitive_root(p):
     """
     Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
     """
+    phip = phi(p)
     for a in range(2, p):
-        if order(a, p) == p - 1:
+        if order(a, p) == phip:
             return a
 
 
