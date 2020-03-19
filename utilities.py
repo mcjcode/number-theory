@@ -73,6 +73,22 @@ def factorize(n):
         q += 1
     return [n]
 
+def factorize2(n):
+    """
+    Return a list of (prime,exponent) pairs where the
+    primes are distinct and in increasing order
+    """
+    q = 2
+    while q*q <= n:
+        e = 0
+        while n % q == 0:
+            e += 1
+            n = n//q
+        if e > 0:
+            yield (q,e)
+        q += 1
+    if n>1:
+        yield (n,1)
 
 def squarefree(mm):
     """
@@ -102,11 +118,17 @@ def primitive_root(p):
     """
     Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
     """
-    phip = phi(p)
-    for a in range(2, p):
-        if order(a, p) == phip:
+    facts = list(factorize2(p-1))
+    a = 2
+    while a < p:
+        ok = True
+        for (q,e) in facts:
+            if modpow2(a,(p-1)//q,p)==1:
+                ok = False
+                break
+        if ok:
             return a
-
+        a += 1
 
 def modpow(a, k, p):
     """
@@ -123,18 +145,14 @@ def modpow(a, k, p):
     return retval
 
 
-def modpow2(a, k, p):
-    """
-    Return a**k (mod p).
-    """
-    if k == 0:
-        return type(a)(1)
-    tail = (modpow2(a, k / 2, p) ** 2) % p
-    if k % 2 == 1:
-        return (a * tail) % p
-    else:
-        return tail % p
-
+def modpow2(a,k,p):
+    retval = 1%p
+    while k != 0:
+        if k%2==1:
+            retval = (retval * a)%p
+        a = (a*a)%p
+        k = k >> 1
+    return retval
 
 def legendre_ch(p):
     """
