@@ -7,10 +7,10 @@ def sievecntsum(n):
     S0 = {i:i-1          for i in V}
     S1 = {i:i*(i+1)//2-1 for i in V}
     SP = {i:i*(i+1)//2-1 for i in V}
-    for p in [2]+range(3,p+1,2):
+    for p in range(2,p+1):
         if S0[p] > S0[p-1]: # p is prime
             p2 = p*p
-            for (i,v) in V:
+            for v in V:
                 if v < p2: break
                 vmodp = v//p
                 D0 =  S0[vmodp] - S0[p-1]
@@ -18,6 +18,8 @@ def sievecntsum(n):
                 S0[v] -=    D0
                 S1[v] -= p*(D1)
                 SP[v] -= p*(D1-D0)
-    return SP[n]
+    return S0[n], S1[n], SP[n]
 
-print sievecntsum(10**12) % 10**9
+
+
+#print(sievecntsum(10**12) % 10**9)
