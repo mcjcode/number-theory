@@ -1,6 +1,7 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import time
 import unittest
 import itertools
 
@@ -9,6 +10,41 @@ from gaussian_integer import GaussianInteger
 
 import numpy as np
 
+def timeit(f):
+    """
+    decorator to wrap around functions when we
+    want to measure the run time.
+    """
+    def g(*args):
+        t0 = time.time()
+        retval = f(*args)
+        t1 = time.time()
+        print('%.3f seconds' % (t1-t0))
+        return retval
+    return g
+
+def memoize(f):
+    """
+    quick and dirty memoize decorator which
+    supports just 1 'hashable' argument.
+    """
+    fhash = {}
+    def g(arg):
+        if arg in fhash:
+            retval = fhash[arg]
+        else:
+            retval = f(arg)
+            fhash[arg] = retval
+        return retval
+    return g
+
+def mymod(n,m):
+    """
+    Return n % m if m != 0.  But if m==0
+    then just return n.  (Kind of what I'd
+    want '%' to do in the first place.
+    """
+    return n%m if m else n
 
 def multiplicities(L):
     """
