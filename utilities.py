@@ -1,6 +1,7 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
+import time
 import unittest
 import itertools
 
@@ -9,6 +10,41 @@ from gaussian_integer import GaussianInteger
 
 import numpy as np
 
+def timeit(f):
+    """
+    decorator to wrap around functions when we
+    want to measure the run time.
+    """
+    def g(*args):
+        t0 = time.time()
+        retval = f(*args)
+        t1 = time.time()
+        print('%.3f seconds' % (t1-t0))
+        return retval
+    return g
+
+def memoize(f):
+    """
+    quick and dirty memoize decorator which
+    supports just 1 'hashable' argument.
+    """
+    fhash = {}
+    def g(arg):
+        if arg in fhash:
+            retval = fhash[arg]
+        else:
+            retval = f(arg)
+            fhash[arg] = retval
+        return retval
+    return g
+
+def mymod(n,m):
+    """
+    Return n % m if m != 0.  But if m==0
+    then just return n.  (Kind of what I'd
+    want '%' to do in the first place.
+    """
+    return n%m if m else n
 
 def multiplicities(L):
     """
@@ -111,7 +147,6 @@ def primitive_root(p):
 def modpow(a, k, p):
     """
     Return a**k (mod p).
-
     a can be of any type that has a multiplicative
     identity and supports multiplication and modding.
     """
@@ -139,7 +174,6 @@ def modpow2(a, k, p):
 def legendre_ch(p):
     """
     Return the mod p legendre character, a function 'ch' such that
-
     ch(a) =  0  if p divides a
             +1  if a is a quadratic residue
             -1  if a is a quadratic non-residue
@@ -224,6 +258,27 @@ def euclidean_algorithm(a, b):
     x, y = euclidean_algorithm(b, r)
     return y, (x-y*q)
 
+def crt(r1,m1,r2,m2):
+    """
+    Chinese remainder theorem.  Return the smallest
+    positive simultaneous solution 'x' to the 
+    congruences
+    x = r1 (mod m1)
+    x = r2 (mod m2)
+    Raises a ValueError if no solution exists.
+    Note that we do *not* require m1 and m2 to be
+    relatively prime.
+    """
+    c1, c2 = euclidean_algorithm(m1,m2)
+    g = c1*m1+c2*m2
+    q, r = divmod(r1-r2,g)
+    if r!=0 : # no solution
+        raise ValueError()
+    else:
+        x = r1 - q*(c1*m1)
+        # = r2 + q*(c2*m2)
+        return x % (m1*m2//g)
+
 def ea3(a,b,c):
     """
     Return x, y, z such that x*a + y*b + z*c = gcd(a,b,c).
@@ -255,7 +310,7 @@ class UtilitiesTest(unittest.TestCase):
 
     def test_gcd(self):
         self.assertEqual(gcd(2*3*5, 3*5*7), 3*5)
-
+        
     def test_euclidean_algorithm(self):
         a = 89
         b = 55
