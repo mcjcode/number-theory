@@ -109,6 +109,22 @@ def factorize(n):
         q += 1
     return [n]
 
+def factorize2(n):
+    """
+    Return a list of (prime,exponent) pairs where the
+    primes are distinct and in increasing order
+    """
+    q = 2
+    while q*q <= n:
+        e = 0
+        while n % q == 0:
+            e += 1
+            n = n//q
+        if e > 0:
+            yield (q,e)
+        q += 1
+    if n>1:
+        yield (n,1)
 
 def squarefree(mm):
     """
@@ -133,16 +149,21 @@ def order(a, p):
         cnt += 1
     return cnt
 
-
 def primitive_root(p):
     """
     Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
     """
-    phip = phi(p)
-    for a in range(2, p):
-        if order(a, p) == phip:
+    facts = list(factorize2(p-1))
+    a = 2
+    while a < p:
+        ok = True
+        for (q,e) in facts:
+            if modpow2(a,(p-1)//q,p)==1:
+                ok = False
+                break
+        if ok:
             return a
-
+        a += 1
 
 def modpow(a, k, p):
     """
