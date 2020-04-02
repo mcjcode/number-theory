@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-=======
 #!/usr/bin/env python
 
->>>>>>> 370978c220a779848337f330bde34dd24a5f08b7
+import unittest
+
 import math
 import numpy as np
 from utilities import isprime, factorize2
@@ -28,10 +27,7 @@ def sqrtInt(n):
 
 def sieve(n):
     """
-<<<<<<< HEAD
-=======
     Return the list of primes in [2..n]
->>>>>>> 370978c220a779848337f330bde34dd24a5f08b7
     """
     S = np.ones((n+1,),dtype=bool) 
     S[0]=False
@@ -167,12 +163,10 @@ def smpfsum(n):
 
 sum2mill = 142913828922 
 
-def test_primesum_naive():
-    return primesum_naive(2*10**6) == sum2mill 
+class PrimeSumTest(unittest.TestCase):
+    def test_primesum_naive(self):
+        self.assertEqual(primesum_naive(2*10**6),sum2mill)
 
-def test_primesum_naive2():
-    return primesum_naive2(2*10**6) == sum2mill
-<<<<<<< HEAD
-=======
+    def test_primesum_naive2(self):
+        self.assertEqual(primesum_naive2(2*10**6),sum2mill)
 
->>>>>>> 370978c220a779848337f330bde34dd24a5f08b7

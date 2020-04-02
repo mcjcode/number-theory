@@ -10,6 +10,15 @@ from gaussian_integer import GaussianInteger
 
 import numpy as np
 
+def prod(xs):
+    """
+    return the product of the integers in xs
+    """
+    retval = 1
+    for x in xs:
+        retval *= x
+    return retval
+
 def timeit(f):
     """
     decorator to wrap around functions when we
@@ -45,6 +54,12 @@ def mymod(n,m):
     want '%' to do in the first place.
     """
     return n%m if m else n
+
+def sqrtInt(n):
+    sqrtn=int(sqrt(n))
+    if (sqrtn+1)**2<=n:
+        sqrtn += 1
+    return sqrtn
 
 def multiplicities(L):
     """
