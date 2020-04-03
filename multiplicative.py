@@ -42,7 +42,7 @@ def sum_sigma0(n):
     """
     sqrtk=sqrtInt(n)
     part1=sum(n//d for d in range(1,n//sqrtk+1))
-    part2=sum((n//d)-(n//(d+1)) for d in range(1,sqrtk))
+    part2=sum(((n//d)-(n//(d+1)))*d for d in range(1,sqrtk))
     return part1+part2
      
 def sum_sigma1(n):
