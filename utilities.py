@@ -120,7 +120,7 @@ def factorize(n):
     q = 2
     while q * q <= n:
         if n % q == 0:
-            return [q] + factorize(n / q)
+            return [q] + factorize(n//q)
         q += 1
     return [n]
 

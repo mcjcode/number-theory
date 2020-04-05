@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-
-import numpy as np
-
 from math import sqrt
 
 from utilities import (
@@ -12,8 +9,13 @@ from utilities import (
     gcd,
     isprime,
     factorize,
+    prod,
+    modpow2
     )
 
+from prime import (
+    sieve
+    )
 
 def discriminant(d):
     """
@@ -51,14 +53,79 @@ def legendre(a, p):
         else:
             return 0
     if not isprime(a):
-        return np.prod([legendre(q, p) for q in factorize(a)])
+        return prod([legendre(q, p) for q in factorize(a)])
 
     if p % 4 == 1 or a % 4 == 1:
         return legendre(p % a, a)
     else:
         return -legendre(p % a, a)
 
+def tonelli_shanks(a,p,safe=False):
+    """
+    If 'a' is a quadratic residue mod p, return
+    a residue 'r' such that r*r=a(mod p)
 
+    if 'safe' is True, then the algorithm assumes
+    that a is a quadratic residue mod p.  Otherwise
+    it checks this by calling 'legendre'
+    """
+    if not safe:
+        leg = legendre(a,p)
+        if leg==-1:
+            raise ValueError('%d is not a quadratic residue mod %d' % (a,p))
+        if leg==0:
+            return 0
+    #
+    # a is a quadratic residue mod p
+    #
+    if p==2:
+        return a%p
+
+    if p%4==3:
+        return modpow2(a,(p+1)//4,p)
+    
+    #
+    # p=1(mod 4)
+    #
+    S=0
+    Q=p-1
+    while Q%2==0:
+        S += 1
+        Q //= 2
+
+    # p-1 = Q*2**S (with Q odd)
+
+    z=2
+    while legendre(z,p)==+1:
+        z += 1
+
+    # z is a non-residue mod p
+
+    M = S
+    c = modpow2(z,Q,p)
+    t = modpow2(a,Q,p)
+    R = modpow2(a,(Q+1)//2,p)
+
+    while True:
+        if t==0:
+            return 0
+        if t==1:
+            return R
+        i=0
+        t0=t
+        while t0!=1:
+            t0 = (t0*t0) % p
+            i += 1
+
+        # now t**(2**i) = 1 (mod p)
+
+        b = modpow2(c,2**(M-i-1),p)
+        M = i
+        c = b*b % p
+        t = t*c % p
+        #t = t*b*b % p
+        R = R*b % p
+ 
 def legendre_ch(d):
     """
     Return the mod |disc Q[√d]| Legendre character.
@@ -108,11 +175,12 @@ def minkowski_bound(d):
     All ideal classes in O_K have a representative J
     with ||J|| <= the minkowski bound.
     """
+    pi = 3.141592653589793
     disc = abs(discriminant(d))
     if d > 0:
         return int(0.5 * sqrt(disc))
     else:
-        return int(0.5 * (4.0/np.pi) * sqrt(disc))
+        return int(0.5 * (4.0/pi) * sqrt(disc))
 
 
 class QuadInt(object):
@@ -191,6 +259,13 @@ def factorize_in(p, d):
             x += 1
         return p,
 
+class TonelliShanksTest(unittest.TestCase):
+    def test_1(self):
+        for p in sieve(1000):
+            for a in range(p):
+                if legendre(a,p)==+1:
+                    r = tonelli_shanks(a, p)
+                    self.assertEqual(r*r%p, a)
 
 class LegendreCharacterTest(unittest.TestCase):
     def test_12(self):
