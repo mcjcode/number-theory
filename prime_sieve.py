@@ -10,7 +10,6 @@ import numpy as np
 def zeroit(arr,starti,stepi):
     arr[starti::stepi] = 0
 
-@timeit
 def segmented_sieve(n,trace=False):
     """
     Return the list of all prime numbers
