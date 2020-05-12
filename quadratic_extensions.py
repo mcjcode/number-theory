@@ -259,7 +259,7 @@ def factorize_in(p, d):
 
 class TonelliShanksTest(unittest.TestCase):
     def test_1(self):
-        for p in sieve(1000):
+        for p in segmented_sieve(1000):
             for a in range(p):
                 if legendre(a,p)==+1:
                     r = tonelli_shanks(a, p)
@@ -272,7 +272,7 @@ class LegendreCharacterTest(unittest.TestCase):
             self.assertEqual(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')
             
 def test_1():
-    for p in sieve(100000):
+    for p in segmented_sieve(100000):
         for a in range(p):
             if legendre(a,p)==+1:
                 r = tonelli_shanks(a, p)
