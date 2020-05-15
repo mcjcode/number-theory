@@ -20,8 +20,6 @@ def phi(nn):
     :return: the number of natural numbers 1 <= kk < nn
              that are relatively prime to nn.
     """
-    if nn == 1:
-        return 0
     factors = factorize2(nn)
     return prod([pp**(kk-1)*(pp-1) for (pp,kk) in factors])
 
@@ -58,7 +56,7 @@ def sum_sigma1(n):
 class PhiTest(unittest.TestCase):
     def test_phi(self):
         for nn in range(1,100):
-            nresid = sum(1 for kk in range(1,nn) if gcd(nn,kk) == 1)
+            nresid = sum(1 for kk in range(1,nn+1) if gcd(nn,kk) == 1)
             self.assertEqual(nresid, phi(nn))
 
 class SumSigmaTest(unittest.TestCase):
