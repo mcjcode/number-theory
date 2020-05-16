@@ -195,11 +195,17 @@ def modpow(a, k, p):
 
 
 def modpow2(a,k,p):
+    """
+    Return a**k (mod p).
+    
+    O(log(k)) time algorithm
+    """
+
     retval = 1%p
-    while k != 0:
-        if k%2==1:
-            retval = (retval * a)%p
-        a = (a*a)%p
+    while k: ## != 0:
+        if k%2: ## ==1:
+            retval = retval*a % p
+        a = a*a %p
         k = k >> 1
     return retval
 
