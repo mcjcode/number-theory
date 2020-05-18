@@ -52,12 +52,75 @@ def sum_sigma1(n):
     part1=sum(d*(n//d) for d in range(1,n//sqrtk+1))
     part2=sum(sumrange(n//(d+1),n//d)*d for d in range(1,sqrtk))
     return part1+part2
+
+_maxp = 16
+_sgns = [1]*(2**_maxp)
+c=1
+for i in range(_maxp):
+    for j in range(c):
+        _sgns[j+c] = -_sgns[j]
+    c <<= 1
+def partial_totient(n,k):
+    """
+    :param n: a positive integer 
+    :param k: a positive integer
+    :return: the number of integers in [1..n]
+        that are relatively prime to k.  Note
+        that the number of distinct prime factors
+        of k must be <= _maxp (currently 16) 
+    """
+
+    if n==0: return 0
+    ps = [p for (p,_) in factorize2(k)]
+    nps = len(ps)
+
+    assert nps <= _maxp
+
+    pps = [1]*(2**nps)
+    c=1
+    for p in ps:
+        j = 0
+        while j<c:
+        #for j in xrange(c): 
+            pps[j+c] = p*pps[j]
+            j += 1
+        c <<= 1
+
+    retval = 0
+    ub = 2**nps
+    i = 0
+    while i < ub:
+        retval += _sgns[i]*(n//pps[i])
+        i += 1
+    return retval
+
+def _partial_totient_alternate(n,k):
+    """
+    Return the number of integers in [1..n]
+    that are relatively prime to k
+    """
+    if n==0: return 0
+    kps = [p for (p,_) in factorize2(k)]
+    V = [n//i for i in range(1,sqrtInt(n)+1)]
+    V += list(range(V[-1]-1,-1,-1))
+    S1 = {i:i for i in V}
+    for p in kps:
+        for v in V:
+            if v<p: break
+            S1[v] -= S1[v//p]
+    return S1[n]
     
 class PhiTest(unittest.TestCase):
     def test_phi(self):
         for nn in range(1,100):
             nresid = sum(1 for kk in range(1,nn+1) if gcd(nn,kk) == 1)
             self.assertEqual(nresid, phi(nn))
+    def partial_totient_test(self):
+        partial_sum = 0
+        for nn in range(1,101):
+            partial_sum += phi(nn)
+            self.assertEqual(partial_sum,partial_totient(nn))
+            self.assertEqual(partial_sum._partial_totient_alternate(nn))
 
 class SumSigmaTest(unittest.TestCase):
     def test_sum_sigma1(self):

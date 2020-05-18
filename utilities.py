@@ -126,9 +126,16 @@ def factorize(n):
 
 def factorize2(n):
     """
-    Return a list of (prime,exponent) pairs where the
-    primes are distinct and in increasing order
+    Yield a sequence of (prime,exponent) pairs where the
+    primes are distinct and in increasing order giving
+    the prime factorization of n.
     """
+    if n < _maxn : # see below
+        g = factorize2_bounded(n)
+        for fact in g:
+            yield fact
+        return
+
     q = 2
     while q*q <= n:
         e = 0
@@ -140,6 +147,31 @@ def factorize2(n):
         q += 1
     if n>1:
         yield (n,1)
+
+_maxn = 10**10
+_ps = [p for p in range(2,sqrtInt(_maxn)) if isprime(p)]
+def factorize2_bounded(n):
+    """
+    Yield a sequence of (prime,exponent) pairs where the
+    primes are distinct and in increasing order giving
+    the prime factorization of n.
+   
+    prime factors are precomputed.  Only n < _maxn are
+    allowed. 
+    """
+    assert n < _maxn
+    for p in _ps:
+        if p*p > n:
+            break
+        e = 0
+        while n % p == 0:
+            e += 1
+            n //= p
+        if e:
+            yield (p,e)
+    if n>1:
+        yield (n,1)
+    
 
 def squarefree(mm):
     """
@@ -196,16 +228,14 @@ def modpow(a, k, p):
 
 def modpow2(a,k,p):
     """
-    Return a**k (mod p).
-    
-    O(log(k)) time algorithm
+    Return a**k(mod p).
+    O(log(k))-time algorithm
     """
-
     retval = 1%p
-    while k: ## != 0:
-        if k%2: ## ==1:
+    while k: # k != 0
+        if k%2: # k odd
             retval = retval*a % p
-        a = a*a %p
+        a = a*a % p
         k = k >> 1
     return retval
 
