@@ -6,9 +6,7 @@ import unittest
 import itertools
 
 from math import sqrt
-from gaussian_integer import GaussianInteger
 
-import numpy as np
 
 def prod(xs):
     """
@@ -269,18 +267,30 @@ def gcd(a, b):
     return abs(b)
 
 
+def sgn(a):
+    """
+    Return the sign of a
+    """
+    if a > 0:
+        return +1
+    elif a < 0:
+        return -1
+    else:
+        return 0
+
+    
 def euclidean_algorithm(a, b):
     """
     Return x,y such that x*a + y*b = gcd(a,b).
     """
     
     if b==0:
-        return np.sign(a), 0
+        return sgn(a), 0
 
     q, r = divmod(a, b)  # a = q * b + r
 
     if r == 0:
-        return 0, np.sign(b)
+        return 0, sgn(b)
 
     # d = gcd(a, b) = gcd(b, r)
     #
