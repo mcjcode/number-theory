@@ -4,8 +4,8 @@
 from __future__ import print_function
 
 from gaussian_integer import GaussianInteger
-from utilities import jacobi_sum_quartic, isprime, modpow
-
+from utilities import isprime, modpow
+from jacobi import jacobi_sum_quartic
 
 def maptochar(x, pi):
     zero = GaussianInteger(0)

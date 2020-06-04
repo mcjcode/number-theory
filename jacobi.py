@@ -3,7 +3,40 @@
 
 from __future__ import print_function
 import numpy as np
-from utilities import isprime
+from utilities import isprime, primitive_root, modpow
+from gaussian_integer import GaussianInteger
+
+def jacobi_sum(chi1, chi2, p):
+    """
+    Return the Jacobi sum of two mod p characters
+    with values in the GaussianIntegers (so the
+    characters are either the trivial character,
+    the non-trivial quadratic character or one of
+    the two non-trivial quartic characters.)
+    """
+    retval = GaussianInteger(0)
+    for a in range(p):
+        retval = retval + chi1(a) * chi2(1 - a)
+    return retval
+
+
+def jacobi_sum_quartic(p):
+    """
+    Returns the Jacobi sum J(chi,chi) associated with the
+    quartic character which maps the smallest primitive
+    root mod p to the pure imaginary unit i.
+    """
+    a = primitive_root(p)
+    zeta = GaussianInteger(0, 1)
+    avals = [0] + [modpow(a, k, p) for k in range(1, p)]
+    achars = [GaussianInteger(0)] + [zeta ** (k % 4) for k in range(1, p)]
+    bvals = [(1 - aa) % p for aa in avals]
+    binds = [avals.index(bb) for bb in bvals]
+    bchars = [achars[bi] for bi in binds]
+    retval = GaussianInteger(0)
+    for val in (ac * bc for (ac, bc) in zip(achars, bchars)):
+        retval = retval + val
+    return retval
 
 
 def run1():
