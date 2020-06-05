@@ -57,11 +57,16 @@ def divint(num, denom, prec=15):
     Don’t bother using prec>15 as the arithmetic is
     single precision floats.
     """
+    return (num*10**prec)/denom/10.0**prec
+
     ans = 0.0
+    pow10 = 1.0
     for i in range(prec):
         q, r = divmod(num, denom)
-        ans += q/(10.0**i)
-        num = (10*r)
+        ans += q/pow10
+        #(10.0**i)
+        num = 10*r
+        pow10 *= 10.0
     return ans
 
 
@@ -80,7 +85,7 @@ def cont_frac_quad(a, b, c, d):
         # should be reasonable, so do int division
         # first before trying to convert to floats
 
-        m = int(divint(a, c, 15) + sqd*divint(b, c, 15))
+        m = int(divint(a, c) + sqd*divint(b, c))
         yield m
         a1 = c*(a-c*m)
         b1 = -c*b
@@ -104,6 +109,46 @@ def approximants(d):
 
         if c == 1:
             break
+        h0, k0 = h1, k1
+        h1, k1 = h,  k
+
+
+def approximants2(d):
+    """
+    Yield the approximants for sqrt(d)
+
+    here you just get (h,k) pairs, not the QuadInts
+    that approximants returns.
+    """
+    h0, k0 = 0, 1
+    h1, k1 = 1, 0
+
+    for ai in cont_frac_quad(0, 1, 1, d):
+        h = ai*h1 + h0
+        k = ai*k1 + k0
+        c = h**2 - d*k**2
+        yield h, k
+        if c == 1:
+            break
+        h0, k0 = h1, k1
+        h1, k1 = h,  k
+
+
+def pell(d):
+    """
+    For a positive integer d that is not a square (you're
+    on your honor here) return positive integers
+    h, k such that h**2 - d*k**2 == 1.
+
+    Uses Lagrange's method of continued fractions.
+    """
+    h0, k0 = 0, 1
+    h1, k1 = 1, 0
+    for ai in cont_frac_quad(0, 1, 1, d):
+        h = ai*h1 + h0
+        k = ai*k1 + k0
+        if h**2 - d*k**2 == +1:
+            return h, k
         h0, k0 = h1, k1
         h1, k1 = h,  k
 
