@@ -223,6 +223,14 @@ def modpow(a, k, p):
         cnt += 1
     return retval
 
+def powerset(xs):
+    """
+    Returns a generator iterating over all of 
+    subsets of xs, starting with the smallest
+    and ending with the largest subsets
+    """
+    lengths = range(len(xs)+1)
+    return itertools.chain(*[itertools.combinations(xs,nn) for nn in lengths])
 
 def modpow2(a,k,p):
     """
@@ -337,7 +345,11 @@ class UtilitiesTest(unittest.TestCase):
 
     def runTest(self):
         pass
-        
+
+    def test_powerset(self):
+        nn = len(list(powerset([1,2,3,4,5])))
+        self.assertEqual(nn, 2**5, 'number of subsets should = 32. was %d' % (nn,))
+
     def test_isprime(self):
         self.assertEqual(False, isprime(0), 'zero is not a (maximal) prime')
         self.assertEqual(False, isprime(1), 'units are not prime')
