@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from math import sqrt, floor
+import mpmath
+import unittest
 
 from utilities import (
     isprime,
     gcd,
     issq,
+    prod,
     )
 
 from quadratic_extensions import (
@@ -45,6 +48,9 @@ def cont_frac(m):
         m = 1./(m-f)
 
 
+_prec=56
+_multint=2**_prec
+_multflt=2.0**_prec
 def divint(num, denom, prec=15):
     """
     Return a floating point number representing num/denom
@@ -57,17 +63,8 @@ def divint(num, denom, prec=15):
     Don’t bother using prec>15 as the arithmetic is
     single precision floats.
     """
-    return (num*10**prec)/denom/10.0**prec
-
-    ans = 0.0
-    pow10 = 1.0
-    for i in range(prec):
-        q, r = divmod(num, denom)
-        ans += q/pow10
-        #(10.0**i)
-        num = 10*r
-        pow10 *= 10.0
-    return ans
+    
+    return (num*_multint)/denom/_multflt
 
 
 def floor_rem(x):
@@ -79,19 +76,16 @@ def cont_frac_quad(a, b, c, d):
     """
     Yield the continued fraction for (a+b*sqrt(d))/c
     """
-    sqd = sqrt(d)
+    sqd = mpmath.sqrt(d)
     while True:
-        # a,b and c may be large, but a/c and b/c
-        # should be reasonable, so do int division
-        # first before trying to convert to floats
-
-        m = int(divint(a, c) + sqd*divint(b, c))
+        m = int((mpmath.mpf(a)+sqd*mpmath.mpf(b))/mpmath.mpf(c))
         yield m
-        a1 = c*(a-c*m)
+        a1p = (a-c*m)
+        a1 = c*a1p
         b1 = -c*b
-        c1 = (a-c*m)**2 - d*b**2
-        g = gcd(gcd(a1, b1), c1)
-        a, b, c = a1/g, b1/g, c1/g
+        c1 = a1p**2 - d*b**2
+        g = gcd(c*gcd(a1p, b), c1)
+        a, b, c = a1//g, b1//g, c1//g
 
 
 def approximants(d):
@@ -122,19 +116,16 @@ def approximants2(d):
     """
     h0, k0 = 0, 1
     h1, k1 = 1, 0
-
     for ai in cont_frac_quad(0, 1, 1, d):
         h = ai*h1 + h0
         k = ai*k1 + k0
-        c = h**2 - d*k**2
         yield h, k
-        if c == 1:
+        if h**2 - d*k**2 == 1:
             break
         h0, k0 = h1, k1
         h1, k1 = h,  k
 
-
-def pell(d):
+def pell(d,bound=0):
     """
     For a positive integer d that is not a square (you're
     on your honor here) return positive integers
@@ -144,13 +135,26 @@ def pell(d):
     """
     h0, k0 = 0, 1
     h1, k1 = 1, 0
+
+    h0s, k0s = 0, 1
+    h1s, k1s = 1, 0
+
+    modulus  = prod([2,3,5,7,11,13,17,19,23,29])
+
     for ai in cont_frac_quad(0, 1, 1, d):
         h = ai*h1 + h0
         k = ai*k1 + k0
-        if h**2 - d*k**2 == +1:
-            return h, k
+
+        hs = (ai*h1s + h0s) % modulus
+        ks = (ai*k1s + k0s) % modulus
+
+        if (hs**2 - d*ks**2) % modulus == 1:
+            if h**2 - d*k**2 == +1:
+                return h, k
         h0, k0 = h1, k1
         h1, k1 = h,  k
+        h0s, k0s = h1s, k1s
+        h1s, k1s =  hs,  ks
 
 
 def squares_mod_d(d):
@@ -252,3 +256,12 @@ def class_group_info(d):
                 p = split_primes[ii] * split_primes[jj] * split_primes[kk]
                 md = norm_search(p, d)
                 print(p, md)
+
+
+
+class PellTest(unittest.TestCase):
+
+    def test_pell(self):
+        for d in range(2,10000):
+            a, b = pell(d**4+1)
+            self.assertEqual(a*a-(d**4+1)*b*b, 1, 'pell equn not satisfied for d=%d' % (d**4+1,))
