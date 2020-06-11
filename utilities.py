@@ -59,6 +59,12 @@ def sqrtInt(n):
         sqrtn += 1
     return sqrtn
 
+def cbrtInt(n):
+    cbrtn = int(n**(1./3.))
+    if (cbrtn+1)**2 <= n:
+        cbrtn += 1
+    return cbrtn
+
 def multiplicities(L):
     """
     :param L: a list of elements
