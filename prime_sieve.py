@@ -118,3 +118,14 @@ def sqfree_parts():
             indicators.append( (i, g) )
         yield ps
         i += 1
+
+def primeFactors(n):
+    """
+    Return a length n+1 list pf such that pf[k] is the list of primes dividing k
+    """
+    retval = [[] for _ in range(n+1)]
+    for p in range(2,n+1):
+        if not retval[p]:  # p is prime
+            for j in range(p,n+1,p):
+                retval[j].append(p)
+    return retval
