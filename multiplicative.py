@@ -109,7 +109,16 @@ def _partial_totient_alternate(n,k):
             if v<p: break
             S1[v] -= S1[v//p]
     return S1[n]
-    
+
+
+def coprime(lb, ub, pfacts, i=0, prd=1):
+    """
+    Return the # of ints in (lb,ub] not divisible by the primes in pfacts.
+    """
+    if i == len(pfacts):
+        return ub//prd - lb//prd
+    return coprime(lb, ub, pfacts, i+1, prd) - coprime(lb, ub, pfacts, i+1, prd*pfacts[i])
+
 class PhiTest(unittest.TestCase):
     def test_phi(self):
         for nn in range(1,100):
@@ -121,6 +130,12 @@ class PhiTest(unittest.TestCase):
             partial_sum += phi(nn)
             self.assertEqual(partial_sum,partial_totient(nn))
             self.assertEqual(partial_sum._partial_totient_alternate(nn))
+    def test_coprime(self):
+        pfacts = [2,3,5,7]
+        xx = 2*3*5*7
+        for lb in range(1,151):
+            for ub in range(lb+1,151):
+                self.assertEqual(coprime(lb,ub,pfacts),partial_totient(ub,xx)-partial_totient(lb,xx),'(%d,%d]'%(lb,ub))
 
 class SumSigmaTest(unittest.TestCase):
     def test_sum_sigma1(self):
@@ -131,4 +146,4 @@ class SumSigmaTest(unittest.TestCase):
         for nn in range(1,100):
             ss0 = sum([divisor_function(0,kk) for kk in range(1,nn+1)])
             self.assertEqual(ss0, sum_sigma0(nn))
-            
+
