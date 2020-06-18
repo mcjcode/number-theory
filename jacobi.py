@@ -3,40 +3,9 @@
 
 from __future__ import print_function
 import numpy as np
-from utilities import isprime, primitive_root, modpow
-from gaussian_integer import GaussianInteger
+import unittest
 
-def jacobi_sum(chi1, chi2, p):
-    """
-    Return the Jacobi sum of two mod p characters
-    with values in the GaussianIntegers (so the
-    characters are either the trivial character,
-    the non-trivial quadratic character or one of
-    the two non-trivial quartic characters.)
-    """
-    retval = GaussianInteger(0)
-    for a in range(p):
-        retval = retval + chi1(a) * chi2(1 - a)
-    return retval
-
-
-def jacobi_sum_quartic(p):
-    """
-    Returns the Jacobi sum J(chi,chi) associated with the
-    quartic character which maps the smallest primitive
-    root mod p to the pure imaginary unit i.
-    """
-    a = primitive_root(p)
-    zeta = GaussianInteger(0, 1)
-    avals = [0] + [modpow(a, k, p) for k in range(1, p)]
-    achars = [GaussianInteger(0)] + [zeta ** (k % 4) for k in range(1, p)]
-    bvals = [(1 - aa) % p for aa in avals]
-    binds = [avals.index(bb) for bb in bvals]
-    bchars = [achars[bi] for bi in binds]
-    retval = GaussianInteger(0)
-    for val in (ac * bc for (ac, bc) in zip(achars, bchars)):
-        retval = retval + val
-    return retval
+from utilities import isprime, squarefree
 
 
 def run1():
@@ -117,3 +86,50 @@ def run2():
         bound = 2*int(np.sqrt(p))
         if abs(cnt-p) >= bound:
             print('%5d %5d %5d %5d' % (p, cnt, cnt - p, bound))
+
+def jacobi2(a, n):
+    assert n%2==1
+    a %= n
+    if a==0: return 0
+    t = 1
+    while a: ## != 0:
+        while a%2 == 0:
+            a /= 2
+            r = n%8
+            if r==3 or r==5:
+                t = -t
+        a, n = n, a
+        if a%4 == n%4 == 3:
+            t = -t
+        a %= n
+    return t if n==1 else 0
+
+def jacobi_sum(modulus,ub):
+
+    #modulus must be odd and squarefree
+    assert squarefree(modulus) and (modulus%2)
+    
+    m = modulus
+
+    J=np.ones((ub+1,),dtype=np.int8)  # this will only store 0,+1,-1's
+    P=np.ones((ub+1,),dtype=np.int8)
+    P[0] = 0
+    P[1] = 0
+    J[0] = 0
+    for p in range(2,ub+1):
+        if P[p]:  # p is prime
+            P[p*p::p] = 0 # strike higher multiples
+            if m%p:  # p does not divide m
+                poverm = jacobi2(p,m)
+                if poverm==1:
+                    pass
+                else:
+                    pk = p
+                    while pk<=ub:
+                        J[pk::pk] *= -1
+                        #print((J,pk))
+                        pk *= p
+            else:
+                J[p::p] = 0
+    return J
+
