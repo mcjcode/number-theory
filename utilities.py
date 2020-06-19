@@ -36,12 +36,13 @@ def memoize(f):
     supports just 1 'hashable' argument.
     """
     fhash = {}
-    def g(arg):
-        if arg in fhash:
-            retval = fhash[arg]
+    def g(*args):
+        targs = tuple(args)
+        if targs in fhash:
+            retval = fhash[targs]
         else:
-            retval = f(arg)
-            fhash[arg] = retval
+            retval = f(*targs)
+            fhash[targs] = retval
         return retval
     return g
 
