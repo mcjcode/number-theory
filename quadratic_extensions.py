@@ -9,6 +9,7 @@ from utilities import (
     gcd,
     isprime,
     factorize,
+    factorize2,
     prod,
     modpow2
     )
@@ -50,8 +51,9 @@ def legendre(a, p):
             return -1
         else:
             return 0
+    
     if not isprime(a):
-        return prod([legendre(q, p) for q in factorize(a)])
+        return prod([legendre(q, p) for q, e in factorize2(a) if e%2])
 
     if p % 4 == 1 or a % 4 == 1:
         return legendre(p % a, a)
@@ -285,5 +287,3 @@ def test_2():
                 r = tonelli_shanks(a, p)
                 print(p,r*r%p)
                 assert r*r%p == a%p
-                
-
