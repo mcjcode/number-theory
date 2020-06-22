@@ -20,7 +20,7 @@ def segmented_sieve(n,trace=False):
     seglen = sqrtInt(n+1)
 
     # always make seglen a multiple of 6
-    seglen = max(6,6*(seglen//6))
+    seglen = max(6,6*(seglen//6))+6 # add 6 so that the first segment contains sqrt(n)
     
     wheel = [4,2]
     wheel_len = len(wheel)
@@ -33,6 +33,8 @@ def segmented_sieve(n,trace=False):
     if trace:
         print('number of segments = %d' % (nsegs,))
     ps = [2,3]
+    for p in ps:
+        yield p
     segi = 0
     seg_start = 0
     seg = np.ones((seglen,),dtype=np.int8)
@@ -64,7 +66,9 @@ def segmented_sieve(n,trace=False):
         while i < endi: 
             if seg[i]:
                 p = seg_start + i
-                ps.append(p)
+                yield p
+                if segi==0:
+                    ps.append(p)
                 #seg[p*p-seg_start::p]
                 zeroit(seg,p*p-seg_start, p)
                 if trace:
@@ -75,7 +79,10 @@ def segmented_sieve(n,trace=False):
         maxi = min(seglen,n-seg_start+1)
         while i < maxi:
             if seg[i]: # seq_start+i is prime
-                ps.append(seg_start+i) 
+                p = seg_start+i
+                yield p
+                if segi==0:
+                    ps.append(p) 
             #i += 2
             i += wheel[wheeli]
             wheeli = (wheeli + 1) % wheel_len
@@ -84,7 +91,7 @@ def segmented_sieve(n,trace=False):
         seg_start += seglen
         seg[:] = 1
 
-    return ps
+    #return ps
 
 def indicator(n):
     nm1 = n-1
