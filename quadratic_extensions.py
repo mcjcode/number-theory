@@ -272,18 +272,4 @@ class LegendreCharacterTest(unittest.TestCase):
         ch = legendre_ch(3)
         for xx in range(12):
             self.assertEqual(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')
-            
-def test_1():
-    for p in segmented_sieve(100000):
-        for a in range(p):
-            if legendre(a,p)==+1:
-                r = tonelli_shanks(a, p)
-                assert r*r%p == a
-                
-def test_2():
-    for p in segmented_sieve(1000000):
-        for a in [13]:
-            if legendre(a,p)==+1:
-                r = tonelli_shanks(a, p)
-                print(p,r*r%p)
-                assert r*r%p == a%p
+

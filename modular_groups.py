@@ -6,10 +6,13 @@ import itertools
 from math import atan, sin, cos, exp, floor, sqrt
 import numpy as np
 
-import matplotlib
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
-from matplotlib.path import Path
+try:
+    import matplotlib
+    import matplotlib.patches as mpatches
+    import matplotlib.pyplot as plt
+    from matplotlib.path import Path
+except:
+    pass
 
 from utilities import (
     gcd,

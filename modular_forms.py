@@ -157,7 +157,7 @@ class EisensteinTest(unittest.TestCase):
         zz = self._random_pt()
         for kk in range(3,7):
             zeta2k = sum( 1./n**(2*kk) for n in range(100000,0,-1) )
-            self.assertAlmostEqual(unrestricted_eisenstein(kk, zz), zeta2k*eisenstein(kk,zz))
+            self.assertAlmostEqual(unrestricted_eisenstein(kk, zz), zeta2k*eisenstein(kk,zz),places=6)
     
     def test_poincare(self):
         """
