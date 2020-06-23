@@ -4,6 +4,8 @@ python:
   - "3.6"
   - "pypy3"
 
+dist: bionic
+
 env:
   - NUMPY_VERSION=1.19.0
 
