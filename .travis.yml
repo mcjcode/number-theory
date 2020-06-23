@@ -4,6 +4,9 @@ python:
   - "3.6"
   - "pypy3"
 
+env:
+  - NUMPY_VERSION=1.18.1
+
 install:
   - pip install -r requirements.txt
 
