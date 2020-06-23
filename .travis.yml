@@ -7,8 +7,6 @@ python:
 env:
   - NUMPY_VERSION=1.19.0
 
-install:
-  - pip install -r requirements.txt
 
 script:
   - pytest *.py
