@@ -15,10 +15,10 @@ def run():
     For a fixed characteristic p (where 3 divides p-1), there
     is a unique (up to conjugation) non-trivial cubic
     character \u03C7 on F_{p^k}, and so the real part of
-    the Jacobi sum J(\u03C7,\u03C7) only depends on the
+    the Jacobi sum J(\u03C7, \u03C7) only depends on the
     field F_{p^k}.
     
-    Calculate J(\u03C7,\u03C7) for range of values of k
+    Calculate J(\u03C7, \u03C7) for range of values of k
     to get an idea of how these values are related to
     each other.
     """)

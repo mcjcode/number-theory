@@ -47,7 +47,7 @@ class FiniteFieldElement(object):
         self.ff = ff
 
     def __repr__(self):
-        return 'FiniteFieldElement(%s,%s)' % (self.value, self.ff)
+        return 'FiniteFieldElement(%s, %s)' % (self.value, self.ff)
 
     def __add__(self, other):
         return FiniteFieldElement((self.value+other.value) % self.ff.p, self.ff)
@@ -103,18 +103,18 @@ class FiniteField(object):
         return pc
 
     def defining_polynomial(self):
-        indicators = np.zeros((self.p,)*self.n, dtype=int)
+        indicators = np.zeros((self.p, )*self.n, dtype=int)
         for ii in range(1, self.n//2+1):
             for acoefs in itertools.product(*[range(self.p)]*ii):
                 for bcoefs in itertools.product(*[range(self.p)]*(self.n-ii)):
-                    ccoefs = (poly1d((1,)+acoefs)*poly1d((1,)+bcoefs)).c
+                    ccoefs = (poly1d((1, )+acoefs)*poly1d((1, )+bcoefs)).c
                     ccoefs = tuple(xx % self.p for xx in ccoefs)
                     # print(ccoefs)
                     indicators[tuple(ccoefs[1:])] = 1
         # print(indicators)
         for kk in itertools.product(*[range(self.p)]*self.n):
             if indicators[kk] == 0:
-                return poly1d((1,)+kk)
+                return poly1d((1, )+kk)
 
     def defining_polynomial_old(self):
         #
@@ -156,7 +156,7 @@ class FiniteField(object):
                 return elt
 
     def __repr__(self):
-        return 'FiniteField(%d,%d)' % (self.p, self.n)
+        return 'FiniteField(%d, %d)' % (self.p, self.n)
 
     def __str__(self):
         return self.__repr__()
@@ -189,8 +189,8 @@ class FiniteField(object):
         theta = 2 * np.pi / order
         zeta = np.cos(theta)+1j*np.sin(theta)
 
-        chars = np.zeros((self.p,)*self.n, dtype=type(0j))
-        chars[(0,)*self.n] = 0j
+        chars = np.zeros((self.p, )*self.n, dtype=type(0j))
+        chars[(0, )*self.n] = 0j
         pa = self.one()
         char_val = 1+0j
         for k in range(1, pn):

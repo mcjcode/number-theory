@@ -108,7 +108,7 @@ class DesbovesCurvePoint(object):
         return 'DesbovesCurvePoint(%d, %s)' % (self.a, self.xyz)
 
     def __str__(self):
-        return '%s' % (self.xyz,)
+        return '%s' % (self.xyz, )
 
     def __add__(self, other):
         if self.a != other.a:

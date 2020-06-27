@@ -60,7 +60,7 @@ def legendre(a, p):
     else:
         return -legendre(p % a, a)
 
-def tonelli_shanks(a,p,safe=False):
+def tonelli_shanks(a, p, safe=False):
     """
     If 'a' is a quadratic residue mod p, return
     a residue 'r' such that r*r=a(mod p)
@@ -70,9 +70,9 @@ def tonelli_shanks(a,p,safe=False):
     it checks this by calling 'legendre'
     """
     if not safe:
-        leg = legendre(a,p)
+        leg = legendre(a, p)
         if leg==-1:
-            raise ValueError('%d is not a quadratic residue mod %d' % (a,p))
+            raise ValueError('%d is not a quadratic residue mod %d' % (a, p))
         if leg==0:
             return 0
     #
@@ -82,7 +82,7 @@ def tonelli_shanks(a,p,safe=False):
         return a%p
 
     if p%4==3:
-        return modpow2(a,(p+1)//4,p)
+        return modpow2(a, (p+1)//4, p)
     
     #
     # p=1(mod 4)
@@ -96,15 +96,15 @@ def tonelli_shanks(a,p,safe=False):
     # p-1 = Q*2**S (with Q odd)
 
     z=2
-    while legendre(z,p)==+1:
+    while legendre(z, p)==+1:
         z += 1
 
     # z is a non-residue mod p
 
     M = S
-    c = modpow2(z,Q,p)
-    t = modpow2(a,Q,p)
-    R = modpow2(a,(Q+1)//2,p)
+    c = modpow2(z, Q, p)
+    t = modpow2(a, Q, p)
+    R = modpow2(a, (Q+1)//2, p)
 
     while True:
         if t==0:
@@ -119,7 +119,7 @@ def tonelli_shanks(a,p,safe=False):
 
         # now t**(2**i) = 1 (mod p)
 
-        b = modpow2(c,2**(M-i-1),p)
+        b = modpow2(c, 2**(M-i-1), p)
         M = i
         c = b*b % p
         t = t*c % p
@@ -138,7 +138,7 @@ def legendre_ch(d):
     ch(p)=-1 if d is not a square mod p
     """
     if not squarefree(d):
-        raise ValueError('%d is not square free' % (d,))
+        raise ValueError('%d is not square free' % (d, ))
 
     abs_disc = abs(discriminant(d))
 
@@ -191,17 +191,17 @@ class QuadInt(object):
 
     def __str__(self):
         if self.d % 4 != 1:
-            part1 = u"%d" % (self.a,)
+            part1 = u"%d" % (self.a, )
             sgn = "+" if self.b > 0 else "-"
             if abs(self.b) == 1:
-                part2 = u"√%d" % (self.d,)
+                part2 = u"√%d" % (self.d, )
             else:
                 part2 = u"%d√%d" % (abs(self.b), self.d)
             return u" ".join([part1, sgn, part2])
         else:
             if self.b == 1:
                 if self.a == 0:
-                    return u"(1+√%d)/2" % (self.d,)
+                    return u"(1+√%d)/2" % (self.d, )
                 else:
                     return u"%d + (1+√%d)/2" % (self.a, self.d)
             else:
@@ -239,7 +239,7 @@ def factorize_in(p, d):
     Return the factorization of (p) in Q[√d].
 
     If p remains prime in Q[√d], then return (p)
-    otherwise return a prime (p,a) lying over (p).
+    otherwise return a prime (p, a) lying over (p).
     """
     if d % 4 != 1:
         # the minimal polynomial is x**2 - d = 0
@@ -263,7 +263,7 @@ class TonelliShanksTest(unittest.TestCase):
     def test_1(self):
         for p in segmented_sieve(1000):
             for a in range(p):
-                if legendre(a,p)==+1:
+                if legendre(a, p)==+1:
                     r = tonelli_shanks(a, p)
                     self.assertEqual(r*r%p, a)
 
