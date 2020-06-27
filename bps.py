@@ -108,7 +108,7 @@ def bps_facts_w_rep(n, ps):
     n: the integer upper bound
     ps: the list of primes
 
-    yields: all factorized integers [(p1,e1),...,(pk,ek)]
+    yields: all factorized integers [(p1, e1), ..., (pk, ek)]
         where p1**e1 * ... * pk**ek <= n and all pi are
         from the list ps
 
@@ -170,7 +170,7 @@ def bps_facts_w_rep_powerful(n, ps):
     n: the integer upper bound
     ps: the list of primes
 
-    yields: all factorized integers [(p1,e1),...,(pk,ek)]
+    yields: all factorized integers [(p1, e1), ..., (pk, ek)]
         where p1**e1 * ... * pk**ek <= n and all pi are
         from the list ps
 

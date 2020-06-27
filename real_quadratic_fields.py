@@ -111,7 +111,7 @@ def approximants2(d):
     """
     Yield the approximants for sqrt(d)
 
-    here you just get (h,k) pairs, not the QuadInts
+    here you just get (h, k) pairs, not the QuadInts
     that approximants returns.
     """
     h0, k0 = 0, 1
@@ -125,7 +125,7 @@ def approximants2(d):
         h0, k0 = h1, k1
         h1, k1 = h,  k
 
-def pell(d,bound=0):
+def pell(d, bound=0):
     """
     For a positive integer d that is not a square (you're
     on your honor here) return positive integers
@@ -139,7 +139,7 @@ def pell(d,bound=0):
     h0s, k0s = 0, 1
     h1s, k1s = 1, 0
 
-    modulus  = prod([2,3,5,7,11,13,17,19,23,29])
+    modulus  = prod([2, 3, 5, 7, 11, 13, 17, 19, 23, 29])
 
     for ai in cont_frac_quad(0, 1, 1, d):
         h = ai*h1 + h0
@@ -180,7 +180,7 @@ def sqrtint(xx):
 
 def fundamental_unit_old(d):
     if d <= 1:
-        raise ValueError('%d is not >= 2' % (d,))
+        raise ValueError('%d is not >= 2' % (d, ))
     b = 1
     while True:
         if issq(b*b*d-4):
@@ -198,7 +198,7 @@ def fundamental_unit_old(d):
 
 def fundamental_unit(d):
     if d <= 1:
-        raise ValueError('%d is not >= 2' % (d,))
+        raise ValueError('%d is not >= 2' % (d, ))
 
     if d % 4 == 3 or d % 4 == 2:
             return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
@@ -219,11 +219,11 @@ def class_group_info(d):
     mb = minkowski_bound(d)
     disc = discriminant(d)
     print('Discriminant = %d' % disc)
-    print('Minkowski Bound = %d' % (mb,))
+    print('Minkowski Bound = %d' % (mb, ))
     split_primes = []
     for p in [pp for pp in range(2, mb+1) if isprime(pp)]:
         fact = factorize_in(p, d)
-        if fact == (p,):
+        if fact == (p, ):
             print(fact)
         else:
             md = norm_search(p, d)
@@ -240,7 +240,7 @@ def class_group_info(d):
         return
     print('Split primes')
     print(split_primes)
-    print('Split primes that are not squares mod %d' % (d,))
+    print('Split primes that are not squares mod %d' % (d, ))
     sq = squares_mod_d(d)
     print([pp for pp in split_primes if (pp not in sq) and ((d-pp) not in sq)])
 
@@ -262,6 +262,6 @@ def class_group_info(d):
 class PellTest(unittest.TestCase):
 
     def test_pell(self):
-        for d in range(2,10000):
+        for d in range(2, 10000):
             a, b = pell(d**4+1)
-            self.assertEqual(a*a-(d**4+1)*b*b, 1, 'pell equn not satisfied for d=%d' % (d**4+1,))
+            self.assertEqual(a*a-(d**4+1)*b*b, 1, 'pell equn not satisfied for d=%d' % (d**4+1, ))

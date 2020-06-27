@@ -93,7 +93,7 @@ def biquadratic_residue_table():
 
     print('%5s' % ' ', end=' ')
     for pi2 in qprimes:
-        print('%4s' % (GaussianInteger(pi2.real(), 0),), end=' ')
+        print('%4s' % (GaussianInteger(pi2.real(), 0), ), end=' ')
     print('')
 
     print('%5s' % ' ', end=' ')
@@ -101,14 +101,14 @@ def biquadratic_residue_table():
         if pi2.imag() == 0:
             print('%4s' % ' ', end=' ')
         else:
-            print('%+4s' % (GaussianInteger(0, pi2.imag()),), end=' ')
+            print('%+4s' % (GaussianInteger(0, pi2.imag()), ), end=' ')
     print('')
 
     for pi1 in pprimes:
-        print('%5s' % (pi1,), end=' ')
+        print('%5s' % (pi1, ), end=' ')
         for pi2 in qprimes:
             if pi1 == pi2:
                 print('%4s' % ' ', end=' ')
             else:
-                print('%4s' % (biquad(pi2, pi1),), end=' ')
+                print('%4s' % (biquad(pi2, pi1), ), end=' ')
         print('')

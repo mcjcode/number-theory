@@ -21,7 +21,7 @@ class GaussianInteger(object):
 
     @staticmethod
     def random():
-        xx, yy = np.random.randint(0, 20, (2,)).tolist()
+        xx, yy = np.random.randint(0, 20, (2, )).tolist()
         return GaussianInteger(xx, yy)
 
     def __str__(self):
@@ -35,12 +35,12 @@ class GaussianInteger(object):
             return '%di' % self.b
         else:
             if self.b == 1:
-                return '%d+i' % (self.a,)
+                return '%d+i' % (self.a, )
             else:
                 return '%d%+di' % (self.a, self.b)
 
     def __repr__(self):
-        return 'GaussianInteger(%d,%d)' % (self.a, self.b)
+        return 'GaussianInteger(%d, %d)' % (self.a, self.b)
 
     def real(self):
         return self.a

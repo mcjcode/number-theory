@@ -1,5 +1,9 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
+"""
+General purpose, factorization and modular
+arithmetic routines.
+"""
 
 import time
 import unittest
@@ -46,7 +50,7 @@ def memoize(f):
         return retval
     return g
 
-def mymod(n,m):
+def mymod(n, m):
     """
     Return n % m if m != 0.  But if m==0
     then just return n.  (Kind of what I'd
@@ -131,7 +135,7 @@ def factorize(n):
 
 def factorize2(n):
     """
-    Yield a sequence of (prime,exponent) pairs where the
+    Yield a sequence of (prime, exponent) pairs where the
     primes are distinct and in increasing order giving
     the prime factorization of n.
     """
@@ -148,16 +152,16 @@ def factorize2(n):
             e += 1
             n = n//q
         if e > 0:
-            yield (q,e)
+            yield (q, e)
         q += 1
     if n>1:
-        yield (n,1)
+        yield (n, 1)
 
 _maxn = 10**10
-_ps = [p for p in range(2,sqrtInt(_maxn)) if isprime(p)]
+_ps = [p for p in range(2, sqrtInt(_maxn)) if isprime(p)]
 def factorize2_bounded(n):
     """
-    Yield a sequence of (prime,exponent) pairs where the
+    Yield a sequence of (prime, exponent) pairs where the
     primes are distinct and in increasing order giving
     the prime factorization of n.
    
@@ -173,9 +177,9 @@ def factorize2_bounded(n):
             e += 1
             n //= p
         if e:
-            yield (p,e)
+            yield (p, e)
     if n>1:
-        yield (n,1)
+        yield (n, 1)
     
 
 def squarefree(mm):
@@ -209,8 +213,8 @@ def primitive_root(p):
     a = 2
     while a < p:
         ok = True
-        for (q,e) in facts:
-            if modpow2(a,(p-1)//q,p)==1:
+        for (q, e) in facts:
+            if modpow2(a, (p-1)//q, p)==1:
                 ok = False
                 break
         if ok:
@@ -237,9 +241,9 @@ def powerset(xs):
     and ending with the largest subsets
     """
     lengths = range(len(xs)+1)
-    return itertools.chain(*[itertools.combinations(xs,nn) for nn in lengths])
+    return itertools.chain(*[itertools.combinations(xs, nn) for nn in lengths])
 
-def modpow2(a,k,p):
+def modpow2(a, k, p):
     """
     Return a**k(mod p).
     O(log(k))-time algorithm
@@ -260,7 +264,7 @@ def legendre_ch(p):
             -1  if a is a quadratic non-residue
     """
     if not isprime(p) or p == 2:
-        raise ValueError("%d is not an odd prime." % (p,))
+        raise ValueError("%d is not an odd prime." % (p, ))
 
     def ch(a):
         if a % p == 0:
@@ -296,7 +300,7 @@ def sgn(a):
     
 def euclidean_algorithm(a, b):
     """
-    Return x,y such that x*a + y*b = gcd(a,b).
+    Return x, y such that x*a + y*b = gcd(a, b).
     """
     
     if b==0:
@@ -318,7 +322,7 @@ def euclidean_algorithm(a, b):
     x, y = euclidean_algorithm(b, r)
     return y, (x-y*q)
 
-def crt(r1,m1,r2,m2):
+def crt(r1, m1, r2, m2):
     """
     Chinese remainder theorem.  Return the smallest
     positive simultaneous solution 'x' to the 
@@ -329,9 +333,9 @@ def crt(r1,m1,r2,m2):
     Note that we do *not* require m1 and m2 to be
     relatively prime.
     """
-    c1, c2 = euclidean_algorithm(m1,m2)
+    c1, c2 = euclidean_algorithm(m1, m2)
     g = c1*m1+c2*m2
-    q, r = divmod(r1-r2,g)
+    q, r = divmod(r1-r2, g)
     if r!=0 : # no solution
         raise ValueError()
     else:
@@ -339,13 +343,13 @@ def crt(r1,m1,r2,m2):
         # = r2 + q*(c2*m2)
         return x % (m1*m2//g)
 
-def ea3(a,b,c):
+def ea3(a, b, c):
     """
-    Return x, y, z such that x*a + y*b + z*c = gcd(a,b,c).
+    Return x, y, z such that x*a + y*b + z*c = gcd(a, b, c).
     """
     x, y = euclidean_algorithm(a, b)
-    # now x*a+y*b=gcd(a,b)
-    s, t = euclidean_algorithm(gcd(a,b), c)
+    # now x*a+y*b=gcd(a, b)
+    s, t = euclidean_algorithm(gcd(a, b), c)
     return s*x, s*y, t
     
 class UtilitiesTest(unittest.TestCase):
@@ -354,8 +358,8 @@ class UtilitiesTest(unittest.TestCase):
         pass
 
     def test_powerset(self):
-        nn = len(list(powerset([1,2,3,4,5])))
-        self.assertEqual(nn, 2**5, 'number of subsets should = 32. was %d' % (nn,))
+        nn = len(list(powerset([1, 2, 3, 4, 5])))
+        self.assertEqual(nn, 2**5, 'number of subsets should = 32. was %d' % (nn, ))
 
     def test_isprime(self):
         self.assertEqual(False, isprime(0), 'zero is not a (maximal) prime')
@@ -382,7 +386,7 @@ class UtilitiesTest(unittest.TestCase):
         self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
         
     def test_euclidean_algorithm2(self):
-        for a in range(-100,+100):
-            for b in range(-100,+100):
+        for a in range(-100, +100):
+            for b in range(-100, +100):
                 x, y = euclidean_algorithm(a, b)
-                self.assertEqual(gcd(a,b), x*a + y*b,'gcd != x*a+y*b')
+                self.assertEqual(gcd(a, b), x*a + y*b, 'gcd != x*a+y*b')

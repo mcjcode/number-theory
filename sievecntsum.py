@@ -2,12 +2,12 @@ import math
 def sievecntsum(n):
     p = int(math.sqrt(n))
     if (p+1)**2 <= n: p += 1
-    V = [n//i for i in range(1,p+1)]
-    V += list(range(V[-1]-1,0,-1))
+    V = [n//i for i in range(1, p+1)]
+    V += list(range(V[-1]-1, 0, -1))
     S0 = {i:i-1          for i in V}
     S1 = {i:i*(i+1)//2-1 for i in V}
     SP = {i:i*(i+1)//2-1 for i in V}
-    for p in range(2,p+1):
+    for p in range(2, p+1):
         if S0[p] > S0[p-1]: # p is prime
             p2 = p*p
             for v in V:

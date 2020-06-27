@@ -44,7 +44,7 @@ def all_modm_chars(m):
     works with prime m for now.
     """
     if not isprime(m):
-        raise ValueError("%d is not a prime." % (m,))
+        raise ValueError("%d is not a prime." % (m, ))
     a = primitive_root(m)
     zz = np.exp(2.0j*np.pi/(m-1))
 
@@ -68,7 +68,7 @@ def all_modm_chars(m):
 # now compare to the product of the L(1, ch) as ch runs over
 # all non-trivial mod 5 characters:
 #
-# >>> np.product([L_one_chi(ch,5) for ch in all_modm_chars(5)[1:]])
+# >>> np.product([L_one_chi(ch, 5) for ch in all_modm_chars(5)[1:]])
 # (0.33983727824052373+0j)
 
 
@@ -76,12 +76,12 @@ def kappa(m):
     """
     Return kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
 
-    |L(chi,1)| = h*kappa, where h is the class number of Q[√m],
+    |L(chi, 1)| = h*kappa, where h is the class number of Q[√m],
     chi is the 'legendre character' and L is the associated
     Dirichlet L function.
     """
     if not squarefree(m):
-        raise ValueError('%d is not square free.' % (m,))
+        raise ValueError('%d is not square free.' % (m, ))
 
     if m == 1:
         return 1
@@ -105,7 +105,7 @@ def ideal_class_number(dd):
     Return the ideal class number of Q[√d], for squarefree integer dd.
     """
     if not squarefree(dd):
-        raise ValueError("%d is not squarefree." % (dd,))
+        raise ValueError("%d is not squarefree." % (dd, ))
 
     if dd == 1:
         return 1
@@ -139,7 +139,7 @@ class GaussSumTest(unittest.TestCase):
         self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)
     
     def test_ideal_class_number(self):
-        for d in range(3000):
-            if squarefree(d) and d != 0:
+        for d in range(1, 500):
+            if squarefree(d):
                 _ = ideal_class_number(d)
 

@@ -35,4 +35,4 @@ class CholeskyTest(unittest.TestCase):
         m = np.array(aa)
         d, a = cholesky(m)
         atma = a.transpose().dot(m).dot(a)
-        self.assertEqual(sum((atma-d).ravel()), Fraction(0,1))
+        self.assertEqual(sum((atma-d).ravel()), Fraction(0, 1))

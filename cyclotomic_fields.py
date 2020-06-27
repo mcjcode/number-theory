@@ -29,7 +29,7 @@ class CyclotomicInteger(object):
 
     @staticmethod
     def random(nn):
-        coefs = np.random.randint(0, 20, (nn,)).tolist()
+        coefs = np.random.randint(0, 20, (nn, )).tolist()
         return CyclotomicInteger(coefs)
 
     @staticmethod
@@ -49,7 +49,7 @@ class CyclotomicInteger(object):
 
         order = phi(nn)
         r = primitive_root(nn)
-        powers = [modpow(r, k, nn) for k in range(1,order+1)]
+        powers = [modpow(r, k, nn) for k in range(1, order+1)]
         rts = [CyclotomicInteger.zeta(nn)**rr for rr in powers]
 
         if kk == 1:
@@ -65,7 +65,7 @@ class CyclotomicInteger(object):
         self.coefs = coefs
 
     def __repr__(self):
-        return 'CyclotomicInteger(%s)' % (self.coefs,)
+        return 'CyclotomicInteger(%s)' % (self.coefs, )
 
     def conjugates(self):
         """

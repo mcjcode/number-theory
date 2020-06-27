@@ -25,7 +25,7 @@ def jacobi_sum(chi1, chi2, p):
 
 def jacobi_sum_quartic(p):
      """
-     Returns the Jacobi sum J(chi,chi) associated with the
+     Returns the Jacobi sum J(chi, chi) associated with the
      quartic character which maps the smallest primitive
      root mod p to the pure imaginary unit i.
      """
@@ -54,7 +54,7 @@ def run1():
 
         nnp = p if (p % 4 == 1) else p*p
 
-        # print 'Finite Field with %d^2=%d elements' % (p,p*p)
+        # print 'Finite Field with %d^2=%d elements' % (p, p*p)
         def mul(a, b):
             # Here's how we multiply Gaussian integers
             return (a[0]*b[0]-a[1]*b[1]) % p, (a[0]*b[1]+a[1]*b[0]) % p
@@ -111,7 +111,7 @@ def run2():
     for p in []:
         if not isprime(p):
             continue
-            # [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61] :
+            # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61] :
         cnt = 0
         for x in range(p):
             for y in range(p):
@@ -137,7 +137,7 @@ def jacobi2(a, n):
         a %= n
     return t if n==1 else 0
 
-def partial_jacobi_sum(modulus,ub):
+def partial_jacobi_sum(modulus, ub):
     """
     add up (j/modulus) for j in [0..ub].  use a sieve
     approach (though it doesn't seem to be buying us
@@ -149,23 +149,23 @@ def partial_jacobi_sum(modulus,ub):
     
     m = modulus
 
-    J=np.ones((ub+1,),dtype=np.int8)  # this will only store 0,+1,-1's
-    P=np.ones((ub+1,),dtype=np.int8)
+    J=np.ones((ub+1, ), dtype=np.int8)  # this will only store 0, +1, -1's
+    P=np.ones((ub+1, ), dtype=np.int8)
     P[0] = 0
     P[1] = 0
     J[0] = 0
-    for p in range(2,ub+1):
+    for p in range(2, ub+1):
         if P[p]:  # p is prime
             P[p*p::p] = 0 # strike higher multiples
             if m%p:  # p does not divide m
-                poverm = jacobi2(p,m)
+                poverm = jacobi2(p, m)
                 if poverm==1:
                     pass
                 else:
                     pk = p
                     while pk<=ub:
                         J[pk::pk] *= -1
-                        #print((J,pk))
+                        #print((J, pk))
                         pk *= p
             else:
                 J[p::p] = 0
