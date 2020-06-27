@@ -139,7 +139,7 @@ class GaussSumTest(unittest.TestCase):
         self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)
     
     def test_ideal_class_number(self):
-        for d in range(300):
+        for d in range(3000):
             if squarefree(d) and d != 0:
                 _ = ideal_class_number(d)
 

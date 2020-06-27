@@ -229,7 +229,7 @@ class QuadInt(object):
 
     def norm(self):
         if self.d % 4 == 1:
-            return self.a**2 + self.a * self.b + (1-self.d)/4 * self.b**2
+            return self.a**2 + self.a * self.b + (1-self.d)//4 * self.b**2
         else:
             return self.a**2 - self.d * self.b**2
 
