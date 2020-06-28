@@ -17,7 +17,7 @@ def run():
     character \u03C7 on F_{p^k}, and so the real part of
     the Jacobi sum J(\u03C7, \u03C7) only depends on the
     field F_{p^k}.
-    
+
     Calculate J(\u03C7, \u03C7) for range of values of k
     to get an idea of how these values are related to
     each other.
@@ -34,4 +34,3 @@ def run():
                 nk = count_diagonal_cubic_points(ff)
                 print(u'%6d    %+.0f%+.0f\u03c9   %4.0f   %4d' %
                       (p**ii, c0, c1, (p**ii+1)-(-1)**ii*(pi**ii + pi.conj()**ii).real, nk))
-

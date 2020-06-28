@@ -38,24 +38,24 @@ def gauss_polynomial(ff):
 def run():
     print(u"""
     For the curve given by the affine equation
-    
+
     x\u00B2 + y\u00B2 + x\u00B2y\u00B2 = 1
-    
+
     calculate the number of points on curve over
     the finite field Z/pZ.
-    
+
     If p\u22611(4), and we write p=a\u00B2+b\u00B2 with
     a odd and b even and
-    
+
     a\u22613(4) if b\u2261 2(4)
     a\u22611(4) if b\u2261 0(4)
-    
+
     then Gauss conjectured that the number of points
     on this curve, including the 2 add'l points at
     infinity, should equal
-    
+
     p-1-2a.
-    
+
     Do a brute force calculation and verify this for
     such primes up to 199.
     """)

@@ -29,9 +29,9 @@ def cholesky(mm):
 
 class CholeskyTest(unittest.TestCase):
     def runTest(self):
-        aa = list(map(lambda L: list(map(Fraction, L)), [[5, 3, 3],
-                                                         [3, 3, 3],
-                                                         [3, 3, 8]]))
+        aa = list(map(lambda xs: list(map(Fraction, xs)), [[5, 3, 3],
+                                                           [3, 3, 3],
+                                                           [3, 3, 8]]))
         m = np.array(aa)
         d, a = cholesky(m)
         atma = a.transpose().dot(m).dot(a)

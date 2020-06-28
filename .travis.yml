@@ -12,3 +12,4 @@ dist: bionic
 
 script:
   - pytest *.py
+  - pycodestyle .

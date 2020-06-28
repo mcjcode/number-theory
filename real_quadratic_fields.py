@@ -8,6 +8,7 @@ import unittest
 from utilities import (
     isprime,
     gcd,
+    sqrtInt,
     issq,
     prod,
     )
@@ -48,9 +49,11 @@ def cont_frac(m):
         m = 1./(m-f)
 
 
-_prec=56
-_multint=2**_prec
-_multflt=2.0**_prec
+_prec = 56
+_multint = 2**_prec
+_multflt = 2.0**_prec
+
+
 def divint(num, denom, prec=15):
     """
     Return a floating point number representing num/denom
@@ -63,7 +66,7 @@ def divint(num, denom, prec=15):
     Don’t bother using prec>15 as the arithmetic is
     single precision floats.
     """
-    
+
     return (num*_multint)/denom/_multflt
 
 
@@ -125,6 +128,7 @@ def approximants2(d):
         h0, k0 = h1, k1
         h1, k1 = h,  k
 
+
 def pell(d, bound=0):
     """
     For a positive integer d that is not a square (you're
@@ -139,7 +143,7 @@ def pell(d, bound=0):
     h0s, k0s = 0, 1
     h1s, k1s = 1, 0
 
-    modulus  = prod([2, 3, 5, 7, 11, 13, 17, 19, 23, 29])
+    modulus = prod([2, 3, 5, 7, 11, 13, 17, 19, 23, 29])
 
     for ai in cont_frac_quad(0, 1, 1, d):
         h = ai*h1 + h0
@@ -154,7 +158,7 @@ def pell(d, bound=0):
         h0, k0 = h1, k1
         h1, k1 = h,  k
         h0s, k0s = h1s, k1s
-        h1s, k1s =  hs,  ks
+        h1s, k1s = hs,  ks
 
 
 def squares_mod_d(d):
@@ -174,20 +178,16 @@ def norm_search(p, d):
     return md
 
 
-def sqrtint(xx):
-    return int(sqrt(xx))
-
-
 def fundamental_unit_old(d):
     if d <= 1:
         raise ValueError('%d is not >= 2' % (d, ))
     b = 1
     while True:
         if issq(b*b*d-4):
-            a = sqrtint(b*b*d-4)
+            a = sqrtInt(b*b*d-4)
             break
         if issq(b*b*d+4):
-            a = sqrtint(b*b*d+4)
+            a = sqrtInt(b*b*d+4)
             break
         b += 1
     if d % 4 == 1:
@@ -201,7 +201,7 @@ def fundamental_unit(d):
         raise ValueError('%d is not >= 2' % (d, ))
 
     if d % 4 == 3 or d % 4 == 2:
-            return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
+        return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
     else:
         if d == 5:
             return QuadInt(5, 0, 1)
@@ -256,7 +256,6 @@ def class_group_info(d):
                 p = split_primes[ii] * split_primes[jj] * split_primes[kk]
                 md = norm_search(p, d)
                 print(p, md)
-
 
 
 class PellTest(unittest.TestCase):

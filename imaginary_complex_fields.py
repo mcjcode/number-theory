@@ -10,6 +10,7 @@ from fractions import Fraction
 import numpy as np
 from utilities import (
     gcd,
+    sqrtInt,
     issq,
     isprime,
     )
@@ -106,21 +107,17 @@ def idoneal(max_abs_disc):
             print(D, end=' ')
 
 
-def intsqrt(k):
-    return int(sqrt(k))
-
-
 def principal_representations(n, m):
     """
     yield a sequence of positive (a, b) such that
     a**2 + n * b**2 = m
     """
-    ub = intsqrt(m/n)
+    ub = sqrtInt(m/n)
     ii = 0
     while ii <= ub:
         xx = m - n*ii**2
         if issq(xx):
-            yield (intsqrt(xx), ii)
+            yield sqrtInt(xx), ii
         ii += 1
 
 
@@ -204,7 +201,7 @@ def cf_from_rational(n, d):
     Yield the terms of the continued fraction
     representation of n/d
     """
-    while n%d :
+    while n % d:
         q, r = divmod(n, d)
         yield n//d
         n, d = d, r
@@ -216,9 +213,9 @@ def rational_from_cf(cf):
     Return the rational number (a Fraction)
     corresponding to a continued fraction.
     """
-    if len(cf)==0:
+    if len(cf) == 0:
         return Fraction(1, 1)
-    elif len(cf)==1:
+    elif len(cf) == 1:
         return Fraction(cf[0], 1)
     else:
         return Fraction(cf[0], 1) + 1 / rational_from_cf(cf[1:])
@@ -230,14 +227,14 @@ def sum_sq_rep(p):
     representation as a sum of 2 squares.
     Return such a representation
     """
-    if p==2:
+    if p == 2:
         return 1, 1
 
     for m in range(int(np.sqrt(p)), p//2+1):
         cf = list(cf_from_rational(p, m))
         ln = len(cf)
-        if cf==list(reversed(cf)):
-            if ln%2==0:
+        if cf == list(reversed(cf)):
+            if ln % 2 == 0:
                 a = rational_from_cf(cf[:ln//2]).numerator
                 b = rational_from_cf(cf[:ln//2-1]).numerator
                 return a, b
@@ -249,10 +246,10 @@ class QuadraticFormTests(unittest.TestCase):
             for form in all_reduced_forms(disc):
                 self.assertEqual(proper_reduced_form(*form), form)
 
+
 class SumOfSquaresAlgoTest(unittest.TestCase):
     def test_one(self):
         ps = [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97, 101, 109, 113, 137, 149]
         for p in ps:
             a, b = sum_sq_rep(p)
             self.assertEqual(p, a*a+b*b)
-

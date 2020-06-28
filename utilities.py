@@ -21,6 +21,7 @@ def prod(xs):
         retval *= x
     return retval
 
+
 def timeit(f):
     """
     decorator to wrap around functions when we
@@ -34,12 +35,14 @@ def timeit(f):
         return retval
     return g
 
+
 def memoize(f):
     """
     quick and dirty memoize decorator which
     supports just 1 'hashable' argument.
     """
     fhash = {}
+
     def g(*args):
         targs = tuple(args)
         if targs in fhash:
@@ -50,25 +53,29 @@ def memoize(f):
         return retval
     return g
 
+
 def mymod(n, m):
     """
     Return n % m if m != 0.  But if m==0
     then just return n.  (Kind of what I'd
     want '%' to do in the first place.
     """
-    return n%m if m else n
+    return n % m if m else n
+
 
 def sqrtInt(n):
-    sqrtn=int(sqrt(n))
-    if (sqrtn+1)**2<=n:
+    sqrtn = int(sqrt(n))
+    if (sqrtn+1)**2 <= n:
         sqrtn += 1
     return sqrtn
+
 
 def cbrtInt(n):
     cbrtn = int(n**(1./3.))
     if (cbrtn+1)**2 <= n:
         cbrtn += 1
     return cbrtn
+
 
 def multiplicities(L):
     """
@@ -78,19 +85,20 @@ def multiplicities(L):
     items = sorted(list(set(L)))
     counts = []
     for item in items:
-        counts.append(len([LL for LL in L if LL==item]))
+        counts.append(len([LL for LL in L if LL == item]))
     return items, counts
 
 
-def symmetric_function(k, LL, zero=0, one=1):
+def symmetric_function(k, xs, zero=0, one=1):
     """
-    :param k:  the degree of the symmetric function
-    :param LL: the list of elements
-    :return:   the value of the kth symmetric function evaluated on LL
-    :zero:     the zero of the elements of
+    :param k: the degree of the symmetric function
+    :param xs: the list of elements
+    :param zero: the zero of the elements
+    :param one: the 'one' of the elements
+    :return: the value of the kth symmetric function evaluated on xs
     """
     retval = zero
-    for comb in itertools.combinations(LL, k):
+    for comb in itertools.combinations(xs, k):
         term = one
         for elt in comb:
             term = term * elt
@@ -133,13 +141,14 @@ def factorize(n):
         q += 1
     return [n]
 
+
 def factorize2(n):
     """
     Yield a sequence of (prime, exponent) pairs where the
     primes are distinct and in increasing order giving
     the prime factorization of n.
     """
-    if n < _maxn : # see below
+    if n < _maxn:  # see below
         g = factorize2_bounded(n)
         for fact in g:
             yield fact
@@ -152,19 +161,22 @@ def factorize2(n):
             e += 1
             n = n//q
         if e > 0:
-            yield (q, e)
+            yield q, e
         q += 1
-    if n>1:
-        yield (n, 1)
+    if n > 1:
+        yield n, 1
+
 
 _maxn = 10**10
 _ps = [p for p in range(2, sqrtInt(_maxn)) if isprime(p)]
+
+
 def factorize2_bounded(n):
     """
     Yield a sequence of (prime, exponent) pairs where the
     primes are distinct and in increasing order giving
     the prime factorization of n.
-   
+
     prime factors are precomputed.  Only n < _maxn are
     allowed. 
     """
@@ -177,10 +189,10 @@ def factorize2_bounded(n):
             e += 1
             n //= p
         if e:
-            yield (p, e)
-    if n>1:
-        yield (n, 1)
-    
+            yield p, e
+    if n > 1:
+        yield n, 1
+
 
 def squarefree(mm):
     """
@@ -205,6 +217,7 @@ def order(a, p):
         cnt += 1
     return cnt
 
+
 def primitive_root(p):
     """
     Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
@@ -214,12 +227,13 @@ def primitive_root(p):
     while a < p:
         ok = True
         for (q, e) in facts:
-            if modpow2(a, (p-1)//q, p)==1:
+            if modpow2(a, (p-1)//q, p) == 1:
                 ok = False
                 break
         if ok:
             return a
         a += 1
+
 
 def modpow(a, k, p):
     """
@@ -234,27 +248,30 @@ def modpow(a, k, p):
         cnt += 1
     return retval
 
+
 def powerset(xs):
     """
-    Returns a generator iterating over all of 
+    Returns a generator iterating over all of
     subsets of xs, starting with the smallest
     and ending with the largest subsets
     """
     lengths = range(len(xs)+1)
     return itertools.chain(*[itertools.combinations(xs, nn) for nn in lengths])
 
+
 def modpow2(a, k, p):
     """
     Return a**k(mod p).
     O(log(k))-time algorithm
     """
-    retval = 1%p
-    while k: # k != 0
-        if k%2: # k odd
+    retval = 1 % p
+    while k:  # k != 0
+        if k % 2:  # k odd
             retval = retval*a % p
         a = a*a % p
         k = k >> 1
     return retval
+
 
 def legendre_ch(p):
     """
@@ -297,13 +314,13 @@ def sgn(a):
     else:
         return 0
 
-    
+
 def euclidean_algorithm(a, b):
     """
     Return x, y such that x*a + y*b = gcd(a, b).
     """
-    
-    if b==0:
+
+    if b == 0:
         return sgn(a), 0
 
     q, r = divmod(a, b)  # a = q * b + r
@@ -322,6 +339,7 @@ def euclidean_algorithm(a, b):
     x, y = euclidean_algorithm(b, r)
     return y, (x-y*q)
 
+
 def crt(r1, m1, r2, m2):
     """
     Chinese remainder theorem.  Return the smallest
@@ -336,12 +354,13 @@ def crt(r1, m1, r2, m2):
     c1, c2 = euclidean_algorithm(m1, m2)
     g = c1*m1+c2*m2
     q, r = divmod(r1-r2, g)
-    if r!=0 : # no solution
+    if r != 0:  # no solution
         raise ValueError()
     else:
         x = r1 - q*(c1*m1)
         # = r2 + q*(c2*m2)
         return x % (m1*m2//g)
+
 
 def ea3(a, b, c):
     """
@@ -351,7 +370,8 @@ def ea3(a, b, c):
     # now x*a+y*b=gcd(a, b)
     s, t = euclidean_algorithm(gcd(a, b), c)
     return s*x, s*y, t
-    
+
+
 class UtilitiesTest(unittest.TestCase):
 
     def runTest(self):
@@ -378,13 +398,13 @@ class UtilitiesTest(unittest.TestCase):
 
     def test_gcd(self):
         self.assertEqual(gcd(2*3*5, 3*5*7), 3*5)
-        
+
     def test_euclidean_algorithm(self):
         a = 89
         b = 55
         x, y = euclidean_algorithm(a, b)
         self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
-        
+
     def test_euclidean_algorithm2(self):
         for a in range(-100, +100):
             for b in range(-100, +100):
