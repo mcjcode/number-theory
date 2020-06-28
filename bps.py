@@ -17,7 +17,7 @@ def bps_w_rep(n, ps, i=0, only_powerful=False):
 
     If 'only_powerful' is set to True, then
     only return the numbers that are powerful.
-    
+
     Recursive, so fails if recursion limit
     is not sufficient.
     """

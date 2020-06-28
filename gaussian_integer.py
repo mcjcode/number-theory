@@ -5,6 +5,7 @@ import unittest
 
 import numpy as np
 
+
 class GaussianInteger(object):
 
     def __init__(self, a, b=0):

@@ -4,11 +4,13 @@
 #
 
 import math
-from utilities import sqrtInt, timeit
+from utilities import sqrtInt
 import numpy as np
+
 
 def zeroit(arr, starti, stepi):
     arr[starti::stepi] = 0
+
 
 def segmented_sieve(n, trace=False):
     """
@@ -20,14 +22,15 @@ def segmented_sieve(n, trace=False):
     seglen = sqrtInt(n+1)
 
     # always make seglen a multiple of 6
-    seglen = max(6, 6*(seglen//6))+6 # add 6 so that the first segment contains sqrt(n)
-    
+    # add 6 so that the first segment contains sqrt(n)
+    seglen = max(6, 6*(seglen//6))+6
+
     wheel = [4, 2]
     wheel_len = len(wheel)
- 
+
     if trace:
         print('segment length = %d' % (seglen, ))
-    nsegs  = (n+1)//seglen
+    nsegs = (n+1)//seglen
     if seglen*nsegs < n+1:
         nsegs += 1
     if trace:
@@ -41,10 +44,10 @@ def segmented_sieve(n, trace=False):
     seg[:4] = [0, 0, 1, 1]
     
     while segi < nsegs:
-        seg_end   = seg_start+seglen-1 
-        
+        seg_end = seg_start+seglen-1
+
         if trace: 
-            print('segment number = %d' % (segi))
+            print('segment number = %d' % (segi, ))
             print('segment start = %d' % (seg_start, ))
             print('segment end = %d' % (seg_end, ))
 
@@ -52,11 +55,10 @@ def segmented_sieve(n, trace=False):
         for p in ps:
             if p > ub:
                 break
-            #seg[(p-seg_start)%p::p] = 0
-            zeroit(seg, (p-seg_start)%p, p)
+            zeroit(seg, (p-seg_start) % p, p)
             if trace:
-                print(p, '%s'%(seg, ))
-        
+                print(p, '%s' % (seg, ))
+
         starti = 1
         endi = min(seglen, ub-seg_start+1)
         stepi = 2
@@ -67,40 +69,38 @@ def segmented_sieve(n, trace=False):
             if seg[i]:
                 p = seg_start + i
                 yield p
-                if segi==0:
+                if segi == 0:
                     ps.append(p)
-                #seg[p*p-seg_start::p]
                 zeroit(seg, p*p-seg_start, p)
                 if trace:
-                    print(p, '%s'%(seg, ))
-            i += wheel[wheeli] #stepi
+                    print(p, '%s' % (seg, ))
+            i += wheel[wheeli]  # stepi
             wheeli = (wheeli + 1) % wheel_len
 
         maxi = min(seglen, n-seg_start+1)
         while i < maxi:
-            if seg[i]: # seq_start+i is prime
+            if seg[i]:  # seq_start+i is prime
                 p = seg_start+i
                 yield p
-                if segi==0:
+                if segi == 0:
                     ps.append(p) 
-            #i += 2
             i += wheel[wheeli]
             wheeli = (wheeli + 1) % wheel_len
-        
+
         segi += 1
         seg_start += seglen
         seg[:] = 1
 
-    #return ps
 
 def indicator(n):
     nm1 = n-1
     while True:
         yield True
-        i=0
-        while i<nm1:
+        i = 0
+        while i < nm1:
             yield False
             i += 1
+
 
 def sqfree_parts():
     """
@@ -110,7 +110,7 @@ def sqfree_parts():
     inefficient.  Just a proof of
     concept.
     """
-    yield [] # 1 has no prime divisors
+    yield []  # 1 has no prime divisors
     indicators = []
     i = 2
     while True:
@@ -122,13 +122,15 @@ def sqfree_parts():
             ps = [i]
             g = indicator(i) 
             _ = next(g)
-            indicators.append( (i, g) )
+            indicators.append((i, g))
         yield ps
         i += 1
 
+
 def primeFactors(n):
     """
-    Return a length n+1 list pf such that pf[k] is the list of primes dividing k
+    Return a length n+1 list pf such that pf[k]
+    is the list of primes dividing k
     """
     retval = [[] for _ in range(n+1)]
     for p in range(2, n+1):

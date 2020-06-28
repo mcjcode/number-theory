@@ -128,7 +128,6 @@ def ideal_class_number(dd):
     return int(round(rho/k))
 
 
-
 class GaussSumTest(unittest.TestCase):
     def test_1(self):
         class_number = ideal_class_number(1)
@@ -137,9 +136,9 @@ class GaussSumTest(unittest.TestCase):
     def test_2(self):
         class_number = ideal_class_number(-1)
         self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)
-    
-    def test_ideal_class_number(self):
+
+    @staticmethod
+    def test_ideal_class_number():
         for d in range(1, 500):
             if squarefree(d):
                 _ = ideal_class_number(d)
-

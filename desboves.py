@@ -19,7 +19,7 @@ def desboves_tangent(x, y, z):
     Return the third point of intersection of the tangent
     to x^3 + y^3 = a*z^3 at the point (x, y, z).
     """
-    
+
     x, y, z = x*(x**3+2*y**3), -y*(y**3+2*x**3), -z*(y**3-x**3)
 
     d = gcd(gcd(x, y), z)
@@ -61,14 +61,14 @@ def desbovesp(p, q):
     the value of a, but p and q must
     satisfy the same cubic equation.
     """
-    
+
     # If either of the points is the
     # identity, then return the other
     # point.
     #
     if pequal(p, [1, -1, 0]):
         return q
-    
+
     if pequal(q, [1, -1, 0]):
         return p
 
@@ -79,7 +79,7 @@ def desbovesp(p, q):
     #
     if pequal([p[1], p[0], p[2]], q):
         return 1, -1, 0
-    
+
     if pequal(p, q):
         x, y, z = desboves_tangent(*p)
         return y, x, z
@@ -165,4 +165,3 @@ class DesbovesUnitTest(unittest.TestCase):
         self.assertEqual(1*p, p)
         self.assertEqual(2*p, p+p)
         self.assertEqual(3*p, p+p+p)
-

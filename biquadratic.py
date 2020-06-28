@@ -4,8 +4,9 @@
 from __future__ import print_function
 
 from gaussian_integer import GaussianInteger
-from utilities import isprime, modpow
+from utilities import isprime, modpow2
 from jacobi import jacobi_sum_quartic
+
 
 def maptochar(x, pi):
     zero = GaussianInteger(0)
@@ -23,7 +24,7 @@ def biquad(pi1, pi2):
         return GaussianInteger(0)
 
     z = pi2 % pi1
-    ch = modpow(z, (pi1.norm()-1)/4, pi1)
+    ch = modpow2(z, (pi1.norm()-1)/4, pi1)
     return maptochar(ch, pi1)
 
 
@@ -51,7 +52,7 @@ def jacobi_sum(chi1, chi2, p):
     retval = GaussianInteger(0)
     for aa in range(p):
         aa = GaussianInteger(aa)
-        retval = retval + chi1(a)*chi2(GaussianInteger(1)-aa)
+        retval = retval + chi1(aa)*chi2(GaussianInteger(1)-aa)
     return retval
 
 

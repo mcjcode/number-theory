@@ -8,13 +8,13 @@ from utilities import (
     squarefree,
     gcd,
     isprime,
-    factorize,
     factorize2,
     prod,
     modpow2
     )
 
 from prime_sieve import segmented_sieve
+
 
 def discriminant(d):
     """
@@ -53,12 +53,13 @@ def legendre(a, p):
             return 0
     
     if not isprime(a):
-        return prod([legendre(q, p) for q, e in factorize2(a) if e%2])
+        return prod([legendre(q, p) for q, e in factorize2(a) if e % 2])
 
     if p % 4 == 1 or a % 4 == 1:
         return legendre(p % a, a)
     else:
         return -legendre(p % a, a)
+
 
 def tonelli_shanks(a, p, safe=False):
     """
@@ -71,32 +72,32 @@ def tonelli_shanks(a, p, safe=False):
     """
     if not safe:
         leg = legendre(a, p)
-        if leg==-1:
+        if leg == -1:
             raise ValueError('%d is not a quadratic residue mod %d' % (a, p))
-        if leg==0:
+        if leg == 0:
             return 0
     #
     # a is a quadratic residue mod p
     #
-    if p==2:
-        return a%p
+    if p == 2:
+        return a % p
 
-    if p%4==3:
+    if p % 4 == 3:
         return modpow2(a, (p+1)//4, p)
     
     #
     # p=1(mod 4)
     #
-    S=0
-    Q=p-1
-    while Q%2==0:
+    S = 0
+    Q = p-1
+    while Q % 2 == 0:
         S += 1
         Q //= 2
 
     # p-1 = Q*2**S (with Q odd)
 
-    z=2
-    while legendre(z, p)==+1:
+    z = 2
+    while legendre(z, p) == +1:
         z += 1
 
     # z is a non-residue mod p
@@ -107,13 +108,13 @@ def tonelli_shanks(a, p, safe=False):
     R = modpow2(a, (Q+1)//2, p)
 
     while True:
-        if t==0:
+        if t == 0:
             return 0
-        if t==1:
+        if t == 1:
             return R
-        i=0
-        t0=t
-        while t0!=1:
+        i = 0
+        t0 = t
+        while t0 != 1:
             t0 = (t0*t0) % p
             i += 1
 
@@ -123,9 +124,9 @@ def tonelli_shanks(a, p, safe=False):
         M = i
         c = b*b % p
         t = t*c % p
-        #t = t*b*b % p
         R = R*b % p
- 
+
+
 def legendre_ch(d):
     """
     Return the mod |disc Q[√d]| Legendre character.
@@ -259,17 +260,18 @@ def factorize_in(p, d):
             x += 1
         return p,
 
+
 class TonelliShanksTest(unittest.TestCase):
     def test_1(self):
         for p in segmented_sieve(1000):
             for a in range(p):
-                if legendre(a, p)==+1:
+                if legendre(a, p) == +1:
                     r = tonelli_shanks(a, p)
-                    self.assertEqual(r*r%p, a)
+                    self.assertEqual(r*r % p, a)
+
 
 class LegendreCharacterTest(unittest.TestCase):
     def test_12(self):
         ch = legendre_ch(3)
         for xx in range(12):
             self.assertEqual(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')
-

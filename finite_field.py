@@ -175,8 +175,8 @@ class FiniteField(object):
         return FiniteFieldElement(np.array([1]+[0]*(self.n-1), dtype=int), self)
 
     def __iter__(self):
-            return (FiniteFieldElement(np.array(val, dtype=int), self)
-                    for val in itertools.product(*[range(self.p)]*self.n))
+        return (FiniteFieldElement(np.array(val, dtype=int), self)
+                for val in itertools.product(*[range(self.p)]*self.n))
 
     def jacobi_sum(self, order):
         """
@@ -290,6 +290,6 @@ class FiniteFieldTest(unittest.TestCase):
         for elem in list(ffield):
             self.assertEqual(elem, ffield.one() * elem, msg='1*X == X')
             self.assertEqual(elem, elem * ffield.one(), msg='X*1 == X')
-            self.assertEqual(ffield.zero() * elem, ffield.zero(), msg='0*X == 0')
-            self.assertEqual(elem * ffield.zero(), ffield.zero(), msg='X*0 == 0')
+            self.assertEqual(ffield.zero() * elem, ffield.zero(), msg='0*X==0')
+            self.assertEqual(elem * ffield.zero(), ffield.zero(), msg='X*0==0')
             self.assertEqual(elem ** 2, elem * elem, msg='X**2 == X*X')
