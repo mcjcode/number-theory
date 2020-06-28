@@ -6,10 +6,11 @@ python:
   - "pypy3"
 
 install:
-   - pip install -r requirements.txt
+  - pip install -r requirements.txt
+  - pip install pycodestyle
 
 dist: bionic
 
 script:
   - pytest *.py
-  - pycodestyle .
+  - pycodestyle

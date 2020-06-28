@@ -27,7 +27,7 @@ def c2xy(z):
     """
     Given a (finite) complex number, return the associated ordered pair
     """
-    return z.real,z.imag
+    return z.real, z.imag
 
 
 def Sz(z):
