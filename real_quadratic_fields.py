@@ -25,20 +25,13 @@ def cont_frac(m):
     """
     For a positive floating point number 'm',
     return a generator for the sequence of
-    integers that give the continued fraction
-    representation of
-    the number.
-
-              1    1    1
-    m = a0 + --   --   --
-             a1 + a2 + a3 + ...
-
-    You probably shouldn’t use this
+    integers a0, a1, a2, ... that give the continued fraction
+    representation of m:
+    :math: m = a_0 + \cfrac{1}{a_1 + \cfrac{1}{a_2 + \cfrac{1}{a_3 + \cdots}}}
+    You probably shouldn't use this
     if you really care about all of the terms
     since rounding eventually corrupts the
-    process.
-
-    For numbers in quadratic number fields,
+    process.  For numbers in quadratic number fields,
     use ‘cont_frac_quad’ instead.
     """
     while True:

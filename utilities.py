@@ -276,9 +276,11 @@ def modpow2(a, k, p):
 def legendre_ch(p):
     """
     Return the mod p legendre character, a function 'ch' such that
-    ch(a) =  0  if p divides a
-            +1  if a is a quadratic residue
-            -1  if a is a quadratic non-residue
+    ch(a) =
+    0  if p divides a
+    +1  if a is a quadratic residue
+    -1  if a is a quadratic non-residue
+    :param p: a prime
     """
     if not isprime(p) or p == 2:
         raise ValueError("%d is not an odd prime." % (p, ))

@@ -446,13 +446,12 @@ def name_to_latex(name):
 def plot_regions(tile_names, center, shift_name, transform_names):
     """
     Plot a fundamental domain and neighbors for a subgroup G of SL(2, Z).
-
-    tile_names - coset representatives for G in SL(2, Z)
-    center     - complex number for the center of the fundamental region.
-    shift_name - the name of an element g of G, g(D) will be
-                 the center of the plot
-    transform_names - the name of elements of G for neighboring
-                 cells to plot
+    :param tile_names: coset representatives for G in SL(2, Z)
+    :param center: complex number for the center of the fundamental region.
+    :param shift_name: the name of an element g of G, g(D) will be
+    the center of the plot
+    :param transform_names: the name of elements of G for neighboring
+    cells to plot
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, 0.0+0.0j)

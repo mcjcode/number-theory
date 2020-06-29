@@ -74,9 +74,12 @@ def all_modm_chars(m):
 
 def kappa(m):
     """
-    Return kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
+    :param m: a square-free integer
+    :return: kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
 
-    |L(chi, 1)| = h*kappa, where h is the class number of Q[√m],
+    We have that
+    :math: abs(L(chi, 1)) = h*kappa
+    where h is the class number of Q[√m],
     chi is the 'legendre character' and L is the associated
     Dirichlet L function.
     """
