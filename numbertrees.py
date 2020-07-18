@@ -4,9 +4,12 @@
 
 def farey(n):
     """
-    Yield the farey sequence of order n.  (All reduced
+    :param n: a positive integer
+    :return: yields the farey sequence of order n.
+
+    The farey sequence of order n is all reduced
     fractions between 0 and 1, in reduced terms, with
-    denominator <= n, in increasing order)
+    denominator <= n, in increasing order.
 
     It is also a convenient way to obtain a sequence of
     all pairs (a, b) with a <= b <= n with gcd(a, b)=1.

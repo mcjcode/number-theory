@@ -2,3 +2,9 @@
 *.pyc
 *.py~
 .idea
+
+# documentation built files
+doc/_build
+
+doc/__pycache__
+doc/_build

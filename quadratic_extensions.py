@@ -129,9 +129,9 @@ def tonelli_shanks(a, p, safe=False):
 
 def legendre_ch(d):
     """
-    Return the mod |disc Q[√d]| Legendre character.
+    Return the mod abs(disc Q[√d]) Legendre character.
 
-    This is the character ch with modulus D=|disc Q[√d]|
+    This is the character ch with modulus D=abs(disc Q[√d])
     such that for any odd prime p, ch(p)=(d/p) (i.e.
 
     ch(p)=0 if p|d

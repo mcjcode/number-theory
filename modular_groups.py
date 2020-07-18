@@ -24,14 +24,14 @@ from base_complex import infj
 
 
 def c2xy(z):
-    """
+    r"""
     Given a (finite) complex number, return the associated ordered pair
     """
     return z.real, z.imag
 
 
 def Sz(z):
-    """
+    r"""
     Apply the linear fractional transformation z -> -1/z to a point.
     """
     if z == infj:
@@ -44,7 +44,7 @@ def Sz(z):
 
 
 def S(corners):
-    """
+    r"""
     Apply the linear fractional transformation z -> -1/z to
     a sequence of points.
     """
@@ -74,7 +74,7 @@ def U(corners):
 
 
 def halfplane_to_poincare_disk(zz):
-    """
+    r"""
     Send zs —> (zs-i)/(-i*zs+1) = (i*zs+1)/(zs+i) = i + 2/(zs+i)
     """
     if zz == -1.0j:
@@ -86,7 +86,7 @@ def halfplane_to_poincare_disk(zz):
 
 
 def poincare_disk_to_halfplane(ww):
-    """
+    r"""
     send ws -> (ws+i)/(i*ws+1) = (-i*ws+1)/(ws-i) = -i + 2/(ws-i)
     """
     if ww == 1.0j:
@@ -98,7 +98,7 @@ def poincare_disk_to_halfplane(ww):
 
 
 def z1z2_to_pts(z1, z2, n, model):
-    """
+    r"""
     Return a sequence of n+1 points along the geodesic from z1 to z2.
     """
     x1, y1 = c2xy(z1)
@@ -161,7 +161,7 @@ def z1z2_to_pts(z1, z2, n, model):
 
 
 def tile_patch(corners, model='halfplane', **kwdargs):
-    """
+    r"""
     Given the three corners of a tile (a fundamental
     region for G, the full modular group), return the
     matplotlib Patch artist that can be added to a
@@ -325,7 +325,7 @@ def _eq(m1, m2, qq):
 
 
 def coset_reps_alt(qq, return_generators=False):
-    """
+    r"""
     Yield coset representatives for Gamma(q) in SL(2, Z).
     """
 
@@ -366,7 +366,7 @@ def coset_reps_alt(qq, return_generators=False):
 
 
 def coset_reps(qq):
-    """
+    r"""
     Yield coset representatives for Gamma(q) in SL(2, Z).
     """
     zq2 = itertools.product(range(qq), range(qq))
@@ -444,15 +444,13 @@ def name_to_latex(name):
 
 
 def plot_regions(tile_names, center, shift_name, transform_names):
-    """
-    Plot a fundamental domain and neighbors for a subgroup G of SL(2, Z).
+    r"""
+    :param tile_names: coset representatives for :math:`G\leqslant SL(2,\mathbb{Z})`
+    :param center: complex number for the center of the fundamental region.
+    :param shift_name: the name of an element g of G, g(D) will be the center of the plot
+    :param transform_names: the name of elements of G for neighboring cells to plot
 
-    tile_names - coset representatives for G in SL(2, Z)
-    center     - complex number for the center of the fundamental region.
-    shift_name - the name of an element g of G, g(D) will be
-                 the center of the plot
-    transform_names - the name of elements of G for neighboring
-                 cells to plot
+    Plot a fundamental domain and neighbors for :math:`G\leqslant SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, 0.0+0.0j)
@@ -502,8 +500,8 @@ def plot_regions(tile_names, center, shift_name, transform_names):
 
 
 def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='halfplane'):
-    """
-    Plot a fundamental domain and neighbors for a subgroup G of SL(2, Z).
+    r"""
+    Plot a fundamental domain and neighbors for :math:`G\leqslant of SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, infj)
@@ -571,8 +569,8 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
 
 
 def plot_gamma_2():
-    """
-    Plot the fundamental region for Gamma(2), the principal
+    r"""
+    Plot the fundamental region for :math:`\Gamma(2)`, the principal
     congruence subgroup of level 2, and neighboring regions
     """
     plot_regions(['I', 'T', 'S', 'TS', 'TSTS', 'TST'],
@@ -588,12 +586,13 @@ def plot_gamma_3():
 
 
 def plot_gammak(k, model='halfplane'):
-    """
-    Plot the fundamental domain of Gamma(k).
+    r"""
+    :param k: a positive integer
+    :param model: 'halfplane' or 'disk'
 
-    model - 'halfplane' or 'disk'
-            'halfplane' - plot it in the upper halfplane model.
-            'disk'      - plot it in the poincare disk.
+    Plot the fundamental domain of :math:`\Gamma(k)`.
+    'halfplane' - plot it in the upper halfplane model.
+    'disk' - plot it in the poincare disk.
     """
     reps, shifts = coset_reps_alt(k, True)
     plot_mat(reps, [np.array([[1, 0], [0, 1]], dtype=int)]+shifts, model=model)
@@ -601,7 +600,7 @@ def plot_gammak(k, model='halfplane'):
 
 def psl2q_order(qq):
     """
-    Return the order of PSL(2, Z/qZ).
+    Return the order of :math:`PSL(2,Z/qZ)`.
     """
     ps = list(set(factorize(qq)))
     if qq == 2:
@@ -674,11 +673,11 @@ def plot_arc(a1, a2):
 
 
 def plot_complex(zs, **kwargs):
-    """
-    Plot complex numbers in the complex plane.
+    r"""
+    :param zs: a numpy array of complex numbers
+    :param kwargs: keyword arguments to pass on to plt.plot
 
-    zs     - the np.array of complex numbers to be plotted
-    kwargs - passed along to plt.plot
+    Plot complex numbers in the complex plane.
     """
     xs = zs.real
     ys = zs.imag
@@ -686,7 +685,7 @@ def plot_complex(zs, **kwargs):
 
 
 def random_complex_gaussian():
-    """
+    r"""
     Generate a random complex number.
 
     The real and imaginary parts of the generated number
@@ -709,6 +708,7 @@ class CosetRepsUnitTest(unittest.TestCase):
 
 class HalfplaneToDiskUnitTest(unittest.TestCase):
     def runTest(self):
+        np.random.seed(17)
         for i in range(100):
             z1 = random_complex_gaussian()
             z1 = z1.real + 1.0j*abs(z1.imag)

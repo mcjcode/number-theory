@@ -21,16 +21,20 @@ from real_quadratic_fields import (
 
 
 def gs_numerical(ch, m, k):
-    """
-    Compute the Gauss sum 'sum_a(ch(a)w**(ak))'
-    of the mod m characher ch.
+    r"""
+    :param ch: a mod m character
+    :param m: the modulus
+    :return: the Gauss sum :math:`\displaystyle\sum_a(ch(a)\omega^{ak})`
+
+    :math:`\omega = e^{2\pi/m}`
+
     """
     ww = np.exp(2.0j*np.pi/m)
     return sum(ch(a)*ww**(k*a) for a in range(1, m))
 
 
 def L_one_chi(ch, m):
-    """
+    r"""
     Compute the value of the Dirichlet L-series L(s, ch) at s=1.
     """
     zz = np.exp(2.0j*np.pi/m)
@@ -38,7 +42,7 @@ def L_one_chi(ch, m):
 
 
 def all_modm_chars(m):
-    """
+    r"""
     Returns a list of all mod m characters,
     starting with the trivial character.  Only
     works with prime m for now.
@@ -73,10 +77,13 @@ def all_modm_chars(m):
 
 
 def kappa(m):
-    """
-    Return kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
+    r"""
+    :param m: a square-free integer
+    :return: kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
 
-    |L(chi, 1)| = h*kappa, where h is the class number of Q[√m],
+    We have that
+    :math: abs(L(chi, 1)) = h*kappa
+    where h is the class number of Q[√m],
     chi is the 'legendre character' and L is the associated
     Dirichlet L function.
     """
@@ -101,7 +108,7 @@ def kappa(m):
 
 
 def ideal_class_number(dd):
-    """
+    r"""
     Return the ideal class number of Q[√d], for squarefree integer dd.
     """
     if not squarefree(dd):
