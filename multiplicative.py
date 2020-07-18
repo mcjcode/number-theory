@@ -1,5 +1,9 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
+"""
+Various multiplicative arithmetic functions
+and their summations.
+"""
 
 import unittest
 
@@ -23,7 +27,9 @@ def phi(nn):
 
 def divisor_function(kk, nn):
     """
-    return the sum of d^k over all divisors of nn
+    :param kk: the exponent
+    :param nn: a positive integer
+    :return: :math:`\sum_{d|n} d^k`
     """
     factors = factorize2(nn)
     return prod([(ee+1) if kk == 0 else (pp**(kk*(ee+1))-1)//(pp**kk-1)
@@ -36,8 +42,8 @@ def sumrange(a, b):
 
 def sum_sigma0(n):
     """
-    return the sum of sigma0(k) for
-    all k in [1..n]
+    :param n: a positive integer
+    :return: :math:`\displaystyle\sum_{k\in[1\dots n]} d(k)`
     """
     sqrtk = sqrtInt(n)
     part1 = sum(n//d for d in range(1, n//sqrtk+1))
@@ -47,8 +53,8 @@ def sum_sigma0(n):
 
 def sum_sigma1(n):
     """
-    return the sum of sigma1(k) for
-    all k in [1..n]
+    :param n: a positive integer
+    :return: :math:`\displaystyle\sum_{k\in[1\dots n]} \sigma(k)`
     """
     sqrtk = sqrtInt(n)
     part1 = sum(d*(n//d) for d in range(1, n//sqrtk+1))
@@ -70,9 +76,9 @@ def partial_totient(n, k):
     :param n: a positive integer 
     :param k: a positive integer
     :return: the number of integers in [1..n]
-        that are relatively prime to k.  Note
-        that the number of distinct prime factors
-        of k must be <= _maxp (currently 16) 
+             that are relatively prime to k.  Note
+             that the number of distinct prime factors
+             of k must be <= _maxp (currently 16)
     """
 
     if n == 0:
@@ -102,8 +108,9 @@ def partial_totient(n, k):
 
 def _partial_totient_alternate(n, k):
     """
-    Return the number of integers in [1..n]
-    that are relatively prime to k
+    :param n: a positive integer
+    :return: the number of integers in [1..n]
+             that are relatively prime to k
     """
     if n == 0:
         return 0
@@ -121,7 +128,10 @@ def _partial_totient_alternate(n, k):
 
 def coprime(lb, ub, pfacts, i=0, prd=1):
     """
-    Return the # of ints in (lb, ub] not divisible by the primes in pfacts.
+    :param lb: a positive integer
+    :param ub: a positive integer greater than lb
+    :param pfacts: a list of prime numbers
+    :return: the # of ints in (lb, ub] not divisible by the primes in pfacts.
     """
     if i == len(pfacts):
         return ub//prd - lb//prd

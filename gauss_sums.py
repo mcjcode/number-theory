@@ -22,8 +22,12 @@ from real_quadratic_fields import (
 
 def gs_numerical(ch, m, k):
     """
-    Compute the Gauss sum 'sum_a(ch(a)w**(ak))'
-    of the mod m characher ch.
+    :param ch: a mod m character
+    :param m: the modulus
+    :return: the Gauss sum :math:`\displaystyle\sum_a(ch(a)\omega^{ak})`
+
+    :math:`\omega = e^{2\pi/m}`
+
     """
     ww = np.exp(2.0j*np.pi/m)
     return sum(ch(a)*ww**(k*a) for a in range(1, m))

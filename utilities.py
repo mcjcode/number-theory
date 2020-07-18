@@ -12,11 +12,13 @@ import itertools
 from math import sqrt
 
 
-def prod(xs):
+def prod(xs, start=1):
     """
-    return the product of the integers in xs
+    :param xs: a sequence of elements to multiply
+    :param start: the value to return if xs is empty
+    :return: the product of the xs
     """
-    retval = 1
+    retval = start
     for x in xs:
         retval *= x
     return retval
@@ -24,7 +26,10 @@ def prod(xs):
 
 def timeit(f):
     """
-    decorator to wrap around functions when we
+    :param f: a function
+    :return: a function with the side effect of printing the time it takes to run f
+
+    A decorator to wrap around functions when we
     want to measure the run time.
     """
     def g(*args):
@@ -38,8 +43,8 @@ def timeit(f):
 
 def memoize(f):
     """
-    quick and dirty memoize decorator which
-    supports just 1 'hashable' argument.
+    :param f: a function
+    :return: a memoized version of f.
     """
     fhash = {}
 
@@ -56,14 +61,24 @@ def memoize(f):
 
 def mymod(n, m):
     """
-    Return n % m if m != 0.  But if m==0
-    then just return n.  (Kind of what I'd
-    want '%' to do in the first place.
+    :param n: an integer
+    :param m: an integer, the modulus
+    :return: :math:`n(mod m)`, if m != 0, otherwise n.
+
+    (Kind of what I'd want '%' to do in the first place.)
     """
     return n % m if m else n
 
 
 def sqrtInt(n):
+    """
+    :param n: a non-negative integer
+    :return: the largest integer smaller than the square root of n
+
+    Note that this depends on `math.sqrt`, and its double precision
+    accuracy means that this function should not be trusted for n on
+    the order of :math:`10^{52}` and up.
+    """
     sqrtn = int(sqrt(n))
     if (sqrtn+1)**2 <= n:
         sqrtn += 1
@@ -71,21 +86,29 @@ def sqrtInt(n):
 
 
 def cbrtInt(n):
+    """
+    :param n: a non-negative integer
+    :return: the largest integer smaller than the cube root of n
+
+    Note that this depends on `math.sqrt`, and its double precision
+    accuracy means that this function should not be trusted for n on
+    the order of :math:`10^{52}` and up.
+    """
     cbrtn = int(n**(1./3.))
     if (cbrtn+1)**2 <= n:
         cbrtn += 1
     return cbrtn
 
 
-def multiplicities(L):
+def multiplicities(xs):
     """
-    :param L: a list of elements
-    :return: the list of unique items in L and how often they appear in L
+    :param xs: a list of elements
+    :return: the list of unique items in xs and how often they appear in xs
     """
-    items = sorted(list(set(L)))
+    items = sorted(list(set(xs)))
     counts = []
     for item in items:
-        counts.append(len([LL for LL in L if LL == item]))
+        counts.append(len([xx for xx in xs if xx == item]))
     return items, counts
 
 
@@ -107,6 +130,10 @@ def symmetric_function(k, xs, zero=0, one=1):
 
 
 def isprime(p):
+    """
+    :param p: an integer
+    :return: a boolean saying whether p is a prime number
+    """
     if type(p) != int:
         raise TypeError('%s is %s, but should be int' % (p, type(p)))
 
@@ -116,8 +143,9 @@ def isprime(p):
     if p == 0 or p == 1:
         return False
 
+    sqrtp = sqrtInt(p)
     trdiv = 2
-    while trdiv * trdiv <= p:
+    while trdiv <= sqrtp:
         if p % trdiv == 0:
             return False
         trdiv += 1
@@ -125,12 +153,17 @@ def isprime(p):
 
 
 def issq(nn):
+    """
+    :param nn: an integer
+    :return: a boolean telling whether nn is a square
+    """
     return nn >= 0 and nn == int(sqrt(nn)) ** 2
 
 
 def factorize(n):
     """
-    Return a non-decreasing list of primes whose product is n.
+    :param n: a positive integer
+    :return: a non-decreasing list of primes whose product is n.
     """
     if n == 1:
         return []
@@ -144,9 +177,10 @@ def factorize(n):
 
 def factorize2(n):
     """
-    Yield a sequence of (prime, exponent) pairs where the
-    primes are distinct and in increasing order giving
-    the prime factorization of n.
+    :param n: a positive integer
+    :return: yields a sequence of (prime, exponent) pairs where the
+             primes are distinct and in increasing order giving
+             the prime factorization of n.
     """
     if n < _maxn:  # see below
         g = factorize2_bounded(n)
@@ -196,7 +230,8 @@ def factorize2_bounded(n):
 
 def squarefree(mm):
     """
-    Return True if mm is square free, False otherwise.
+    :param mm: a positive integer
+    :return: True if mm is square free, False otherwise.
     """
     factors = factorize(abs(mm))
     for i in range(len(factors) - 1):
@@ -207,7 +242,10 @@ def squarefree(mm):
 
 def order(a, p):
     """
-    Return the order of a in the multiplicative group (Z/pZ)^*.
+
+    :param a: an integer relatively prime to p
+    :param p: a positive integer
+    :return: the order of a in the multiplicative group :math:`(Z/pZ)^*`.
     """
     one = type(a)(1)
     cnt = 1
@@ -220,7 +258,8 @@ def order(a, p):
 
 def primitive_root(p):
     """
-    Return a generator of the (cyclic) multiplicative group (Z/pZ)^*
+    :param p: a prime number
+    :return: a generator of the (cyclic) multiplicative group :math:`(Z/pZ)^*`.
     """
     facts = list(factorize2(p-1))
     a = 2
@@ -237,7 +276,11 @@ def primitive_root(p):
 
 def modpow(a, k, p):
     """
-    Return a**k (mod p).
+    :param a: the base
+    :param k: the exponent (a positive integer)
+    :param p: the modulus
+    :return: :math:`a^k(p)`.
+
     a can be of any type that has a multiplicative
     identity and supports multiplication and modding.
     """
@@ -251,9 +294,10 @@ def modpow(a, k, p):
 
 def powerset(xs):
     """
-    Returns a generator iterating over all of
-    subsets of xs, starting with the smallest
-    and ending with the largest subsets
+    :param xs: a list of elements
+    :return: a generator iterating over all of subsets of
+             xs, starting with the smallest and ending with
+             the largest subsets
     """
     lengths = range(len(xs)+1)
     return itertools.chain(*[itertools.combinations(xs, nn) for nn in lengths])
@@ -261,7 +305,13 @@ def powerset(xs):
 
 def modpow2(a, k, p):
     """
-    Return a**k(mod p).
+    :param a: the base
+    :param k: the exponent (a positive integer)
+    :param p: the modulus
+    :return: :math:`a^k(p)`.
+
+    a can be of any type that has a multiplicative
+    identity and supports multiplication and modding.
     O(log(k))-time algorithm
     """
     retval = 1 % p
@@ -275,12 +325,8 @@ def modpow2(a, k, p):
 
 def legendre_ch(p):
     """
-    Return the mod p legendre character, a function 'ch' such that
-    ch(a) =
-    0  if p divides a
-    +1  if a is a quadratic residue
-    -1  if a is a quadratic non-residue
-    :param p: a prime
+    :param p: an odd prime
+    :return: the mod p Legendre character
     """
     if not isprime(p) or p == 2:
         raise ValueError("%d is not an odd prime." % (p, ))
@@ -296,7 +342,11 @@ def legendre_ch(p):
 
 def gcd(a, b):
     """
-    Return the greatest common divisor of a and b.
+    :param a: an integer
+    :param b: an integer
+    :return: the greatest common divisor of a and b.
+
+    Uses the Euclidean algorithm.
     """
     if a == 0 or b == 0:
         return abs(a + b)
@@ -307,7 +357,8 @@ def gcd(a, b):
 
 def sgn(a):
     """
-    Return the sign of a
+    :param a: an integer
+    :return: the sign of a (+1,-1, or 0)
     """
     if a > 0:
         return +1
@@ -319,7 +370,9 @@ def sgn(a):
 
 def euclidean_algorithm(a, b):
     """
-    Return x, y such that x*a + y*b = gcd(a, b).
+    :param a: an integer
+    :param b: an integer
+    :return: x, y such that :math:`xa + yb = gcd(a, b)`.
     """
 
     if b == 0:
@@ -344,11 +397,14 @@ def euclidean_algorithm(a, b):
 
 def crt(r1, m1, r2, m2):
     """
-    Chinese remainder theorem.  Return the smallest
-    positive simultaneous solution 'x' to the 
-    congruences
-    x = r1 (mod m1)
-    x = r2 (mod m2)
+    :param r1: the first residue
+    :param m1: the first modulus
+    :param r2: the second residue
+    :param m2: the second modulus
+    :return: the smallest positive simultaneous solution 'x' to the congruences
+             x = r1 (mod m1)
+             x = r2 (mod m2)
+
     Raises a ValueError if no solution exists.
     Note that we do *not* require m1 and m2 to be
     relatively prime.
@@ -366,7 +422,12 @@ def crt(r1, m1, r2, m2):
 
 def ea3(a, b, c):
     """
-    Return x, y, z such that x*a + y*b + z*c = gcd(a, b, c).
+    :param a: an integer
+    :param b: an integer
+    :param c: an integer
+    :return: x, y, z such that :math:`xa + yb + zc = gcd(a, b, c)`.
+
+    Uses the Euclidean algorithm twice.
     """
     x, y = euclidean_algorithm(a, b)
     # now x*a+y*b=gcd(a, b)

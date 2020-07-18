@@ -445,13 +445,12 @@ def name_to_latex(name):
 
 def plot_regions(tile_names, center, shift_name, transform_names):
     """
-    Plot a fundamental domain and neighbors for a subgroup G of SL(2, Z).
-    :param tile_names: coset representatives for G in SL(2, Z)
+    :param tile_names: coset representatives for :math:`G\leqslant SL(2,\mathbb{Z})`
     :param center: complex number for the center of the fundamental region.
-    :param shift_name: the name of an element g of G, g(D) will be
-    the center of the plot
-    :param transform_names: the name of elements of G for neighboring
-    cells to plot
+    :param shift_name: the name of an element g of G, g(D) will be the center of the plot
+    :param transform_names: the name of elements of G for neighboring cells to plot
+
+    Plot a fundamental domain and neighbors for :math:`G\leqslant SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, 0.0+0.0j)
@@ -502,7 +501,7 @@ def plot_regions(tile_names, center, shift_name, transform_names):
 
 def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='halfplane'):
     """
-    Plot a fundamental domain and neighbors for a subgroup G of SL(2, Z).
+    Plot a fundamental domain and neighbors for :math:`G\leqslant of SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, infj)
@@ -571,7 +570,7 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
 
 def plot_gamma_2():
     """
-    Plot the fundamental region for Gamma(2), the principal
+    Plot the fundamental region for :math:`\Gamma(2)`, the principal
     congruence subgroup of level 2, and neighboring regions
     """
     plot_regions(['I', 'T', 'S', 'TS', 'TSTS', 'TST'],
@@ -588,11 +587,12 @@ def plot_gamma_3():
 
 def plot_gammak(k, model='halfplane'):
     """
-    Plot the fundamental domain of Gamma(k).
+    :param k: a positive integer
+    :param model: 'halfplane' or 'disk'
 
-    model - 'halfplane' or 'disk'
-            'halfplane' - plot it in the upper halfplane model.
-            'disk'      - plot it in the poincare disk.
+    Plot the fundamental domain of :math:`\Gamma(k)`.
+    'halfplane' - plot it in the upper halfplane model.
+    'disk' - plot it in the poincare disk.
     """
     reps, shifts = coset_reps_alt(k, True)
     plot_mat(reps, [np.array([[1, 0], [0, 1]], dtype=int)]+shifts, model=model)
@@ -600,7 +600,7 @@ def plot_gammak(k, model='halfplane'):
 
 def psl2q_order(qq):
     """
-    Return the order of PSL(2, Z/qZ).
+    Return the order of :math:`PSL(2,Z/qZ)`.
     """
     ps = list(set(factorize(qq)))
     if qq == 2:
@@ -674,10 +674,10 @@ def plot_arc(a1, a2):
 
 def plot_complex(zs, **kwargs):
     """
-    Plot complex numbers in the complex plane.
+    :param zs: a numpy array of complex numbers
+    :param kwargs: keyword arguments to pass on to plt.plot
 
-    zs     - the np.array of complex numbers to be plotted
-    kwargs - passed along to plt.plot
+    Plot complex numbers in the complex plane.
     """
     xs = zs.real
     ys = zs.imag

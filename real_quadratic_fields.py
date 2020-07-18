@@ -23,16 +23,14 @@ from quadratic_extensions import (
 
 def cont_frac(m):
     """
-    For a positive floating point number 'm',
-    return a generator for the sequence of
-    integers a0, a1, a2, ... that give the continued fraction
-    representation of m:
-    :math: m = a_0 + \cfrac{1}{a_1 + \cfrac{1}{a_2 + \cfrac{1}{a_3 + \cdots}}}
-    You probably shouldn't use this
-    if you really care about all of the terms
-    since rounding eventually corrupts the
-    process.  For numbers in quadratic number fields,
-    use ‘cont_frac_quad’ instead.
+    :param m: a positive floating point number 'm',
+    :return: a generator for the sequence of integers :math:`a_0,a_1,a_2,\dots`
+             that give the continued fraction representation of m:
+
+    :math:`m = a_0 + \cfrac{1}{a_1 + \cfrac{1}{a_2 + \cfrac{1}{a_3 + \cdots}}}`
+    You probably shouldn't use this if you really care about all of the terms
+    since rounding eventually corrupts the process.  For numbers in quadratic
+    number fields use ‘cont_frac_quad’ instead.
     """
     while True:
         f = int(floor(m))
@@ -86,7 +84,8 @@ def cont_frac_quad(a, b, c, d):
 
 def approximants(d):
     """
-    Yield the approximants for sqrt(d)
+    :param d: a positive non-square integer
+    :return: Yields the approximants for :math:`\sqrt{d}`
     """
     h0, k0 = 0, 1
     h1, k1 = 1, 0
@@ -105,9 +104,10 @@ def approximants(d):
 
 def approximants2(d):
     """
-    Yield the approximants for sqrt(d)
+    :param d: a positive non-square integer
+    :return: Yields the approximants for :math:`\sqrt{d}`
 
-    here you just get (h, k) pairs, not the QuadInts
+    Here you just get (h, k) pairs, not the QuadInts
     that approximants returns.
     """
     h0, k0 = 0, 1
@@ -122,11 +122,10 @@ def approximants2(d):
         h1, k1 = h,  k
 
 
-def pell(d, bound=0):
+def pell(d):
     """
-    For a positive integer d that is not a square (you're
-    on your honor here) return positive integers
-    h, k such that h**2 - d*k**2 == 1.
+    :param d: a positive non-square integer
+    :return: positive integers h, k such that :math:`h^2 - dk^2 = 1`.
 
     Uses Lagrange's method of continued fractions.
     """
@@ -190,6 +189,11 @@ def fundamental_unit_old(d):
 
 
 def fundamental_unit(d):
+    """
+    :param d: a non-square positive integer
+    :return: return a fundamental unit (a QuadInt) for the ring of integers
+             in :math:`\mathbb{Q}(\sqrt{d})`.
+    """
     if d <= 1:
         raise ValueError('%d is not >= 2' % (d, ))
 
@@ -209,6 +213,11 @@ def fundamental_unit(d):
 
 
 def class_group_info(d):
+    """
+    :param d: a non-square integer
+    :return: prints information relevant to the class group of the ring
+             of integers in :math:`\mathbb{Q}(\sqrt{d})`
+    """
     mb = minkowski_bound(d)
     disc = discriminant(d)
     print('Discriminant = %d' % disc)
