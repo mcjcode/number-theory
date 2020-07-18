@@ -708,6 +708,7 @@ class CosetRepsUnitTest(unittest.TestCase):
 
 class HalfplaneToDiskUnitTest(unittest.TestCase):
     def runTest(self):
+        np.random.seed(17)
         for i in range(100):
             z1 = random_complex_gaussian()
             z1 = z1.real + 1.0j*abs(z1.imag)
