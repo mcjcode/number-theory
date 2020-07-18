@@ -22,7 +22,7 @@ from quadratic_extensions import (
 
 
 def cont_frac(m):
-    """
+    r"""
     :param m: a positive floating point number 'm',
     :return: a generator for the sequence of integers :math:`a_0,a_1,a_2,\dots`
              that give the continued fraction representation of m:
@@ -46,7 +46,7 @@ _multflt = 2.0**_prec
 
 
 def divint(num, denom, prec=15):
-    """
+    r"""
     Return a floating point number representing num/denom
     accurate to prec decimal digits of accuracy.
 
@@ -67,7 +67,7 @@ def floor_rem(x):
 
 
 def cont_frac_quad(a, b, c, d):
-    """
+    r"""
     Yield the continued fraction for (a+b*sqrt(d))/c
     """
     sqd = mpmath.sqrt(d)
@@ -83,7 +83,7 @@ def cont_frac_quad(a, b, c, d):
 
 
 def approximants(d):
-    """
+    r"""
     :param d: a positive non-square integer
     :return: Yields the approximants for :math:`\sqrt{d}`
     """
@@ -103,7 +103,7 @@ def approximants(d):
 
 
 def approximants2(d):
-    """
+    r"""
     :param d: a positive non-square integer
     :return: Yields the approximants for :math:`\sqrt{d}`
 
@@ -123,7 +123,7 @@ def approximants2(d):
 
 
 def pell(d):
-    """
+    r"""
     :param d: a positive non-square integer
     :return: positive integers h, k such that :math:`h^2 - dk^2 = 1`.
 
@@ -189,7 +189,7 @@ def fundamental_unit_old(d):
 
 
 def fundamental_unit(d):
-    """
+    r"""
     :param d: a non-square positive integer
     :return: return a fundamental unit (a QuadInt) for the ring of integers
              in :math:`\mathbb{Q}(\sqrt{d})`.
@@ -213,7 +213,7 @@ def fundamental_unit(d):
 
 
 def class_group_info(d):
-    """
+    r"""
     :param d: a non-square integer
     :return: prints information relevant to the class group of the ring
              of integers in :math:`\mathbb{Q}(\sqrt{d})`

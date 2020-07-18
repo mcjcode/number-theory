@@ -21,7 +21,7 @@ from real_quadratic_fields import (
 
 
 def gs_numerical(ch, m, k):
-    """
+    r"""
     :param ch: a mod m character
     :param m: the modulus
     :return: the Gauss sum :math:`\displaystyle\sum_a(ch(a)\omega^{ak})`
@@ -34,7 +34,7 @@ def gs_numerical(ch, m, k):
 
 
 def L_one_chi(ch, m):
-    """
+    r"""
     Compute the value of the Dirichlet L-series L(s, ch) at s=1.
     """
     zz = np.exp(2.0j*np.pi/m)
@@ -42,7 +42,7 @@ def L_one_chi(ch, m):
 
 
 def all_modm_chars(m):
-    """
+    r"""
     Returns a list of all mod m characters,
     starting with the trivial character.  Only
     works with prime m for now.
@@ -77,7 +77,7 @@ def all_modm_chars(m):
 
 
 def kappa(m):
-    """
+    r"""
     :param m: a square-free integer
     :return: kappa = lim_{t->infty} #{J | ||J|| < t}/t for Q[√m].
 
@@ -108,7 +108,7 @@ def kappa(m):
 
 
 def ideal_class_number(dd):
-    """
+    r"""
     Return the ideal class number of Q[√d], for squarefree integer dd.
     """
     if not squarefree(dd):

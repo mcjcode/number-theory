@@ -16,7 +16,7 @@ from utilities import (
 
 
 def phi(nn):
-    """
+    r"""
     :param nn: a positive integer
     :return: the number of natural numbers 1 <= kk < nn
              that are relatively prime to nn.
@@ -26,7 +26,7 @@ def phi(nn):
 
 
 def divisor_function(kk, nn):
-    """
+    r"""
     :param kk: the exponent
     :param nn: a positive integer
     :return: :math:`\sum_{d|n} d^k`
@@ -41,7 +41,7 @@ def sumrange(a, b):
 
 
 def sum_sigma0(n):
-    """
+    r"""
     :param n: a positive integer
     :return: :math:`\displaystyle\sum_{k\in[1\dots n]} d(k)`
     """
@@ -52,7 +52,7 @@ def sum_sigma0(n):
 
 
 def sum_sigma1(n):
-    """
+    r"""
     :param n: a positive integer
     :return: :math:`\displaystyle\sum_{k\in[1\dots n]} \sigma(k)`
     """
@@ -72,7 +72,7 @@ for i in range(_maxp):
 
 
 def partial_totient(n, k):
-    """
+    r"""
     :param n: a positive integer 
     :param k: a positive integer
     :return: the number of integers in [1..n]
@@ -107,7 +107,7 @@ def partial_totient(n, k):
 
 
 def _partial_totient_alternate(n, k):
-    """
+    r"""
     :param n: a positive integer
     :return: the number of integers in [1..n]
              that are relatively prime to k
@@ -127,7 +127,7 @@ def _partial_totient_alternate(n, k):
 
 
 def coprime(lb, ub, pfacts, i=0, prd=1):
-    """
+    r"""
     :param lb: a positive integer
     :param ub: a positive integer greater than lb
     :param pfacts: a list of prime numbers

@@ -11,7 +11,7 @@ from utilities import timeit
 
 @timeit
 def npartitions(n):
-    """
+    r"""
     :param n: the upper bound
     :return: number of unrestricted partitions of k, for k in [0..n]
 
@@ -51,7 +51,7 @@ def npartitions(n):
 
 @timeit
 def npartitions_distinct(n):
-    """
+    r"""
     :param n: the upper bound
     :return: number of partitions of k into distinct parts, for k in [0..n]
 
@@ -139,7 +139,8 @@ def npartitions_distinct_mod(n, modulus):
         k = 0
         accum = 0
         for tr in squares:
-            if tr > n1: break
+            if tr > n1:
+                break
             term = (-1) ** (tr % 2) * arr[n1 - tr]
             accum = (accum - 2 * (-1) ** (tr % 2) * arr[n1 - tr]) % modulus
         if n1_is_pent:
@@ -210,7 +211,8 @@ def npartitions_distinct_odd_mod(n, modulus):
         k = 0
         accum = 0
         for tr in triangles:
-            if tr > n1: break
+            if tr > n1:
+                break
             accum -= (-1) ** (tr % 2) * arr[n1 - tr]
 
         if n1_is_2pent:
