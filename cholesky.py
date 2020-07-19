@@ -1,8 +1,6 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-import unittest
-
 import numpy as np
 from fractions import Fraction
 
@@ -25,14 +23,3 @@ def cholesky(mm):
             mat[:, j] = mat[:, j] - mat[:, i] * r2
             a[:, j] = a[:, j] - a[:, i] * r1
     return mat, a
-
-
-class CholeskyTest(unittest.TestCase):
-    def runTest(self):
-        aa = list(map(lambda xs: list(map(Fraction, xs)), [[5, 3, 3],
-                                                           [3, 3, 3],
-                                                           [3, 3, 8]]))
-        m = np.array(aa)
-        d, a = cholesky(m)
-        atma = a.transpose().dot(m).dot(a)
-        self.assertEqual(sum((atma-d).ravel()), Fraction(0, 1))

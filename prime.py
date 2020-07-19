@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import unittest
 import numpy as np
 from utilities import isprime, factorize2, sqrtInt
 from itertools import chain
@@ -163,14 +163,3 @@ def smpfsum(n):
         smpf = next(factorize2(k))[0]
         retval += smpf
     return retval
-
-
-sum2mill = 142913828922
-
-
-class PrimeSumTest(unittest.TestCase):
-    def test_primesum_naive(self):
-        self.assertEqual(primesum_naive(2*10**6), sum2mill)
-
-    def test_primesum_naive2(self):
-        self.assertEqual(primesum_naive2(2*10**6), sum2mill)

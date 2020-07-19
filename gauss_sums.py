@@ -1,8 +1,6 @@
 #!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
-import unittest
-
 import numpy as np
 
 from utilities import (
@@ -24,6 +22,7 @@ def gs_numerical(ch, m, k):
     r"""
     :param ch: a mod m character
     :param m: the modulus
+    :param k: an integer
     :return: the Gauss sum :math:`\displaystyle\sum_a(ch(a)\omega^{ak})`
 
     :math:`\omega = e^{2\pi/m}`
@@ -133,19 +132,3 @@ def ideal_class_number(dd):
     assert(abs(round(rho/k) - rho/k) < 0.001)
 
     return int(round(rho/k))
-
-
-class GaussSumTest(unittest.TestCase):
-    def test_1(self):
-        class_number = ideal_class_number(1)
-        self.assertEqual(class_number, 1, 'Class number of Q should be 1.  Was %d.' % class_number)
-
-    def test_2(self):
-        class_number = ideal_class_number(-1)
-        self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)
-
-    @staticmethod
-    def test_ideal_class_number():
-        for d in range(1, 500):
-            if squarefree(d):
-                _ = ideal_class_number(d)
