@@ -12,5 +12,5 @@ install:
 dist: bionic
 
 script:
-  - pytest *.py
+  - python -m pytest
   - pycodestyle

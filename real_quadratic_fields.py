@@ -3,7 +3,6 @@
 
 from math import sqrt, floor
 import mpmath
-import unittest
 
 from utilities import (
     isprime,
@@ -258,11 +257,3 @@ def class_group_info(d):
                 p = split_primes[ii] * split_primes[jj] * split_primes[kk]
                 md = norm_search(p, d)
                 print(p, md)
-
-
-class PellTest(unittest.TestCase):
-
-    def test_pell(self):
-        for d in range(2, 10000):
-            a, b = pell(d**4+1)
-            self.assertEqual(a*a-(d**4+1)*b*b, 1, 'pell equn not satisfied for d=%d' % (d**4+1, ))

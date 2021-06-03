@@ -3,8 +3,6 @@
 
 from __future__ import print_function
 
-import unittest
-
 from utilities import isprime
 from finite_field import (
     FiniteField,
@@ -68,14 +66,3 @@ def run():
             js = ff.jacobi_sum(4)
             a, b = normalize(js[0], js[1])
             print('%4d %5d+2 = p-1%+3d, J=%+2.0f%+2.0fi' % (p, np, (np+2-p+1), a, b))
-
-
-class GaussLastEntryTest(unittest.TestCase):
-    def runTest(self):
-        for p in [5, 13, 17, 29]:
-            ff = FiniteField(p, 1)
-            q = gauss_polynomial(ff)
-            np = count_curve_points_affine(q, ff)
-            js = ff.jacobi_sum(4)
-            a, _ = normalize(js[0], js[1])
-            self.assertEqual(np+2, p-1-2*a)

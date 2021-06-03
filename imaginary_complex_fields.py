@@ -3,8 +3,6 @@
 
 from __future__ import print_function
 
-import unittest
-
 from math import sqrt
 from fractions import Fraction
 import numpy as np
@@ -238,18 +236,3 @@ def sum_sq_rep(p):
                 a = rational_from_cf(cf[:ln//2]).numerator
                 b = rational_from_cf(cf[:ln//2-1]).numerator
                 return a, b
-
-
-class QuadraticFormTests(unittest.TestCase):
-    def test_one(self):
-        for disc in range(-4, -50, -4):
-            for form in all_reduced_forms(disc):
-                self.assertEqual(proper_reduced_form(*form), form)
-
-
-class SumOfSquaresAlgoTest(unittest.TestCase):
-    def test_one(self):
-        ps = [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97, 101, 109, 113, 137, 149]
-        for p in ps:
-            a, b = sum_sq_rep(p)
-            self.assertEqual(p, a*a+b*b)

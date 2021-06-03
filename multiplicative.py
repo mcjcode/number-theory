@@ -5,8 +5,6 @@ Various multiplicative arithmetic functions
 and their summations.
 """
 
-import unittest
-
 from utilities import (
     prod,
     factorize2,
@@ -136,40 +134,3 @@ def coprime(lb, ub, pfacts, i=0, prd=1):
     if i == len(pfacts):
         return ub//prd - lb//prd
     return coprime(lb, ub, pfacts, i+1, prd) - coprime(lb, ub, pfacts, i+1, prd*pfacts[i])
-
-
-class PhiTest(unittest.TestCase):
-
-    def test_phi(self):
-        for nn in range(1, 100):
-            nresid = sum(1 for kk in range(1, nn+1) if gcd(nn, kk) == 1)
-            self.assertEqual(nresid, phi(nn))
-
-    def partial_totient_test(self):
-        partial_sum = 0
-        for nn in range(1, 101):
-            partial_sum += phi(nn)
-            self.assertEqual(partial_sum, partial_totient(nn))
-            self.assertEqual(partial_sum._partial_totient_alternate(nn))
-
-    def test_coprime(self):
-        pfacts = [2, 3, 5, 7]
-        xx = 2*3*5*7
-        for lb in range(1, 151):
-            for ub in range(lb+1, 151):
-                pt = partial_totient(ub, xx)-partial_totient(lb, xx)
-                msg = '(%d, %d]' % (lb, ub)
-                self.assertEqual(coprime(lb, ub, pfacts), pt, msg)
-
-
-class SumSigmaTest(unittest.TestCase):
-
-    def test_sum_sigma1(self):
-        for nn in range(1, 100):
-            ss1 = sum([divisor_function(1, kk) for kk in range(1, nn+1)])
-            self.assertEqual(ss1, sum_sigma1(nn))
-
-    def test_sum_sigma0(self):
-        for nn in range(1, 100):
-            ss0 = sum([divisor_function(0, kk) for kk in range(1, nn+1)])
-            self.assertEqual(ss0, sum_sigma0(nn))
