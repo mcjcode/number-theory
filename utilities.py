@@ -394,13 +394,13 @@ def euclidean_algorithm(a, b):
     return y, (x-y*q)
 
 
-def modinv(p,a):
+def modinv(p, a):
     """
     :param p: a prime
     :param a: an integer, with (p,a)==1
     :return: the multiplicative inverse of a(mod p)
     """
-    x, y = euclidean_algorithm(p,a)
+    x, y = euclidean_algorithm(p, a)
     #
     # now we have xp+ya=1
     #
