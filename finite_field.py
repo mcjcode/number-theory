@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import numpy as np
 import itertools
-from utilities import factorize
+from utilities import factorize, factorize2
 from numpy import poly1d
 
 
@@ -136,16 +136,41 @@ class FiniteField(object):
 
         return self.p == other.p and self.n == other.n and self.rpoly == other.rpoly
 
-    def order(self, a):
+    def order2(self, a):
+        """
+        :param a: an element of the finite field
+        :return: the multiplicative order of the element in the field
+
+        A brute force reference implementation.
+        """
         cnt = 1
         b = a
-        while not b == self.one():
-            if b == -self.one():
+        one = self.one()
+        minus_one = -one
+        while not b == one:
+            if b == minus_one:
                 return 2*cnt
             b = b * a
             cnt += 1
         return cnt
 
+    def order(self, a):
+        """
+        :param a: an element of the finite field
+        :return: the multiplicative order of the element in the finite field
+
+        Seems about 2x as fast as a brute force attempt.
+        """
+        e = self.p**self.n-1
+        one = self.one()
+        for (q, f) in factorize2(e):
+            e //= q**f
+            a1 = a**e
+            while a1 != one:
+                a1 = a1**q
+                e *= q
+        return e
+    
     def primitive_element(self):
         for elt in self:
             if elt == self.zero():
