@@ -10,7 +10,6 @@ import itertools
 
 from math import sqrt
 
-
 def prod(xs, start=1):
     """
     :param xs: a sequence of elements to multiply
@@ -394,13 +393,30 @@ def euclidean_algorithm(a, b):
     return y, (x-y*q)
 
 
+def euclidean_algorithm2(a, b):
+    """
+    :param a: an integer
+    :param b: an integer
+    :return: x, y such that :math:`xa + yb = gcd(a, b)`.
+    """
+    
+    x0, y0 = 1, 0 # x0*a + y0*b = a
+    x1, y1 = 0, 1 # x1*a + y1*b = b
+    q, r = divmod(a, b) # now r = a - q*b
+    while r:
+        a, b = b, r
+        (x0, y0), (x1, y1) = (x1, y1), (x0 - q*x1, y0 - q*y1)
+        q, r = divmod(a, b)
+        
+    return x1, y1
+        
 def modinv(p, a):
     """
     :param p: a prime
     :param a: an integer, with (p,a)==1
     :return: the multiplicative inverse of a(mod p)
     """
-    x, y = euclidean_algorithm(p, a)
+    x, y = euclidean_algorithm2(p, a)
     #
     # now we have xp+ya=1
     #
@@ -445,3 +461,16 @@ def ea3(a, b, c):
     # now x*a+y*b=gcd(a, b)
     s, t = euclidean_algorithm(gcd(a, b), c)
     return s*x, s*y, t
+
+
+def digitsum(n,base=10):
+    """
+    :param n: a non-negative integer
+    :return: the sum of all the digits of n in the given base
+    """
+    retval = 0
+    while n:
+        k = n % base
+        retval += k
+        n = (n-k)//base
+    return retval
