@@ -19,6 +19,11 @@ def segmented_sieve(n, trace=False):
     complexity of O(n) (or a bit better)
     with space complexity of O(sqrt(n)).
     """
+    if n<=2:
+        if n==2:
+            yield 2
+        return
+
     seglen = sqrtInt(n+1)
 
     # always make seglen a multiple of 6
