@@ -474,3 +474,14 @@ def digitsum(n,base=10):
         retval += k
         n = (n-k)//base
     return retval
+
+
+def sign(x):
+    """
+    Return the sign of a number
+    """
+    if x < 0:
+        return -1
+    if x > 0:
+        return +1
+    return 0
