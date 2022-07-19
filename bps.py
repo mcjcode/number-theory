@@ -237,3 +237,50 @@ def bps_facts_w_rep_powerful(n, ps):
             last_val[3] //= p
         else:
             val.append([p, pi, 2, last_n//(p*p)])
+
+def bps_w_sign(xs,n):
+    """
+    For an increasing sequence xs of relatively
+    prime numbers and an upper bound n, compute
+    all of the products <=n of subsets of xs, along
+    with a parity: +1 if an even number of elements
+    are used, -1 if an odd number are used.
+    """
+    if len(xs)==0:
+        yield (1,1)
+        return
+    
+    x, *xs = xs
+    for y in bps_w_sign(xs,n):
+        yield y
+    if x <= n:
+        for (s, pr) in bps_w_sign(xs,n//x):
+            yield -s, x*pr
+
+
+def bps_w_sign_stack(xs, n):
+    """
+    For an increasing sequence xs of relatively
+    prime numbers and an upper bound n>=1, compute
+    all of the products <=n of subsets of xs, along
+    with a parity: +1 if an even number of elements
+    are used, -1 if an odd number are used.
+    
+    This function proceeds depth first in the tree and
+    is non-recursive (it does not call it self and is not
+    limited by python's recursion depth bound)
+    
+    Also, have found this 20x faster than bps_w_sign
+    """
+
+    s = [(+1, 1, 0)]
+    lenxs = len(xs)
+    while s:
+        sgn, prd, idx = s.pop()
+        if idx < lenxs:
+            x = xs[idx]
+            if x*prd <= n:                
+                s.append(( sgn, prd,   idx+1))
+                s.append((-sgn, prd*x, idx+1))
+                continue
+        yield sgn, prd
