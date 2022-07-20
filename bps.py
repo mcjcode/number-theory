@@ -8,6 +8,30 @@ given sequence of primes below a fixed bound.
 from utilities import sqrtInt, prod
 
 
+def bps(xs, n):
+    """
+    For an increasing sequence xs of relatively
+    prime numbers and an upper bound n>=1, compute
+    all of the products <=n of subsets of xs.
+    
+    This function proceeds depth first in the tree and
+    is non-recursive (it does not call it self and is not
+    limited by python's recursion depth bound)
+    """
+
+    s = [(1, 0)]
+    lenxs = len(xs)
+    while s:
+        prd, idx = s.pop()
+        if idx < lenxs:
+            x = xs[idx]
+            if x*prd <= n:                
+                s.append((prd,   idx+1))
+                s.append((prd*x, idx+1))
+                continue
+        yield prd
+
+
 def bps_w_rep(n, ps, i=0, only_powerful=False):
     """
     Return all numbers in [1..n] whose prime
