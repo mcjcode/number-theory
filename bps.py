@@ -143,6 +143,9 @@ def bps_facts_w_rep(n, ps):
     if n < 1:
         return
     yield []
+    if n==1 or num_primes==0:
+        return
+    
     val = [[ps[-1], num_primes-1, 1, n//ps[-1]]]
     while True:
         yield [(v[0], v[2]) for v in val]
