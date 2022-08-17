@@ -150,6 +150,47 @@ def isprime(p):
     return True
 
 
+def is_miller_rabin_witness(p, a):
+    """
+    :param p: an odd number >= 3 whose primality we are testing
+    :param a: the potential 'witness' a
+    """
+    s = 0
+    d = p-1
+    while d%2==0:
+        s += 1
+        d //= 2
+    # now p-1 = 2**s * d with d odd.
+    assert p == 2**s * d + 1
+    assert d%2 == 1
+
+    ad = modpow2(a, d, p)    ##p, d, a)
+    if ad==1 or ad==p-1:
+        return False
+    for _ in range(s-1):
+        ad *= ad
+        ad %= p
+        if ad==p-1:
+            return False
+    return True
+
+
+def isprime_miller_rabin(p):
+    if p<=1:
+        return False
+    if p==2:
+        return True
+    if p%2==0:
+        return False
+    # p is now an odd number >= 3.
+    for a in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]:
+        if a >= p:
+            break
+        if is_miller_rabin_witness(p, a):
+            return False
+    return True
+
+
 def issq(nn):
     """
     :param nn: an integer

@@ -10,6 +10,7 @@ import unittest
 from utilities import (
     powerset,
     isprime,
+    isprime_miller_rabin,
     squarefree,
     gcd,
     euclidean_algorithm,
@@ -34,6 +35,10 @@ class UtilitiesTest(unittest.TestCase):
         self.assertEqual(True, isprime(-7), '(some) negative numbers are prime')
         self.assertRaises(TypeError, isprime, 7.0)
 
+    def test_miller_rabin(self):
+        for n in range(1000):
+            self.assertEqual(isprime_miller_rabin(n), isprime(n))
+            
     def test_squarefree(self):
         self.assertEqual(True, squarefree(1), '1 is square free')
         self.assertEqual(True, squarefree(-1), '-1 is square free')
