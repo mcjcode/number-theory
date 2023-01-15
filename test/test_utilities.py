@@ -14,6 +14,8 @@ from utilities import (
     squarefree,
     gcd,
     euclidean_algorithm,
+    euclidean_algorithm2,
+    modinv,
 )
 
 
@@ -55,7 +57,14 @@ class UtilitiesTest(unittest.TestCase):
         self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
 
     def test_euclidean_algorithm2(self):
-        for a in range(-100, +100):
-            for b in range(-100, +100):
-                x, y = euclidean_algorithm(a, b)
+        for a in range(1, 100):
+            for b in range(1, 100):
+                x, y = euclidean_algorithm2(a, b)
                 self.assertEqual(gcd(a, b), x*a + y*b, 'gcd != x*a+y*b')
+
+    def test_modinv(self):
+        for m in range(2, 100):
+            for a in range(1,m):
+                if gcd(m, a)==1:
+                    b = modinv(m, a)
+                    self.assertEqual((a*b)%m, 1, f'{a}*{b}%{m} != 1')

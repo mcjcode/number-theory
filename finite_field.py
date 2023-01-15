@@ -189,7 +189,7 @@ class FiniteField(object):
         for ii in range(z.order+1):
             z[ii] %= self.p
         z = self.polynomial_remainder_modp(z, self.rpoly)
-        return np.array(list(reversed(z.c))+[0]*(self.n-len(z.c)))
+        return np.array(list(map(int,list(reversed(z.c))+[0]*(self.n-len(z.c)))))
 
     def zero(self):
         return FiniteFieldElement(np.array([0]*self.n, dtype=int), self)

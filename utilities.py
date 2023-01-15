@@ -434,7 +434,7 @@ def euclidean_algorithm(a, b):
     return y, (x-y*q)
 
 
-def euclidean_algorithm2(a, b):
+def euclidean_algorithm2(a:int, b:int) -> (int, int):
     """
     :param a: an integer
     :param b: an integer
@@ -451,17 +451,20 @@ def euclidean_algorithm2(a, b):
         
     return x1, y1
         
-def modinv(p, a):
+def modinv(m:int, a:int) -> int:
     """
-    :param p: a prime
-    :param a: an integer, with (p,a)==1
-    :return: the multiplicative inverse of a(mod p)
+    :param m: a positive integer
+    :param a: an integer, with (m,a)==1
+    :return: the multiplicative inverse of a(mod m)
     """
-    x, y = euclidean_algorithm2(p, a)
+    x, y = euclidean_algorithm2(m, a)
+
+    if x*m + y*a != 1:
+        raise ValueError(f'{a} is not relatively prime to {m}')
     #
     # now we have xp+ya=1
     #
-    return y % p
+    return y % m
 
 
 def crt(r1, m1, r2, m2):
