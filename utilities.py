@@ -434,7 +434,7 @@ def euclidean_algorithm(a, b):
     return y, (x-y*q)
 
 
-def euclidean_algorithm2(a:int, b:int) -> (int, int):
+def bezout(a:int, b:int) -> (int, int):
     """
     :param a: an integer
     :param b: an integer
@@ -457,7 +457,7 @@ def modinv(m:int, a:int) -> int:
     :param a: an integer, with (m,a)==1
     :return: the multiplicative inverse of a(mod m)
     """
-    x, y = euclidean_algorithm2(m, a)
+    x, y = bezout(m, a)
 
     if x*m + y*a != 1:
         raise ValueError(f'{a} is not relatively prime to {m}')

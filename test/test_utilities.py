@@ -14,7 +14,7 @@ from utilities import (
     squarefree,
     gcd,
     euclidean_algorithm,
-    euclidean_algorithm2,
+    bezout,
     modinv,
 )
 
@@ -59,7 +59,7 @@ class UtilitiesTest(unittest.TestCase):
     def test_euclidean_algorithm2(self):
         for a in range(1, 100):
             for b in range(1, 100):
-                x, y = euclidean_algorithm2(a, b)
+                x, y = bezout(a, b)
                 self.assertEqual(gcd(a, b), x*a + y*b, 'gcd != x*a+y*b')
 
     def test_modinv(self):
