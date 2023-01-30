@@ -13,7 +13,6 @@ from utilities import (
     isprime_miller_rabin,
     squarefree,
     gcd,
-    euclidean_algorithm,
     bezout,
     modinv,
 )
@@ -50,17 +49,12 @@ class UtilitiesTest(unittest.TestCase):
     def test_gcd(self):
         self.assertEqual(gcd(2*3*5, 3*5*7), 3*5)
 
-    def test_euclidean_algorithm(self):
-        a = 89
-        b = 55
-        x, y = euclidean_algorithm(a, b)
-        self.assertEqual(abs(gcd(a, b)), abs(x*a + y*b))
-
-    def test_euclidean_algorithm2(self):
-        for a in range(1, 100):
-            for b in range(1, 100):
+    def test_bezout(self):
+        for a in range(-100, 100):
+            for b in range(-100, 100):
                 x, y = bezout(a, b)
-                self.assertEqual(gcd(a, b), x*a + y*b, 'gcd != x*a+y*b')
+                g = gcd(a, b)
+                self.assertEqual(g, x*a + y*b, f'gcd ({g}) != x*a+y*b ({x}*{a}+{y}*{b})')
 
     def test_modinv(self):
         for m in range(2, 100):

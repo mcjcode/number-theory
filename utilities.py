@@ -407,49 +407,32 @@ def sgn(a):
         return 0
 
 
-def euclidean_algorithm(a, b):
-    """
-    :param a: an integer
-    :param b: an integer
-    :return: x, y such that :math:`xa + yb = gcd(a, b)`.
-    """
-
-    if b == 0:
-        return sgn(a), 0
-
-    q, r = divmod(a, b)  # a = q * b + r
-
-    if r == 0:
-        return 0, sgn(b)
-
-    # d = gcd(a, b) = gcd(b, r)
-    #
-    # Suppose xb+yr = d
-    #
-    #  xb + y(a-qb) = d
-    #
-    #  ya + (x-yq)b = d
-
-    x, y = euclidean_algorithm(b, r)
-    return y, (x-y*q)
-
-
 def bezout(a:int, b:int) -> (int, int):
     """
     :param a: an integer
     :param b: an integer
     :return: x, y such that :math:`xa + yb = gcd(a, b)`.
     """
+
+    sa = sgn(a)
+    sb = sgn(b)
+    
+    a = abs(a)
+    b = abs(b)
+    
+    if b == 0:
+        return sa, 0
     
     x0, y0 = 1, 0 # x0*a + y0*b = a
     x1, y1 = 0, 1 # x1*a + y1*b = b
     q, r = divmod(a, b) # now r = a - q*b
+
     while r:
         a, b = b, r
         (x0, y0), (x1, y1) = (x1, y1), (x0 - q*x1, y0 - q*y1)
         q, r = divmod(a, b)
         
-    return x1, y1
+    return x1*sa, y1*sb
         
 def modinv(m:int, a:int) -> int:
     """
@@ -481,14 +464,13 @@ def crt(r1, m1, r2, m2):
     Note that we do *not* require m1 and m2 to be
     relatively prime.
     """
-    c1, c2 = euclidean_algorithm(m1, m2)
+    c1, c2 = bezout(m1, m2)
     g = c1*m1+c2*m2
     q, r = divmod(r1-r2, g)
     if r != 0:  # no solution
         raise ValueError()
     else:
         x = r1 - q*(c1*m1)
-        # = r2 + q*(c2*m2)
         return x % (m1*m2//g)
 
 
@@ -501,9 +483,9 @@ def ea3(a, b, c):
 
     Uses the Euclidean algorithm twice.
     """
-    x, y = euclidean_algorithm(a, b)
-    # now x*a+y*b=gcd(a, b)
-    s, t = euclidean_algorithm(gcd(a, b), c)
+    x, y = bezout(a, b)
+    assert x*a + y*b == gcd(a, b)
+    s, t = bezout(gcd(a, b), c)
     return s*x, s*y, t
 
 

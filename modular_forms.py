@@ -4,8 +4,7 @@
 from math import sqrt, floor
 import numpy as np
 from base_complex import infj
-
-from utilities import gcd, euclidean_algorithm
+from utilities import gcd, bezout
 
 
 def _rectangle_n_points(nn):
@@ -96,7 +95,7 @@ def poincare(k, nu, z):
     for nn in range(nmax, 0, -1):
         for (cc, dd) in _rectangle_n_points(nn):
             if cc >= 0 and (cc > 0 or dd > 0) and gcd(cc, dd) == 1:
-                bb, aa = euclidean_algorithm(cc, dd)
+                bb, aa = bezout(cc, dd)
                 Tz = (aa*z-bb)/(cc*z+dd)
                 vv = np.exp(2.0*np.pi*nu*1.0j*Tz)/(cc*z+dd)**(2*k)
                 retval += vv
