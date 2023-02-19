@@ -7,6 +7,8 @@ arithmetic routines.
 
 import time
 import itertools
+import functools
+import operator
 
 from math import sqrt
 
@@ -16,10 +18,7 @@ def prod(xs, start=1):
     :param start: the value to return if xs is empty
     :return: the product of the xs
     """
-    retval = start
-    for x in xs:
-        retval *= x
-    return retval
+    return functools.reduce(operator.mul, xs, start)
 
 
 def timeit(f):
