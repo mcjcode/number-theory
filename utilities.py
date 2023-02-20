@@ -393,19 +393,6 @@ def gcd(a, b):
     return abs(b)
 
 
-def sgn(a):
-    """
-    :param a: an integer
-    :return: the sign of a (+1,-1, or 0)
-    """
-    if a > 0:
-        return +1
-    elif a < 0:
-        return -1
-    else:
-        return 0
-
-
 def bezout(a:int, b:int) -> (int, int):
     """
     :param a: an integer
@@ -413,8 +400,8 @@ def bezout(a:int, b:int) -> (int, int):
     :return: x, y such that :math:`xa + yb = gcd(a, b)`.
     """
 
-    sa = sgn(a)
-    sb = sgn(b)
+    sa = sign(a)
+    sb = sign(b)
     
     a = abs(a)
     b = abs(b)
@@ -526,7 +513,8 @@ def num_from_digits(ds, base=10):
 
 def sign(x):
     """
-    Return the sign of a number
+    :param a: an integer
+    :return: the sign of a (+1,-1, or 0)
     """
     if x < 0:
         return -1
