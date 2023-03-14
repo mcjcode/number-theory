@@ -92,7 +92,7 @@ def cbrtInt(n):
     the order of :math:`10^{52}` and up.
     """
     cbrtn = int(n**(1./3.))
-    if (cbrtn+1)**2 <= n:
+    if (cbrtn+1)**3 <= n:
         cbrtn += 1
     return cbrtn
 

@@ -15,6 +15,8 @@ from utilities import (
     gcd,
     bezout,
     modinv,
+    sqrtInt,
+    cbrtInt
 )
 
 
@@ -62,3 +64,13 @@ class UtilitiesTest(unittest.TestCase):
                 if gcd(m, a)==1:
                     b = modinv(m, a)
                     self.assertEqual((a*b)%m, 1, f'{a}*{b}%{m} != 1')
+
+    def test_sqrtInt(self):
+        for n in range(1000):
+            sqrtn = sqrtInt(n)
+            self.assertTrue(sqrtn**2 <= n < (sqrtn+1)**2)
+
+    def test_cbrtInt(self):
+        for n in range(1000):
+            cbrtn = cbrtInt(n)
+            self.assertTrue(cbrtn**3 <= n < (cbrtn+1)**3)
