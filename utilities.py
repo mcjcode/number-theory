@@ -521,3 +521,33 @@ def sign(x):
     if x > 0:
         return +1
     return 0
+
+
+def step_modp_pascal(row, p):
+    """
+    :param row: a row of Pascal's triangle mod p, in compressed form
+    :param p: the modulus, not necessary prime
+    :return: the next row of Pascal's triangle mod p, in compressed form
+    
+    compressed mod p pascal's triangle generation.
+    
+    Given the nth row of pascal's triangle, generate the
+    (n+1)st row, where both are represented in compressed
+    form enumerating just the non-zero entries.
+    
+    e.g. row=[(0,1),(1,1),(4,1),(5,1)] is the 5th row
+    of the mod 2 triangle, then the result would be
+    [(0,1),(2,1),(4,1),(6,1)], the 6th row.
+    """
+
+    new_row = [(0,1)]
+    for k in range(len(row)-1):
+        if row[k][0]+1 == row[k+1][0]:
+            newval = (row[k][1] + row[k+1][1]) % p
+            if newval:
+                new_row.append((row[k+1][0], newval)) # if p=2, you never land here
+        else:
+            new_row.append((row[k][0]+1,row[k][1]))
+            new_row.append((row[k+1][0],row[k+1][1]))
+    new_row.append((row[-1][0]+1,1))
+    return new_row

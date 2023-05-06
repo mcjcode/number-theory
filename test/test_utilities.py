@@ -16,7 +16,8 @@ from utilities import (
     bezout,
     modinv,
     sqrtInt,
-    cbrtInt
+    cbrtInt,
+    step_modp_pascal,
 )
 
 
@@ -74,3 +75,13 @@ class UtilitiesTest(unittest.TestCase):
         for n in range(1000):
             cbrtn = cbrtInt(n)
             self.assertTrue(cbrtn**3 <= n < (cbrtn+1)**3)
+
+    def test_step_modp_pascal(self):
+        for p in [2, 3, 5]:
+            for k in range(1,3):
+                row = [(0,1)]
+                N = p**k
+                for i in range(N-1):
+                    row = step_modp_pascal(row, p)
+                self.assertEqual(len(row), N, f'row should be all non-zero p={p}, k={k}, {row}')
+            
