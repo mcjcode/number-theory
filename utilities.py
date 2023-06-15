@@ -341,6 +341,23 @@ def powerset(xs):
     return itertools.chain(*[itertools.combinations(xs, nn) for nn in lengths])
 
 
+def fastpow(a, k, mul, one):
+    """
+    :param a: the base
+    :param k: the exponent (a positive integer)
+    :param mul: the binary multiplication operator
+    :param one: the multiplicative identity for mul
+    :return: :math:`a^k`.
+    """
+    retval = one
+    while k:  # k != 0
+        if k % 2:  # k odd
+            retval = mul(retval, a)
+        a = mul(a, a)
+        k = k >> 1
+    return retval
+
+
 def modpow2(a, k, p):
     """
     :param a: the base
