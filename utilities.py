@@ -12,6 +12,7 @@ import operator
 
 from math import sqrt
 
+
 def prod(xs, start=1):
     """
     :param xs: a sequence of elements to multiply
@@ -212,6 +213,11 @@ def factorize(n):
         q += 1
     return [n]
 
+_wheel = [ 1, 6, 5, 4, 3, 2,
+           1, 4, 3, 2, 1, 2,
+           1, 4, 3, 2, 1, 2,
+           1, 4, 3, 2, 1, 6,
+           5, 4, 3, 2, 1, 2 ]
 
 def factorize2(n):
     """
@@ -220,50 +226,42 @@ def factorize2(n):
              primes are distinct and in increasing order giving
              the prime factorization of n.
     """
-    if n < _maxn:  # see below
-        g = factorize2_bounded(n)
-        for fact in g:
-            yield fact
-        return
-
-    q = 2
-    while q*q <= n:
-        e = 0
-        while n % q == 0:
-            e += 1
-            n = n//q
-        if e > 0:
-            yield q, e
-        q += 1
-    if n > 1:
-        yield n, 1
-
-
-_maxn = 10**10
-_ps = [p for p in range(2, sqrtInt(_maxn)) if isprime(p)]
-
-
-def factorize2_bounded(n):
-    """
-    Yield a sequence of (prime, exponent) pairs where the
-    primes are distinct and in increasing order giving
-    the prime factorization of n.
-
-    prime factors are precomputed.  Only n < _maxn are
-    allowed. 
-    """
-    assert n < _maxn
+    
     for p in _ps:
         if p*p > n:
-            break
+            if n>1:
+                yield n, 1
+            return
         e = 0
-        while n % p == 0:
+        while n%p == 0:
             e += 1
             n //= p
         if e:
             yield p, e
+
+    q = _ps[-1]+2
+    while q*q <= n:
+        e = 0
+        while n%q == 0:
+            e += 1
+            n //= q
+        if e:
+            yield q, e
+        q += _wheel[q%30]
     if n > 1:
         yield n, 1
+
+
+def factors(f):
+    """
+    Given a factorization `f` of an integer `n`, return
+    a list of all of the factors of `n`
+    """
+    retval = [1]
+    for p, e in f:
+        xs = [b*p**ee for b in retval for ee in range(1, e+1)]
+        retval += xs
+    return retval
 
 
 def squarefree(mm):
@@ -568,3 +566,7 @@ def step_modp_pascal(row, p):
             new_row.append((row[k+1][0],row[k+1][1]))
     new_row.append((row[-1][0]+1,1))
     return new_row
+
+from prime_sieve import segmented_sieve
+_ps = list(segmented_sieve(10**6))
+

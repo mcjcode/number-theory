@@ -18,6 +18,7 @@ from utilities import (
     sqrtInt,
     cbrtInt,
     step_modp_pascal,
+    factorize2,
 )
 
 
@@ -85,3 +86,12 @@ class UtilitiesTest(unittest.TestCase):
                     row = step_modp_pascal(row, p)
                 self.assertEqual(len(row), N, f'row should be all non-zero p={p}, k={k}, {row}')
             
+
+    def test_factorize2(self):
+        for n0 in range(2,10_000):
+            n = n0*n0-1
+            n2 = 1
+            for p, e in factorize2(n):
+                self.assertTrue(isprime(p))
+                n2 *= p**e
+            self.assertEqual(n, n2)
