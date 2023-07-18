@@ -219,13 +219,15 @@ _wheel = [ 1, 6, 5, 4, 3, 2,
            1, 4, 3, 2, 1, 6,
            5, 4, 3, 2, 1, 2 ]
 
-def factorize2(n):
+def factorize2(n, ntrials=0):
     """
     :param n: a positive integer
     :return: yields a sequence of (prime, exponent) pairs where the
              primes are distinct and in increasing order giving
              the prime factorization of n.
     """
+
+    itrial = 0
     
     for p in _ps:
         if p*p > n:
@@ -238,6 +240,9 @@ def factorize2(n):
             n //= p
         if e:
             yield p, e
+        itrial += 1
+        if ntrials and itrial==ntrials:
+            raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
 
     q = _ps[-1]+2
     while q*q <= n:
@@ -248,6 +253,9 @@ def factorize2(n):
         if e:
             yield q, e
         q += _wheel[q%30]
+        if ntrials and itrial==ntrials:
+            raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
+
     if n > 1:
         yield n, 1
 

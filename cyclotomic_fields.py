@@ -2,12 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import sympy
+import sympy.abc
+
+from sympy.polys.polytools import (
+    compose,
+)
 
 from utilities import (
     gcd,
     primitive_root,
     modpow,
     symmetric_function,
+    factorize2,
 )
 
 from multiplicative import (
@@ -57,7 +64,7 @@ class CyclotomicInteger(object):
         arr.resize((kk, nn//kk))
         arr = arr.transpose().tolist()
 
-        return map(sum, arr)
+        return list(map(sum, arr))
 
     def __init__(self, coefs):
         self.coefs = coefs
@@ -126,19 +133,33 @@ class CyclotomicInteger(object):
         return retval
 
 
-def cyclotomic_polynomial(nn, kk):
+def cyclotomic_polynomial(nn, kk=1):
     """
     Return the defining polynomial for the degree phi(nn)/kk
     subfield of Q[zeta_nn].
 
-    Only works for nn prime for now.
+    kk must divide phi(nn) and if kk!=1, only works for nn prime.
 
-    Note that this implementation is 'programming by algebra'
-    (i.e. spelling out the Gaussian periods and computing the
-    elementary symmetric functions of them) and is very very
-    slow for large nn (and small kk)
+    For kk=1, we just use the moebius inversion for Phi_n(x),
+
+    For kk>1, we 'program by algebra' (i.e. spelling out the Gaussian
+    periods and computing the elementary symmetric functions of them)
+    and is very very slow for large nn (and small kk).
     """
-    pds = CyclotomicInteger.periods(nn, kk)
-    coefs_ci = [(-1)**dd * symmetric_function(dd, pds) for dd in range(1, phi(nn)//kk + 1)]
-    coefs = [ci.coefs[0]-ci.coefs[1] for ci in coefs_ci]
-    return [1]+coefs
+    x = sympy.abc.x
+    if kk==1:
+        ans = sympy.poly(x-1, x, domain='ZZ')
+        for p, e in factorize2(nn):
+            ans = compose(ans, x**(p**e)) // compose(ans, x**(p**(e-1)))
+        return ans ##.coeffs()
+    else:
+        pds = CyclotomicInteger.periods(nn, kk)
+        print('pds = ', pds)
+        coefs_ci = [(-1)**dd * symmetric_function(dd, pds) for dd in range(1, phi(nn)//kk + 1)]
+        print('coefs_ci = ', coefs_ci)
+        coefs = [ci.coefs[0]-ci.coefs[1] for ci in coefs_ci]
+        return sympy.Poly([1]+coefs, x)
+
+
+
+        

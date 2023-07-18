@@ -86,7 +86,6 @@ class UtilitiesTest(unittest.TestCase):
                     row = step_modp_pascal(row, p)
                 self.assertEqual(len(row), N, f'row should be all non-zero p={p}, k={k}, {row}')
             
-
     def test_factorize2(self):
         for n0 in range(2,10_000):
             n = n0*n0-1
@@ -95,3 +94,8 @@ class UtilitiesTest(unittest.TestCase):
                 self.assertTrue(isprime(p))
                 n2 *= p**e
             self.assertEqual(n, n2)
+
+    def test_trial_division_exception(self):
+        with self.assertRaises(Exception):
+            f = factorize2(41*43, 10)
+            next(f)

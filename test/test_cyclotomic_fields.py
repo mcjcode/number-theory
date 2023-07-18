@@ -2,7 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from cyclotomic_fields import CyclotomicInteger
+
+import sympy
+
+from cyclotomic_fields import (
+    CyclotomicInteger,
+    cyclotomic_polynomial,
+)
+
+from multiplicative import (
+    phi,
+)
 
 
 class CyclotomicIntegerTest(unittest.TestCase):
@@ -34,3 +44,30 @@ class CyclotomicIntegerTest(unittest.TestCase):
         self.assertEqual(zeta ** nn, one)
         self.assertEqual(xx.norm(), nn)
         self.assertEqual(yy.norm(), 1)
+
+class CyclotomicPolynomialTest(unittest.TestCase):
+
+    def test_degree(self):
+        """
+        The degree of Phi_n(x) should equal phi(n)
+        """
+        for n in range(1,100):
+            p = cyclotomic_polynomial(n)
+            d = phi(n)
+            self.assertEqual(p.degree(), d)
+
+    def test_products(self):
+        """
+        Product_{d|n} Phi_d(n) == x**n - 1.
+
+        Check that this holds.
+        """
+        x = sympy.abc.x
+        for n in range(1, 100):
+            lhs = sympy.poly(x**n - 1, x, domain='ZZ')
+            rhs = sympy.poly(1, x, domain='ZZ')
+            for d in range(1, n+1):
+                if n%d==0:
+                    rhs *= cyclotomic_polynomial(d)
+            self.assertEqual(lhs, rhs)
+            
