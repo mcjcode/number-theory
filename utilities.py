@@ -9,7 +9,9 @@ import time
 import itertools
 import functools
 import operator
+import random
 
+import math
 from math import sqrt
 
 
@@ -160,11 +162,11 @@ def is_miller_rabin_witness(p, a):
     while d%2==0:
         s += 1
         d //= 2
-    # now p-1 = 2**s * d with d odd.
-    assert p == 2**s * d + 1
+
+    assert p-1 == 2**s * d
     assert d%2 == 1
 
-    ad = modpow2(a, d, p)    ##p, d, a)
+    ad = pow(a, d, p)
     if ad==1 or ad==p-1:
         return False
     for _ in range(s-1):
@@ -190,6 +192,33 @@ def isprime_miller_rabin(p):
             return False
     return True
 
+
+def lucas(n, nattempts=5, factoring_steps=0):
+    if n==1:
+        return False, None, '1 is a unit'
+    if n==2:
+        return True, 1, 'Found a primitive root'
+    assert n>2
+
+    try:
+        f = list(factorize2(n-1, factoring_steps))
+    except Exception as e:
+        return 'Maybe', None, f'Too hard to factor n-1={n-1}'
+
+    for _ in range(nattempts):
+        a = random.randint(1, n)
+        g = gcd(a, n)
+        if g>1 and g!=n:
+            return False, g, 'Found a factor'
+        
+        if pow(a, n-1, n) != 1:
+            return False, a, 'Fermat fails'
+        
+        if all(pow(a, (n-1)//p, n)!=1 for p, _ in f):
+            return True, a, 'Found a primitive root'
+
+    return 'Maybe', None, 'Test inconclusive'
+                
 
 def issq(nn):
     """
@@ -219,7 +248,20 @@ _wheel = [ 1, 6, 5, 4, 3, 2,
            1, 4, 3, 2, 1, 6,
            5, 4, 3, 2, 1, 2 ]
 
-def factorize2(n, ntrials=0):
+def pollard_p_minus_1(n, B):
+    a = 2
+    for p in _ps:
+        if p>B:
+            break
+        k = int(math.log(B)/math.log(p))
+        a = pow(a, p**k, n)
+        g = gcd(a-1, n)
+        if 1<g<n:
+            return g
+    return False
+
+
+def trial_division(n, ntrials=0):
     """
     :param n: a positive integer
     :return: yields a sequence of (prime, exponent) pairs where the
@@ -253,12 +295,14 @@ def factorize2(n, ntrials=0):
         if e:
             yield q, e
         q += _wheel[q%30]
+        itrial += 1
         if ntrials and itrial==ntrials:
             raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
 
     if n > 1:
         yield n, 1
 
+factorize2 = trial_division
 
 def factors(f):
     """
@@ -309,8 +353,8 @@ def primitive_root(p):
     a = 2
     while a < p:
         ok = True
-        for (q, e) in facts:
-            if modpow2(a, (p-1)//q, p) == 1:
+        for q, e in facts:
+            if pow(a, (p-1)//q, p)==1:
                 ok = False
                 break
         if ok:
@@ -395,7 +439,7 @@ def legendre_ch(p):
     def ch(a):
         if a % p == 0:
             return 0
-        rr = modpow2(a, (p - 1) / 2, p)
+        rr = pow(a, (p-1)//2, p)
         return (-1) if (rr == p - 1) else +1
 
     return ch

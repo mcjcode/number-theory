@@ -52,7 +52,7 @@ def all_modm_chars(m):
     zz = np.exp(2.0j*np.pi/(m-1))
 
     vals = [None]*(m-1)
-    pows = [0] + [modpow(a, k, m) for k in range(m-1)]
+    pows = [0] + [pow(a, k, m) for k in range(m-1)]
     for k in range(m-1):
         pows2 = [0] + [(zz**k)**i for i in range(m-1)]
         vals[k] = dict(zip(pows, pows2))
