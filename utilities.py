@@ -70,20 +70,28 @@ def mymod(n, m):
     return n % m if m else n
 
 
-def sqrtInt(n):
+def sqrtInt(a:int) -> int:
     """
-    :param n: a non-negative integer
-    :return: the largest integer smaller than the square root of n
-
-    Note that this depends on `math.sqrt`, and its double precision
-    accuracy means that this function should not be trusted for n on
-    the order of :math:`10^{52}` and up.
+    :param a: a non-negative integer
+    
+    :return: the largest integer smaller than or equal to the square
+    root of n
     """
-    sqrtn = int(sqrt(n))
-    if (sqrtn+1)**2 <= n:
-        sqrtn += 1
-    return sqrtn
+    if a==0:
+        return 0
 
+    n = 1 << a.bit_length()//2
+    q, r = divmod(a, n)
+    n0 = (n + (q+(r>0)))//2
+    while n0!=n:
+        n = n0
+        q, r = divmod(a, n)
+        n0 = (n + (q+(r>0)))//2
+
+    if n0*n0>a:
+        n0 -= 1
+        
+    return n0
 
 def cbrtInt(n):
     """
@@ -248,9 +256,9 @@ _wheel = [ 1, 6, 5, 4, 3, 2,
            1, 4, 3, 2, 1, 6,
            5, 4, 3, 2, 1, 2 ]
 
-def pollard_p_minus_1(n, B):
+def pollard_p_minus_1(n, B, ps=[2, 3, 5]):
     a = 2
-    for p in _ps:
+    for p in ps:
         if p>B:
             break
         k = int(math.log(B)/math.log(p))
@@ -261,7 +269,7 @@ def pollard_p_minus_1(n, B):
     return False
 
 
-def trial_division(n, ntrials=0):
+def trial_division(n, ntrials=0, ps=[2, 3, 5]):
     """
     :param n: a positive integer
     :return: yields a sequence of (prime, exponent) pairs where the
@@ -271,7 +279,7 @@ def trial_division(n, ntrials=0):
 
     itrial = 0
     
-    for p in _ps:
+    for p in ps:
         if p*p > n:
             if n>1:
                 yield n, 1
@@ -286,7 +294,7 @@ def trial_division(n, ntrials=0):
         if ntrials and itrial==ntrials:
             raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
 
-    q = _ps[-1]+2
+    q = ps[-1]+2
     while q*q <= n:
         e = 0
         while n%q == 0:
@@ -619,6 +627,4 @@ def step_modp_pascal(row, p):
     new_row.append((row[-1][0]+1,1))
     return new_row
 
-from prime_sieve import segmented_sieve
-_ps = list(segmented_sieve(10**6))
 

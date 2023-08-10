@@ -68,10 +68,12 @@ class UtilitiesTest(unittest.TestCase):
                     self.assertEqual((a*b)%m, 1, f'{a}*{b}%{m} != 1')
 
     def test_sqrtInt(self):
-        for n in range(1000):
-            sqrtn = sqrtInt(n)
-            self.assertTrue(sqrtn**2 <= n < (sqrtn+1)**2)
-
+        for n in range(1, 1000):
+            n2 = n*n
+            self.assertEqual(sqrtInt(n2-1), n-1)
+            self.assertEqual(sqrtInt(n2),   n)
+            self.assertEqual(sqrtInt(n2+1), n)
+            
     def test_cbrtInt(self):
         for n in range(1000):
             cbrtn = cbrtInt(n)
