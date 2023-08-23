@@ -17,6 +17,7 @@ from utilities import (
     modinv,
     sqrtInt,
     cbrtInt,
+    issq,
     step_modp_pascal,
     factorize2,
 )
@@ -79,6 +80,11 @@ class UtilitiesTest(unittest.TestCase):
             cbrtn = cbrtInt(n)
             self.assertTrue(cbrtn**3 <= n < (cbrtn+1)**3)
 
+    def test_issq(self):
+        for n in range(1, 10000):
+            self.assertTrue(issq(n*n))
+            self.assertTrue(not issq(n*n+1))
+            
     def test_step_modp_pascal(self):
         for p in [2, 3, 5]:
             for k in range(1,3):

@@ -325,5 +325,4 @@ def newtons_identity(ps):
             z += sign*ps[i]*es[j-i]
             sign *= -1
         es.append(z//j)
-        print(j, es)
     return es

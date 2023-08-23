@@ -226,14 +226,16 @@ def lucas(n, nattempts=5, factoring_steps=0):
             return True, a, 'Found a primitive root'
 
     return 'Maybe', None, 'Test inconclusive'
-                
 
-def issq(nn):
-    """
-    :param nn: an integer
-    :return: a boolean telling whether nn is a square
-    """
-    return nn >= 0 and nn == int(sqrt(nn)) ** 2
+# if n is a square, then _sqlowbits[n%63] is True
+_sqlowbits = [False]*64
+for x in range(64):
+    _sqlowbits[(x*x)%63] = True
+
+def issq(n: int) -> bool:
+    # first check the low 5 bits (52/64=87.5% of
+    # numbers will fail this check)
+    return n>=0 and _sqlowbits[n%63] and sqrtInt(n)**2==n
 
 
 def factorize(n):
@@ -255,18 +257,6 @@ _wheel = [ 1, 6, 5, 4, 3, 2,
            1, 4, 3, 2, 1, 2,
            1, 4, 3, 2, 1, 6,
            5, 4, 3, 2, 1, 2 ]
-
-def pollard_p_minus_1(n, B, ps=[2, 3, 5]):
-    a = 2
-    for p in ps:
-        if p>B:
-            break
-        k = int(math.log(B)/math.log(p))
-        a = pow(a, p**k, n)
-        g = gcd(a-1, n)
-        if 1<g<n:
-            return g
-    return False
 
 
 def trial_division(n, ntrials=0, ps=[2, 3, 5]):

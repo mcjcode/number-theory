@@ -23,6 +23,11 @@ def phi(nn):
     return prod([pp**(kk-1)*(pp-1) for (pp, kk) in factors])
 
 
+def mu(n: int) -> int:
+    n = sum(1 for _ in factorize2(n))
+    return (-1)**(n%2)
+
+
 def divisor_function(kk, nn):
     r"""
     :param kk: the exponent

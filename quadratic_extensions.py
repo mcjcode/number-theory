@@ -200,6 +200,11 @@ class QuadInt(object):
             raise ValueError("integers are not from same field")
         return QuadInt(self.d, self.a+other.a, self.b+other.b)
 
+    def __sub__(self, other):
+        if self.d != other.d:
+            raise ValueError("integers are not from same field")
+        return QuadInt(self.d, self.a-other.a, self.b-other.b)
+    
     def __mul__(self, other):
         if self.d != other.d:
             raise ValueError("integers are not from same field")
