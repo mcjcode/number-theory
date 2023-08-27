@@ -121,6 +121,8 @@ def run2():
 
 
 def jacobi2(a, n):
+    if n==1:
+        return 1
     assert n % 2 == 1
     a %= n
     if a == 0:

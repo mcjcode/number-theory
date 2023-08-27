@@ -5,9 +5,15 @@ import unittest
 
 import sympy
 
+from utilities import (
+    factorize2,
+)
+
 from cyclotomic_fields import (
     CyclotomicInteger,
     cyclotomic_polynomial,
+    lucas_formula,
+    gauss_formula,
 )
 
 from multiplicative import (
@@ -71,3 +77,38 @@ class CyclotomicPolynomialTest(unittest.TestCase):
                     rhs *= cyclotomic_polynomial(d)
             self.assertEqual(lhs, rhs)
             
+    def test_lucas_formula(self):
+        """
+        If n=1(4) is squarefree, then the lucas polynomials
+        C and D satisfy
+        
+        C_n^2 - n*x*D_n^2 = Phi_n
+
+        Check that this holds for a range of n values
+
+        If n=3(4) is squarefree, then the lucas polynomials
+        C_n and D_n satisfy
+
+        C_n^2 - n*x*D_n^2 = Phi_{2n}
+        """
+
+        x = sympy.abc.x
+        for n in range(5, 100, 4):            
+            if all(e==1 for _, e in factorize2(n)):
+                C, D = lucas_formula(n)
+                Phi = cyclotomic_polynomial(n)
+                self.assertEqual(C**2 - n*x*D**2, Phi)
+
+        for n in range(3, 100, 4):
+            if all(e==1 for _, e in factorize2(n)):
+                C, D = lucas_formula(n)
+                Phi = cyclotomic_polynomial(2*n)
+                self.assertEqual(C**2 - n*x*D**2, Phi)
+
+    def test_gauss_formula(self):
+        x = sympy.abc.x
+        for n in range(5, 100, 4):
+            if all(e==1 for _, e in factorize2(n)):
+                A, B = gauss_formula(n)
+                Phi = cyclotomic_polynomial(n)
+                self.assertEqual(A**2 - n*B**2, 4*Phi)

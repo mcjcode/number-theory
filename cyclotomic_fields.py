@@ -3,6 +3,7 @@
 
 import numpy as np
 import math
+from fractions import Fraction
 
 import sympy
 import sympy.abc
@@ -280,19 +281,27 @@ def lucas_formula(n):
     Return polynomials C(x) and D(x) such that C**2 +/- n*x*D**2
     equals the cyclotomic polynomial Phi_n(x)
     """
-    if n%4 != 1:
-        raise ValueError(f'n={n} is not =1(4)')
-        
+    if not(n%2 and all(e==1 for _, e in factorize2(n))): # has to be odd and squarefree
+        raise ValueError(f'n has to be odd and squarefree')
+
     def p(n):
         yield QuadInt(n, phi(n), 0)
         sprime = -1 if n%8==5 else +1
         for k in range(1, phi(n)+1):
-            g = math.gcd(k, n)
+            np = n if n%4==1 else 2*n
+            gp = math.gcd(k, np)
             if k%2==1:
-                yield QuadInt(n, 0, sprime*jacobi.jacobi2(k, n))
+                yield QuadInt(n, 0, sprime*jacobi.jacobi2(n, k))
             else:
-                z = math.cos((n-1)*k*math.pi/4)
-                yield QuadInt(n, mu(n/g)*phi(g)*int(z), 0)
+                if ((n-1)//2 * k)%4==0:
+                    z = 1
+                elif ((n-1)//2 * k)%2==0:
+                    z = -1
+                else:
+                    z = 0
+                #z = math.cos((n-1)*k*math.pi/4)
+                yield QuadInt(n, mu(np/gp)*phi(gp)*int(z), 0)
+
     xs = list(p(n))
     ys = newtons_identity(xs)
     ys[0] = QuadInt(n, 1, 0)
