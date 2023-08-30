@@ -205,27 +205,27 @@ def lucas(n, nattempts=5, factoring_steps=0):
     if n==1:
         return False, None, '1 is a unit'
     if n==2:
-        return True, 1, 'Found a primitive root'
+        return True, 1, 'Lucas: Found a primitive root'
     assert n>2
 
     try:
         f = list(factorize2(n-1, factoring_steps))
     except Exception as e:
-        return 'Maybe', None, f'Too hard to factor n-1={n-1}'
+        return 'Maybe', None, f'Lucas: Too hard to factor n-1'
 
     for _ in range(nattempts):
         a = random.randint(1, n)
         g = gcd(a, n)
         if g>1 and g!=n:
-            return False, g, 'Found a factor'
+            return False, g, 'Lucas: Found a factor'
         
         if pow(a, n-1, n) != 1:
-            return False, a, 'Fermat fails'
+            return False, a, f'Lucas: order({a})!=n-1. n not prime'
         
         if all(pow(a, (n-1)//p, n)!=1 for p, _ in f):
-            return True, a, 'Found a primitive root'
+            return True, a, 'Lucas: found a primitive root'
 
-    return 'Maybe', None, 'Test inconclusive'
+    return 'Maybe', None, 'Lucas: test inconclusive'
 
 # if n is a square, then _sqlowbits[n%63] is True
 _sqlowbits = [False]*64
@@ -538,19 +538,6 @@ def ea3(a, b, c):
     assert x*a + y*b == gcd(a, b)
     s, t = bezout(gcd(a, b), c)
     return s*x, s*y, t
-
-
-def digitsum(n,base=10):
-    """
-    :param n: a non-negative integer
-    :return: the sum of all the digits of n in the given base
-    """
-    retval = 0
-    while n:
-        k = n % base
-        retval += k
-        n = (n-k)//base
-    return retval
 
 
 def digits(n, base=10):
