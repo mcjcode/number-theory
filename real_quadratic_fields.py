@@ -81,6 +81,29 @@ def cont_frac_quad(a, b, c, d):
         a, b, c = a1//g, b1//g, c1//g
 
 
+def cont_frac_quad2(P, Q, n):
+    """
+    Yield the repeating simple continued fraction
+    for the number (P+sqrt(n))/Q.  The integer Q
+    must divide n-P*P.
+    """
+    A0, B0 = 1, 0
+    q0 = sqrtInt(n)
+    q, A, B = q0, q0, 1
+    yield P, Q, q, A, B
+    while True:
+        assert (n-P*P) % Q == 0
+        P = Q*q-P
+        Q = (n-P*P)//Q
+        q = (P+q0)//Q
+
+        A, A0 = q*A + A0, A
+        B, B0 = q*B + B0, B
+        yield P, Q, q, A, B
+        if q==2*q0:
+            break
+
+
 def approximants(d):
     r"""
     :param d: a positive non-square integer
