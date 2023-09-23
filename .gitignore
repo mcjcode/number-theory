@@ -3,6 +3,9 @@
 *.py~
 .idea
 
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+
 # documentation built files
 doc/_build
 
