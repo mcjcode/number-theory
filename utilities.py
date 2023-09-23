@@ -12,7 +12,7 @@ import operator
 import random
 
 import math
-from math import sqrt
+#from math import sqrt
 
 
 def prod(xs, start=1):
@@ -70,42 +70,39 @@ def mymod(n, m):
     return n % m if m else n
 
 
-def sqrtInt(a:int) -> int:
+def sqrtInt(a: int) -> int:
     """
     :param a: a non-negative integer
-    
-    :return: the largest integer smaller than or equal to the square
-    root of n
+    :return: the largest integer smaller than the square root of `a`
     """
     if a==0:
         return 0
-
-    n = 1 << a.bit_length()//2
-    q, r = divmod(a, n)
-    n0 = (n + (q+(r>0)))//2
-    while n0!=n:
+    n = 1 << (a.bit_length()+1)//2
+    n0 = (n + a//n)//2
+    while n0 < n:
         n = n0
-        q, r = divmod(a, n)
-        n0 = (n + (q+(r>0)))//2
+        n0 = (n + a//n)//2
+    return n
 
-    if n0*n0>a:
-        n0 -= 1
-        
-    return n0
 
-def cbrtInt(n):
+def cbrtInt(a: int) -> int:
     """
-    :param n: a non-negative integer
-    :return: the largest integer smaller than the cube root of n
-
-    Note that this depends on `math.sqrt`, and its double precision
-    accuracy means that this function should not be trusted for n on
-    the order of :math:`10^{52}` and up.
+    :param a: a non-negative integer
+    :return: the largest integer smaller than the cube root of `a`
     """
-    cbrtn = int(n**(1./3.))
-    if (cbrtn+1)**3 <= n:
-        cbrtn += 1
-    return cbrtn
+    if a==0:
+        return 0
+    n = a >> (2*a.bit_length())//3
+    q, r = divmod(a, n*n)
+    xi = (2*n + (q+(r>0)))//3
+    prev = -1
+    while xi!=n and xi!=prev:
+        n, prev = xi, n
+        q, r = divmod(a, n*n)
+        xi = (2*n + (q+(r>0)))//3
+    if xi**3>a:
+        xi -= 1
+    return xi
 
 
 def multiplicities(xs):
@@ -227,15 +224,26 @@ def lucas(n, nattempts=5, factoring_steps=0):
 
     return 'Maybe', None, 'Lucas: test inconclusive'
 
-# if n is a square, then _sqlowbits[n%63] is True
-_sqlowbits = [False]*64
-for x in range(64):
-    _sqlowbits[(x*x)%63] = True
+
+_issq_pe = [p**int(math.log(100)/math.log(p)) for p in [2, 3, 5, 7, 11, 13]]
+_sqlowbits = {}
+for pe in _issq_pe:
+    #_pmax = p**e
+    bits = [True]*pe
+    for x in range(pe):
+        bits[(x*x)%pe] = False
+    _sqlowbits[pe] = bits
 
 def issq(n: int) -> bool:
-    # first check the low 5 bits (52/64=87.5% of
-    # numbers will fail this check)
-    return n>=0 and _sqlowbits[n%63] and sqrtInt(n)**2==n
+    # first check that n is plausibly a square by
+    # checking that it is a square mod p**e for
+    # small p**e
+    if n<0:
+        return False
+    for pe, bits in _sqlowbits.items():
+        if bits[n%pe]:
+            return False    
+    return sqrtInt(n)**2==n
 
 
 def factorize(n):
@@ -252,6 +260,8 @@ def factorize(n):
         q += 1
     return [n]
 
+
+_ps = [2, 3, 5]
 _wheel = [ 1, 6, 5, 4, 3, 2,
            1, 4, 3, 2, 1, 2,
            1, 4, 3, 2, 1, 2,
@@ -259,7 +269,7 @@ _wheel = [ 1, 6, 5, 4, 3, 2,
            5, 4, 3, 2, 1, 2 ]
 
 
-def trial_division(n, ntrials=0, ps=[2, 3, 5]):
+def _trial_division(n, bound=0, ps=None):
     """
     :param n: a positive integer
     :return: yields a sequence of (prime, exponent) pairs where the
@@ -267,9 +277,12 @@ def trial_division(n, ntrials=0, ps=[2, 3, 5]):
              the prime factorization of n.
     """
 
-    itrial = 0
-    
+    if ps is None:
+        ps = _ps
+        
     for p in ps:
+        if bound and p>bound:
+            raise ValueError(f'Exceeding max trial divisor.  Giving up.')            
         if p*p > n:
             if n>1:
                 yield n, 1
@@ -280,12 +293,12 @@ def trial_division(n, ntrials=0, ps=[2, 3, 5]):
             n //= p
         if e:
             yield p, e
-        itrial += 1
-        if ntrials and itrial==ntrials:
-            raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
 
-    q = ps[-1]+2
+    q = ps[-1]
+    q += _wheel[q%30]
     while q*q <= n:
+        if bound and q>bound:
+            raise ValueError(f'Exceeded max trial divisor.  Giving up.')
         e = 0
         while n%q == 0:
             e += 1
@@ -293,14 +306,23 @@ def trial_division(n, ntrials=0, ps=[2, 3, 5]):
         if e:
             yield q, e
         q += _wheel[q%30]
-        itrial += 1
-        if ntrials and itrial==ntrials:
-            raise Exception(f'Exceeded {ntrials} trial divisions.  Giving up.')
 
     if n > 1:
         yield n, 1
 
-factorize2 = trial_division
+factorize2 = _trial_division
+
+def trial_division(n, bound=0, ps=None):
+    fiter = _trial_division(n, bound=bound, ps=ps)
+    factorization = []
+    try:
+        for p, e in fiter:
+            factorization.append((p, e))
+            n //= p**e
+    except ValueError as e:
+        pass
+    return factorization, n
+
 
 def factors(f):
     """

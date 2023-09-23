@@ -99,7 +99,7 @@ class UtilitiesTest(unittest.TestCase):
             n = n0*n0-1
             n2 = 1
             for p, e in factorize2(n):
-                self.assertTrue(isprime(p))
+                self.assertTrue(isprime(p), f'non-prime {p} found in factorization')
                 n2 *= p**e
             self.assertEqual(n, n2)
 
