@@ -11,6 +11,20 @@ from mod2linalg import solve_linear_equations_mod_2, null_space_mod_2, det_mod_2
 import random
 
 
+def factors(n):
+    f, _ = trial_division(n)
+    retval = [1]
+    for p, e in f:
+        pi = 1
+        tmp = []
+        for i in range(e+1):
+            for fact in retval:
+                tmp.append(fact*pi)
+            pi *= p
+        retval = tmp
+    return retval
+
+
 def fermat_factor(n: int, a=1, b=1) -> tuple:
     """
     Looking for a factorization of an odd number n=u*v
@@ -333,70 +347,146 @@ def cont_frac(P, Q, n):
             break
 
 
-def cfrac(n):
+def dixon(n, trace=False):
+    """
+    Implementation of Dixon's toy factoring method from
+    
+    Dixon, J. D. (1981). "Asymptotically fast factorization of integers"
+    Math. Comp. 36 (153): 255–260.
+    """
+
     bound = int(exp(sqrt(log(n)*log(log(n))) / 2))
     ps = [p for p in segmented_sieve(bound) if legendre(n, p)==1]
-    pi = {p:(i+1) for i, p in enumerate(ps)}
-    
-    nps = len(ps) + 1
-
-    cnt, vecs, Qs, As, prevA = 0, [], [], [], 1
-    for i, (P, Q, q, A) in enumerate(cont_frac(0, 1, n)):
+    pi = {p:i for i, p in enumerate(ps)}
+    nps = len(ps)
+    print(bound)
+    print(ps)
+    nQs_considered = 0
+    vecs, Qs, As, cnt = [], [], [], 0
+    while True:
+        nQs_considered += 1
+        A = random.randint(1, n)
+        Q = A*A % n
+        if Q==0:
+            # A is in [1,n) but n divides A*A.
+            return(gcd(A,n))
         f, r = smooth_trial_division(Q, ps)
-        if r==1 and Q>1 and Q!=(prevA**2):
+        #print('factoring', Q, f, r)
+        if r==1 and Q>1 and Q!=A**2:
             vec = [0]*nps
-            vec[0] = i%2
             for p, e in f:
                 vec[pi[p]] = e%2
             vecs.append(vec)
             Qs.append(Q)
-            As.append(prevA)
+            As.append(A)
+            #print(Q, vec, A, f)
             cnt += 1
             if cnt>nps:
                 break
-        prevA = A
-
-    nQs_considered = i
-    
-    Amat = np.array(vecs, dtype=np.int8)
-    if Amat.shape[0]==0:
-        return
-    
+    Amat = np.array(vecs, dtype=np.int8)     
     N = null_space_mod_2(Amat.transpose())
-    
-    def formatVec(v):
-        return ' '.join(('%6d'%x if x else '      ') for x in v)
-
-    for kk in range(10):
+    while True:
         col = N.dot(np.random.randint(0, 2, (N.shape[1],)))%2
-        Q2s = []
-        A2s = []
-
-        table = '         ' + formatVec([-1] + ps) + '       \n'
-        for i in range(Amat.shape[0]):
-            if col[i]:
-                Q2s.append(Qs[i])
-                A2s.append(As[i]%n)
-                star = '*'
-            else:
-                star = ' '
-            table += star + ' ' + formatVec([Qs[i]] + list(Amat[i]) + [As[i]%n]) + '\n'
+        Q2s = [Qs[i] for i in range(len(Qs)) if col[i]]
+        A2s = [As[i] for i in range(len(As)) if col[i]]
         x = sqrtInt(prod(Q2s))%n
         y = prod(A2s)%n
-        table += str(x) + '^2 = ' + str(y) + '^2 mod ' + str(n) + '\n'
-        
-        g1 = gcd(x+y, n)
-        g2 = gcd(abs(x-y), n)
+        g = gcd(x+y, n)
 
-        if (1<g1<n) or (1<g2<n):
-            ## print('length of continued fraction period = ',len(f1))
-            print('Q\'s considered = ', nQs_considered)
-            print('number of eligible Q/A pairs = ', len(Qs))
-            print('number of primes in factor base = ',nps)
-            print('number of null-vectors attempted = ',kk+1)
-            #print(table)
-            if (1<g1<n):
-                print('factor', g1, 'found')
-            if (1<g2<n):
-                print('factor', g2, 'found')
-            break
+        if n%g == 0 and g!=1 and g!=n:
+            g2 = gcd(abs(x-y), n)
+            if trace:
+                maxQdigits = max(len(str(Q)) for Q in Qs); fmtQstr = '%'+str(maxQdigits)+'d'
+                maxAdigits = max(len(str(A)) for A in As); fmtAstr = '%'+str(maxAdigits)+'d'
+                maxPdigits = max(len(str(p)) for p in ps); fmtPstr = '%'+str(maxPdigits)+'d'
+                def formatVec(v):
+                    return ' '.join((fmtPstr%x if x else ' '*maxPdigits) for x in v)
+                star = ' *'
+                table = ' ' * (2+maxQdigits) + formatVec(ps) + '       \n'
+                for i in range(Amat.shape[0]):
+                    table += star[col[i]] + ' ' +  (fmtQstr % Qs[i]) + formatVec(list(Amat[i])) + ' ' + (fmtAstr % As[i]) + '\n'
+                table += str(x) + '^2 = ' + str(y) + '^2 mod ' + str(n) + '\n'
+                print('Q\'s considered = ', nQs_considered)
+                print('number of eligible Q/A pairs = ', len(Qs))
+                print('number of primes in factor base = ',nps)
+                print(table)
+                print('factors', g, g2, 'found')
+            return g, g2
+
+
+def cfrac(n, trace=False):
+    if isprobprime(n):
+        if trace:
+            print(n, 'is prime')
+        return None
+    
+    orign = n
+    while True:
+        if trace:
+            print('n =', n)
+
+        if issq(n):
+            return sqrtInt(n)
+        
+        bound = int(exp(sqrt(log(n)*log(log(n))) / 2))
+        ps = [p for p in segmented_sieve(bound) if legendre(n, p)==1]
+        pi = {p:(i+1) for i, p in enumerate(ps)}
+
+        nps = len(ps) + 1
+
+        cnt, vecs, Qs, As, prevA = 0, [], [], [], 1
+        for i, (P, Q, q, A) in enumerate(cont_frac(0, 1, n)):
+            f, r = smooth_trial_division(Q, ps)
+            if r==1 and Q>1 and Q!=(prevA**2):
+                vec = [0]*nps
+                vec[0] = i%2
+                for p, e in f:
+                    vec[pi[p]] = e%2
+                vecs.append(vec)
+                Qs.append(Q)
+                As.append(prevA)
+                cnt += 1
+                if cnt>nps:
+                    break
+            prevA = A
+
+        nQs_considered = i
+
+        Amat = np.array(vecs, dtype=np.int8)
+        if Amat.shape[0]==0:
+            n += orign
+            continue
+            
+        N = null_space_mod_2(Amat.transpose())
+
+        def formatVec(v):
+            return ' '.join(('%6d'%x if x else '      ') for x in v)
+
+        for kk in range(1):
+            col = N.dot(np.random.randint(0, 2, (N.shape[1],)))%2
+            Q2s = [Qs[i] for i in range(len(Qs)) if col[i]]
+            A2s = [As[i] for i in range(len(As)) if col[i]]
+            x = sqrtInt(prod(Q2s))%n
+            y = prod(A2s)%n
+            g = gcd(x+y, orign)
+
+            if orign%g == 0 and g!=1 and g!=orign:
+                g2 = gcd(abs(x-y), orign)
+                if trace:
+                    star = ' *'
+                    table = '         ' + formatVec([-1] + ps) + '       \n'
+                    for i in range(Amat.shape[0]):
+                        table += star[col[i]] + ' ' + formatVec([Qs[i]] + list(Amat[i]) + [As[i]]) + '\n'
+                    table += str(x) + '^2 = ' + str(y) + '^2 mod ' + str(n) + '\n'
+                    print('Q\'s considered = ', nQs_considered)
+                    print('number of eligible Q/A pairs = ', len(Qs))
+                    print('number of primes in factor base = ',nps)
+                    print('number of null-vectors attempted = ',kk+1)
+                    print('l = ', n//orign)
+                    print(table)
+                    print('factors', g, g2, 'found')
+                return g, g2
+                break
+            else:
+                n += orign
+                continue
