@@ -69,6 +69,34 @@ def sievecnt_mod4(n):
 
     return V, S_1mod4, S_3mod4
 
+def sievecnt_mod3(n):
+    """
+    Return the number of primes congruent to 1 and 2 (mod 3)
+    for less than or equal to n, n//2, n//3, ..., 1
+    """
+    sqrtn = sqrtInt(n)
+    V = [n//i for i in range(1,sqrtn+1)]
+    V += list(range(V[-1]-1,0,-1))
+    S_1mod3 = {v: (v-1)//3 for v in V} # counting primes = 1(3)
+    S_2mod3 = {v: (v+1)//3 for v in V} # counting primes = 2(3)
+    for p in range(2,sqrtn+1):
+        p2 = p*p
+        if S_1mod3[p] > S_1mod3[p-1]: # p is a prime of the form 3k+1
+            s1m3pm1 = S_1mod3[p-1]
+            s2m3pm1 = S_2mod3[p-1]
+            for v in V:
+                if v < p2: break
+                S_1mod3[v] -= (S_1mod3[v//p]-s1m3pm1)
+                S_2mod3[v] -= (S_2mod3[v//p]-s2m3pm1)
+        elif S_2mod3[p] > S_2mod3[p-1]: # p is a prime of the form 3k+2
+            s1m3pm1 = S_1mod3[p-1]
+            s2m3pm1 = S_2mod3[p-1]
+            for v in V:
+                if v < p2: break 
+                S_1mod3[v] -= (S_2mod3[v//p]-s2m3pm1)
+                S_2mod3[v] -= (S_1mod3[v//p]-s1m3pm1)
+
+    return V, S_1mod3, S_2mod3
 
 def sievesum(n):
     """
