@@ -19,7 +19,7 @@ def or_transform(a):
         for j in range(0, pow2n, 2*pow2i):
             for k1 in range(j, j+pow2i):
                 k2 = k1+pow2i
-                a[k1], a[k2] = a[k1], a[k1]+a[k2]
+                a[k2] = a[k1]+a[k2]
         pow2i *= 2
 
 def inverse_or_transform(a):
@@ -29,6 +29,6 @@ def inverse_or_transform(a):
         for j in range(0, pow2n, 2*pow2i):
             for k1 in range(j, j+pow2i):
                 k2 = k1+pow2i
-                a[k1], a[k2] = a[k1], -a[k1]+a[k2]
+                a[k2] = -a[k1]+a[k2]
         pow2i *= 2
     
