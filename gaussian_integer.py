@@ -35,6 +35,10 @@ class GaussianInteger(object):
         else:
             if self.b == 1:
                 return '%d+i' % (self.a, )
+            elif self.b == -1:
+                return '%d-i' % (self.a, )
+            elif self.b < 0:
+                return '%d%-di' % (self.a, -self.b)
             else:
                 return '%d%+di' % (self.a, self.b)
 
@@ -90,6 +94,9 @@ class GaussianInteger(object):
         to self mod other that is in the fundamental
         square of C containing the number 1
         """
+
+        if type(other) is int:
+            return GaussianInteger(self.a%other, self.b%other)
 
         if other == GaussianInteger(0):
             return GaussianInteger(self.a, self.b)
