@@ -9,8 +9,40 @@ from fourier import (
     hadamard_transform,
     or_transform,
     inverse_or_transform,
+    fourierZ6,
+    fourierZ10,
 )
 
+class FourierTests(unittest.TestCase):
+
+    @staticmethod
+    def mul(v, w):
+        n = len(v)
+        retval = [0]*n
+        for i in range(n):
+            for j in range(n):
+                ij = i*j % n
+                retval[ij] = (retval[ij] + v[i]*w[j])
+        return retval
+    
+    @staticmethod
+    def check_orthogonality(m):
+        m = m.transpose()
+        # check that the system of vs is correct
+        for v in m:
+            for w in m:
+                x = FourierTests.mul(v, w)
+                if np.linalg.norm(x):
+                    if np.any(v!=w) or np.linalg.norm(np.array(v)-np.array(x)):
+                        return False
+        return True
+        
+    def test_fourierZ6(self):
+        self.assertTrue(FourierTests.check_orthogonality(fourierZ6()))
+
+    def test_fourierZ10(self):
+        self.assertTrue(FourierTests.check_orthogonality(fourierZ10()))
+        
 class GeneralizedHadamardTest(unittest.TestCase):
     """
     Make sure that the generalize_hadamard_transform
