@@ -626,4 +626,25 @@ def step_modp_pascal(row, p):
     new_row.append((row[-1][0]+1,1))
     return new_row
 
+import slv
+import numpy as np
 
+def wagons_algorithm(p):
+    """
+    For a prime p=1(4), return a pair of numbers a < b,
+    such that p = a**2+b**2.
+
+    Method: find 'a', a quadratic non-residue mod p, then
+    use lattice reduction on the vectors [p, 0] and [a, 1]
+    """
+
+    g = 2
+    while pow(g, (p-1)//2, p)==1:
+        g += 1
+    a = pow(g, (p-1)//4, p)
+    assert (a*a)%p == p-1
+
+    v1=np.array((p, 0))
+    v2=np.array((a, 1))
+
+    return sorted(map(abs, slv.lagrange(v1, v2)[0]))

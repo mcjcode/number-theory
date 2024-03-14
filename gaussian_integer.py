@@ -10,13 +10,19 @@ class GaussianInteger(object):
         self.a = a
         self.b = b
 
-    @staticmethod
-    def one():
-        return GaussianInteger(1, 0)
-
-    @staticmethod
-    def zero():
-        return GaussianInteger(0, 0)
+    _one = None
+    @classmethod
+    def one(cls):
+        if not cls._one:
+            cls._one = GaussianInteger(1, 0)
+        return cls._one
+            
+    _zero = None    
+    @classmethod
+    def zero(cls):
+        if not cls._zero:
+            cls._zero =  GaussianInteger(0, 0)
+        return cls._zero
 
     @staticmethod
     def random():
@@ -72,6 +78,7 @@ class GaussianInteger(object):
     def __mul__(self, other):
         return GaussianInteger(self.a*other.a - self.b*other.b, self.a*other.b+self.b*other.a)
 
+    # TODO: should make this a 'fastpow'
     def __pow__(self, n):
         retval = GaussianInteger(1, 0)
         cnt = 0
