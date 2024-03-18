@@ -305,9 +305,8 @@ def bps_w_sign_stack(xs, n):
     while s:
         sgn, prd, idx = s.pop()
         if idx < lenxs:
-            x = xs[idx]
-            if x*prd <= n:                
-                s.append(( sgn, prd,   idx+1))
-                s.append((-sgn, prd*x, idx+1))
-                continue
-        yield sgn, prd
+            if (prdx:=(x:=xs[idx])*prd) <= n:
+                s.append(( sgn, prd,  idx+1))
+                s.append((-sgn, prdx, idx+1))
+        else:
+            yield sgn, prd
