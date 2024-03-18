@@ -10,9 +10,10 @@ import itertools
 import functools
 import operator
 import random
-
 import math
-#from math import sqrt
+import numpy as np
+
+import slv
 
 
 def prod(xs, start=1):
@@ -626,8 +627,6 @@ def step_modp_pascal(row, p):
     new_row.append((row[-1][0]+1,1))
     return new_row
 
-import slv
-import numpy as np
 
 def wagons_algorithm(p):
     """
