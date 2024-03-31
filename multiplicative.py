@@ -5,11 +5,13 @@ Various multiplicative arithmetic functions
 and their summations.
 """
 
+import numpy as np
+
 from utilities import (
     prod,
     factorize2,
     gcd,
-    sqrtInt
+    sqrtInt,
 )
 
 
@@ -65,63 +67,27 @@ def sum_sigma1(n):
     return part1+part2
 
 
-_maxp = 16
-_sgns = [1]*(2**_maxp)
-c = 1
-for i in range(_maxp):
-    for j in range(c):
-        _sgns[j+c] = -_sgns[j]
-    c <<= 1
-
-
-def partial_totient(n, k):
+def partial_totient(n: int, k: int, ps=[]) -> int:
     r"""
-    :param n: a positive integer 
-    :param k: a positive integer
-    :return: the number of integers in [1..n]
-             that are relatively prime to k.  Note
-             that the number of distinct prime factors
-             of k must be <= _maxp (currently 16)
+    :return: how many k in [1,n] are relatively prime to k.
+    n and k should be positive
     """
-
-    if n == 0:
-        return 0
-    ps = [p for (p, _) in factorize2(k)]
-    nps = len(ps)
-
-    assert nps <= _maxp
-
-    pps = [1]*(2**nps)
-    c = 1
+    ps = ps or (p for p,_ in factorize2(k))
+    xs = [(n,+1)]
     for p in ps:
-        j = 0
-        while j < c:
-            pps[j+c] = p*pps[j]
-            j += 1
-        c <<= 1
-
-    retval = 0
-    ub = 2**nps
-    i = 0
-    while i < ub:
-        retval += _sgns[i]*(n//pps[i])
-        i += 1
-    return retval
+        xs += [(x//p, -s) for x,s in xs]
+    return sum(x*s for x,s in xs)
 
 
-def _partial_totient_alternate(n, k):
+def _partial_totient_alternate(n: int, k: int) -> int:
     r"""
-    :param n: a positive integer
-    :return: the number of integers in [1..n]
-             that are relatively prime to k
+    :return: how many k in [1,n] are relatively prime to k.
+    n and k should be positive
     """
-    if n == 0:
-        return 0
-    kps = [p for (p, _) in factorize2(k)]
     V = [n//i for i in range(1, sqrtInt(n)+1)]
     V += list(range(V[-1]-1, -1, -1))
-    S1 = {i: i for i in V}
-    for p in kps:
+    S1 = {i:i for i in V}
+    for p, _ in factorize2(k):
         for v in V:
             if v < p:
                 break
@@ -129,13 +95,15 @@ def _partial_totient_alternate(n, k):
     return S1[n]
 
 
-def coprime(lb, ub, pfacts, i=0, prd=1):
+def coprime(lb, ub, ps):
     r"""
     :param lb: a positive integer
     :param ub: a positive integer greater than lb
-    :param pfacts: a list of prime numbers
-    :return: the # of ints in (lb, ub] not divisible by the primes in pfacts.
-    """
-    if i == len(pfacts):
-        return ub//prd - lb//prd
-    return coprime(lb, ub, pfacts, i+1, prd) - coprime(lb, ub, pfacts, i+1, prd*pfacts[i])
+    :param ps: a list of prime numbers
+    :return: how many k in (lb, ub] are not divisible by the p's in ps
+    """    
+    def f(i=0, prd=1):
+        if i==len(ps):
+            return ub//prd - lb//prd
+        return f(i+1, prd) - f(i+1, prd*ps[i])
+    return f()
