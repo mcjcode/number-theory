@@ -143,3 +143,21 @@ def primeFactors(n):
             for j in range(p, n+1, p):
                 retval[j].append(p)
     return retval
+
+
+def spf(n):
+    retval = [0]*(n+1)
+    for p in range(2, n+1):
+        if not retval[p]: # p is prime
+            for j in range(p, n+1, p):
+                if not retval[j]:
+                    retval[j]=p
+    return retval
+
+
+def lpf(n):
+    retval = np.array([0]*(n+1), dtype=object)
+    for p in range(2, n+1):
+        if not retval[p]: # p is prime
+            retval[p:n+1:p] = p
+    return retval
