@@ -21,13 +21,14 @@ class PhiTest(unittest.TestCase):
             nresid = sum(1 for kk in range(1, nn+1) if gcd(nn, kk) == 1)
             self.assertEqual(nresid, phi(nn))
 
-    def partial_totient_test(self):
-        partial_sum = 0
+    def test_partial_totient(self):
         for nn in range(1, 101):
-            partial_sum += phi(nn)
-            self.assertEqual(partial_sum, partial_totient(nn))
-            self.assertEqual(partial_sum, _partial_totient_alternate(nn))
-
+            self.assertEqual(phi(nn), partial_totient(nn, nn))
+            self.assertEqual(phi(nn), _partial_totient_alternate(nn, nn))
+            for kk in range(1, nn):
+                self.assertEqual(partial_totient(nn, kk),
+                                 _partial_totient_alternate(nn, kk))
+            
     def test_coprime(self):
         pfacts = [2, 3, 5, 7]
         xx = 2*3*5*7
