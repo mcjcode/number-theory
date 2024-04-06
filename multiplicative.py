@@ -67,7 +67,7 @@ def sum_sigma1(n):
     return part1+part2
 
 
-def partial_totient(n: int, k: int, ps=[]) -> int:
+def partial_totient(n: int, k: int, ps: list[int] = []) -> int:
     r"""
     :return: how many k in [1,n] are relatively prime to k.
     n and k should be positive
@@ -95,7 +95,7 @@ def _partial_totient_alternate(n: int, k: int) -> int:
     return S1[n]
 
 
-def coprime(lb, ub, ps):
+def coprime(lb: int, ub: int, ps: list[int]) -> int:
     r"""
     :param lb: a positive integer
     :param ub: a positive integer greater than lb
@@ -105,5 +105,18 @@ def coprime(lb, ub, ps):
     def f(i=0, prd=1):
         if i==len(ps):
             return ub//prd - lb//prd
+        return f(i+1, prd) - f(i+1, prd*ps[i])
+    return f()
+
+def coprime0(ub: int, ps: list[int]) -> int:
+    r"""
+    :param ub: a positive integer greater than lb
+    :param ps: a list of prime numbers
+    :return: how many k <= ub are not divisible by the p's in ps
+    """
+    nps = len(ps)
+    def f(i=0, prd=1):
+        if i==nps:
+            return ub//prd
         return f(i+1, prd) - f(i+1, prd*ps[i])
     return f()
