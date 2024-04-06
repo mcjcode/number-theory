@@ -145,7 +145,11 @@ def primeFactors(n):
     return retval
 
 
-def spf(n):
+def spf(n: int):
+    """
+    Return the smallest prime factors of all integers
+    up to and including n
+    """
     retval = [0]*(n+1)
     for p in range(2, n+1):
         if not retval[p]: # p is prime
@@ -155,7 +159,11 @@ def spf(n):
     return retval
 
 
-def lpf(n):
+def lpf(n: int):
+    """
+    Return the largest prime factor of all integers
+    up to and including n
+    """
     retval = np.array([0]*(n+1), dtype=object)
     for p in range(2, n+1):
         if not retval[p]: # p is prime
