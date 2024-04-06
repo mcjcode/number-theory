@@ -116,42 +116,6 @@ def partitions(d, max_part=None):
                     yield seg + part
 
 
-def connected_components(A):
-    """
-    Given the adjacency matrix A of a graph,
-    partition the nodes of the graph into
-    connected components.
-    
-    Input:  A: the adjacency matrix of G
-    Output: the # of connected components of G
-    """
-
-    n = A.shape[0]
-    V = [False]*n
-    ncomponents = 0
-
-    def DFSmark(origin):
-        for i in range(n):
-            if A[origin,i] and not V[i]:
-                V[i] = True
-                DFSmark(i)
-
-    for i in range(n):
-        if not V[i]:
-            ncomponents += 1
-            V[i] = True
-            DFSmark(i)
-    return ncomponents
-
-
-def adjmat_from_edges(edges,n):
-    nodes = sorted([a for (a,_) in edges])
-    A = np.zeros((n, n), dtype=int)
-    for edge in edges:
-        A[edge] = 1
-    return A
-
-
 def peterson_graph():
     """
     Return the adjacency matrix of the
@@ -170,50 +134,35 @@ def peterson_graph():
     return A
 
 
-def chromatic_polynomial(A):
-    """
-    Given the adjacency matrix A of a graph G, return
-    the chromatic polynomial of the graph p, where
-    p(n) = the number of ways to color G with n
-    colors.
-    """
-    n = A.shape[0]
-    edges = [(i,j) for j in range(n) for i in range(j) if A[i,j]]
-    ne = len(edges)
-    retval = intpoly1d([0]*n + [(-1)**ne])
-    it = powerset(edges)
-    next(it) # skip the empty subgraph
-    for ss in it:
-        na = len(ss)
-        ss = list(ss)+[(b,a) for (a,b) in ss]
-        B = adjmat_from_edges(ss,n)
-        cA = connected_components(B)
-        retval = retval + (-1)**((ne-na)%2) * intpoly1d([0]*cA+[1])
-    if retval.coefs[-1] == -1:
-        retval = (-1)*retval
-    return retval
-
-
-def connected_components2(G):
+def connected_components(G):
     """
     Input: G - a graph
-    Output: the # of connected_components of G
+    Output: the connected_components of G
     """
-
     V = defaultdict(lambda:True)
-    ncomponents = 0
-
+    components = []
     for v in G:
         if V[v]:
-            ncomponents += 1
+            component = []
             stack = [v]
             while stack:
                 v = stack.pop()
+                component.append(v)
                 V[v] = False
                 for w in G[v]:
                     if V[w]:
                         stack.append(w)
-    return ncomponents
+            C = {v:G[v] for v in component}
+            components.append(C)
+    return components
+
+
+def nconnected_components(G):
+    """
+    Input: G - a graph
+    Output: the # of connected_components of G
+    """
+    return len(connected_components(G))
 
 
 def gray(n):
@@ -260,12 +209,12 @@ def chromatic_polynomial2(G):
         for (i,j) in ss:
             G[i].add(j)
             G[j].add(i)
-        cA = connected_components2(G)
+        cA = nconnected_components(G)
         retval = retval + (-1)**((ne-na)%2) * intpoly1d([0]*cA+[1])
     return (retval.coefs[-1])*retval        
 
 
-def chromatic_polynomial3(G):
+def chromatic_polynomial(G):
     """
     Return the chromatic polynomial p of
     the graph G.
@@ -299,7 +248,7 @@ def chromatic_polynomial3(G):
             G2[i].add(j)
             G2[j].add(i)
         sgn = -sgn
-        cA = connected_components2(G2)
+        cA = nconnected_components(G2)
         retval[cA] += sgn
         
     return intpoly1d(retval)
