@@ -21,7 +21,7 @@ def comb(k, a, b):
                 yield tl
 
 
-def nchoosek(n, ks):
+def nchoosek(n, ks, p=0):
     """
     n: a non-negative integer
     ks: either an integer in the range 0..n,
@@ -31,21 +31,34 @@ def nchoosek(n, ks):
         (n choose k1 . . . km)
     """
     if type(ks) == int:
-        if ks < 0:
+        if ks<0 or ks>n:
             return 0
         ks = [ks, n-ks]
 
-    retval = 1
-    i = n
-    while i > 0:
-        for k in ks:
-            j = 1
-            while j <= k:
-                retval *= i
-                i -= 1
-                retval //= j
-                j += 1
-    return retval
+    if p==0:
+        retval = 1
+        i = n
+        while i > 0:
+            for k in ks:
+                j = 1
+                while j <= k:
+                    retval *= i
+                    i -= 1
+                    retval //= j
+                    j += 1
+        return retval
+    else:
+        retval = 1
+        i = n
+        while i > 0:
+            for k in ks:
+                j = 1
+                while j<=k:
+                    retval = (retval*i)  % p
+                    i -= 1
+                    retval = (retval*pow(j, -1, p)) % p
+                    j += 1
+        return retval
 
 
 def stirling2(n, k):
