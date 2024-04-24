@@ -16,6 +16,15 @@ import numpy as np
 import slv
 
 
+def show(x):
+    """
+    A haskell-style function for debugging 'in-place'
+    without disturbing the functional flow.
+    """
+    print(x)
+    return x
+
+
 def prod(xs, start=1):
     """
     :param xs: a sequence of elements to multiply
@@ -626,6 +635,15 @@ def step_modp_pascal(row, p):
             new_row.append((row[k+1][0],row[k+1][1]))
     new_row.append((row[-1][0]+1,1))
     return new_row
+
+
+def divisors(n):
+    """
+    Yield all of the divisors of n
+    """
+    f = list(factorize2(n))
+    for exponents in itertools.product(*[range(e+1) for (p,e) in f]):
+        yield prod(p**e for ((p,_),e) in zip(f,exponents))
 
 
 def wagons_algorithm(p):
