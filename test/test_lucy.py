@@ -8,6 +8,12 @@ from lucy import (
     sievecnt_mod3,
     sievecnt_mod4,
     sievesum_mod3,
+    sievesumsq,
+    sievesumcb,
+)
+
+from prime_sieve import (
+    segmented_sieve,
 )
 
 
@@ -44,3 +50,17 @@ class LucyTest(unittest.TestCase):
             V, Stot = sievesum(n)
             S = sievesum_mod3(n)
             self.assertEqual(S[1][n]+S[2][n]+3, Stot[n])
+
+    def test_sievesumsq(self):
+        N = 100
+        V, S = sievesumsq(N)
+        ps = list(segmented_sieve(N))
+        for v in V:
+            self.assertEqual(S[v], sum(p**2 for p in ps if p<=v))
+
+    def test_sievesumcb(self):
+        N = 100
+        V, S = sievesumcb(N)
+        ps = list(segmented_sieve(N))
+        for v in V:
+            self.assertEqual(S[v], sum(p**3 for p in ps if p<=v))

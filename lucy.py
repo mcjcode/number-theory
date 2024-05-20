@@ -317,6 +317,48 @@ def sievecntsum(n):
                 S1[v] -= p*(D1)
     return V, S0, S1
 
+def sievesumsq(n):
+    """
+    Return the sum of the squares of all numbers not excluded
+    by a sieve of [1..n] by all primes up to
+    and including sqrtInt(n).
+    """
+    sqrtn = sqrtInt(n)
+    V = [n//i for i in range(1,sqrtn+1)]
+    V += list(range(V[-1]-1,0,-1))
+    S = {i:(2*i**3 + 3*i**2 + i)//6-1 for i in V}
+    for p in range(2,sqrtn+1):
+        if S[p] > S[p-1]:  # p is prime
+            sp = S[p-1]  # sum of q**2 for primes q smaller than p
+            p2 = p*p
+            for v in V:
+                if v < p2: break
+                S[v] -= p2*(S[v//p] - sp)
+    return V, S
+
+
+def sievesumcb(n):
+    """
+    Return the sum of the cubes of all numbers not excluded
+    by a sieve of [1..n] by all primes up to
+    and including sqrtInt(n).
+    """
+    sqrtn = sqrtInt(n)
+    V = [n//i for i in range(1,sqrtn+1)]
+    V += list(range(V[-1]-1,0,-1))
+    S = {i:((i+2)*(i**3-i)+2*(i**2+i))//4-1 for i in V}
+    for p in range(2,sqrtn+1):
+        if S[p] > S[p-1]:  # p is prime
+            sp = S[p-1]  # sum of q**3 for primes q smaller than p
+            p2 = p*p
+            p3 = p2*p
+            for v in V:
+                if v < p2: break
+                S[v] -= p3*(S[v//p] - sp)
+    return V, S
+
+
+
 def P23(S0,V,printTables=False):
     """
     V: all positive numbers of the form n//k
