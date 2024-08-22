@@ -665,3 +665,13 @@ def wagons_algorithm(p):
     v2=np.array((a, 1))
 
     return sorted(map(abs, slv.lagrange(v1, v2)[0]))
+
+
+def cardano(p: float, q: float) -> float:
+    """
+    return the real root of t**3 + p*t + q = 0.
+    Provided that D>0.
+    """
+    D = q**2/4 + p**3/27
+    a = -q/2
+    return math.cbrt(a + math.sqrt(D)) + math.cbrt(a - math.sqrt(D))

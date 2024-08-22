@@ -6,6 +6,7 @@ arithmetic routines.
 """
 
 import unittest
+import math
 
 from utilities import (
     powerset,
@@ -20,6 +21,7 @@ from utilities import (
     issq,
     step_modp_pascal,
     factorize2,
+    cardano,
 )
 
 
@@ -107,3 +109,7 @@ class UtilitiesTest(unittest.TestCase):
         with self.assertRaises(Exception):
             f = factorize2(41*43, 10)
             next(f)
+
+    def test_cardano(self):
+        for x in range(1, 10):
+            self.assertAlmostEqual(cardano(0.0, -x), math.cbrt(x), places=10)
