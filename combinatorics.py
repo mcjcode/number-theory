@@ -178,6 +178,26 @@ def nconnected_components(G):
     return len(connected_components(G))
 
 
+def traverse(start, neighbors):
+    """
+    start: the start node
+    neighbors: a function taking a node and returning a
+        sequence of neigboring nodes.
+
+    yields: a sequence of all the nodes reachable
+        from start.
+    """
+    visited = {start}
+    stack = [start]
+    while stack:
+        node = stack.pop()
+        for nbr in neighbors(node):
+            if nbr not in visited:
+                visited.add(nbr)
+                stack.append(nbr)
+        yield node
+
+
 def gray(n):
     """
     The nth term in the reflective
