@@ -74,7 +74,7 @@ def exit_probabilities_weighted(G, end, before):
     n = len(G)
     I = np.identity(n)
     indices = {v:i for (i,v) in enumerate(G)}
-    M = np.zeros((n, n),dtype=np.float)
+    M = np.zeros((n, n),dtype=float)
     for v, i in indices.items():
         if v!=end and v not in before:
             for w, p in G[v]:
@@ -122,7 +122,7 @@ def conditional_expected_exit_time(G, end, other):
     n = len(G)
     probs = exit_probabilities(G, end, other)
     I = np.identity(n)
-    M = np.zeros((n,n),dtype=np.float)
+    M = np.zeros((n,n),dtype=float)
     indices = {v:i for (i,v) in enumerate(G)}
     for i, v in enumerate(G):
         if v==end or v in other:
