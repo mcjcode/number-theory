@@ -67,13 +67,9 @@ def gauss_circle_norm(r2, trace=False):
     retval = 0
 
     quotient = 0
-    if trace:
-        print('=1(4) divisors')
     for d in range(1, sqrtInt(r2//4)):
         count = (r2//d+3)//4 - (r2//(d+1)+3)//4
         quotient = d
-        if trace:
-            print(count, quotient, '*')
         retval += count * quotient
 
     ub = (r2//(quotient+1)-1)//4
@@ -83,18 +79,12 @@ def gauss_circle_norm(r2, trace=False):
         quotient = r2 // (4*i+1)
         if quotient == prev_quot:
             continue
-        if trace:
-            print(1, quotient)
         retval += quotient
 
-    if trace:
-        print('=3(4) divisors')
     quotient = 0
     for d in range(1, sqrtInt(r2//4)):
         count = (r2//d+1)//4 - (r2//(d+1)+1)//4
         quotient = d
-        if trace:
-            print(count, quotient, '*')
         retval -= count * quotient
     ub = (r2//(quotient+1)-1)//4
     prev_quot = quotient
@@ -103,10 +93,6 @@ def gauss_circle_norm(r2, trace=False):
         quotient = r2 // (4*i+3)
         if quotient == prev_quot:
             continue
-        if trace:
-            print(1, quotient)
         retval -= quotient
 
-    retval *= 4
-
-    return retval + 1  # don't forget the origin
+    return 4*retval + 1  # don't forget the origin
