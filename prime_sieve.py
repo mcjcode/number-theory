@@ -24,7 +24,8 @@ def segmented_sieve(n, trace=False):
             yield 2
         return
 
-    seglen = sqrtInt(n+1)
+    seglen = int((n+1)**(2/3))
+    #seglen = sqrtInt(n+1)
 
     # always make seglen a multiple of 6
     # add 6 so that the first segment contains sqrt(n)
@@ -32,67 +33,77 @@ def segmented_sieve(n, trace=False):
 
     wheel = [4, 2]
     wheel_len = len(wheel)
-
-    if trace:
-        print('segment length = %d' % (seglen, ))
+    wheelis = [1, 0]
+    
     nsegs = (n+1)//seglen
     if seglen*nsegs < n+1:
         nsegs += 1
-    if trace:
-        print('number of segments = %d' % (nsegs, ))
+
     ps = [2, 3]
     for p in ps:
         yield p
-    segi = 0
+
     seg_start = 0
-    seg = np.ones((seglen, ), dtype=np.int8)
+    seg = np.ones((seglen, ), dtype=np.int32)
     seg[:4] = [0, 0, 1, 1]
-    
-    while segi < nsegs:
+
+    seg_end = seg_start+seglen-1
+
+    ub = math.sqrt(seg_end)+1
+    for p in ps:
+        if p > ub:
+            break
+        seg[(-seg_start)%p::p] = 0
+
+    starti = 1
+    endi = min(seglen, ub-seg_start+1)
+    stepi = 2
+
+    i = starti
+    wheeli = 0
+    while i < endi: 
+        if seg[i]:
+            yield (p:=seg_start+i)
+            ps.append(p)
+            seg[p*p-seg_start::p] = 0
+        i += wheel[wheeli]  # stepi
+        wheeli = wheelis[wheeli]
+
+    maxi = min(seglen, n-seg_start+1)
+    while i < maxi:
+        if seg[i]:  # seq_start+i is prime
+            yield (p:=seg_start+i)
+            ps.append(p) 
+        i += wheel[wheeli]
+        wheeli = wheelis[wheeli]
+
+    seg_start += seglen
+    seg[:] = 1
+
+    for segi in range(1, nsegs):
         seg_end = seg_start+seglen-1
-
-        if trace: 
-            print('segment number = %d' % (segi, ))
-            print('segment start = %d' % (seg_start, ))
-            print('segment end = %d' % (seg_end, ))
-
         ub = math.sqrt(seg_end)
         for p in ps:
             if p > ub:
                 break
-            zeroit(seg, (p-seg_start) % p, p)
-            if trace:
-                print(p, '%s' % (seg, ))
-
+            seg[(-seg_start)%p::p] = 0
         starti = 1
         endi = min(seglen, ub-seg_start+1)
         stepi = 2
-
         i = starti
         wheeli = 0
         while i < endi: 
             if seg[i]:
-                p = seg_start + i
-                yield p
-                if segi == 0:
-                    ps.append(p)
-                zeroit(seg, p*p-seg_start, p)
-                if trace:
-                    print(p, '%s' % (seg, ))
+                yield (p:=seg_start+i)
+                seg[p*p-seg_start::p] = 0
             i += wheel[wheeli]  # stepi
-            wheeli = (wheeli + 1) % wheel_len
-
+            wheeli = wheelis[wheeli]
         maxi = min(seglen, n-seg_start+1)
         while i < maxi:
             if seg[i]:  # seq_start+i is prime
-                p = seg_start+i
-                yield p
-                if segi == 0:
-                    ps.append(p) 
+                yield (p:=seg_start+i)
             i += wheel[wheeli]
-            wheeli = (wheeli + 1) % wheel_len
-
-        segi += 1
+            wheeli = wheelis[wheeli]
         seg_start += seglen
         seg[:] = 1
 
@@ -169,3 +180,10 @@ def lpf(n: int):
         if not retval[p]: # p is prime
             retval[p:n+1:p] = p
     return retval
+
+
+def phiarray(n: int):
+    """
+    Return [_, phi(1), phi(2),..., phi(n)]
+    """
+    pass
