@@ -260,17 +260,19 @@ def sievecnt_modp(
         S[i] = {v: F(i,q,v) for v in V}
         printS(Vr, S[i])
     printRuler(Vr)
-    
+
+    invs = {i:modinv(q, i) for i in residues}
     for p in range(2, sqrtn+1):
         p2 = p*p
         for i in residues:
-            invi = modinv(q, i)
+            invi = invs[i] # modinv(q, i)
             if S[i][p] > S[i][p-1]: # p is prime = i(mod p)
+                fiqp = f(i,q,p)
                 for v in V:
                     if v < p2: break
                     for j in residues:
                         j2 = j*invi % q
-                        S[j][v] -= f(i,q,p)*(S[j2][v//p] - S[j2][p-1])
+                        S[j][v] -= fiqp*(S[j2][v//p] - S[j2][p-1])
                 for i in residues:
                     printS(Vr, S[i], tag='%s, %s' % (p, i))
                 printRuler(Vr)
