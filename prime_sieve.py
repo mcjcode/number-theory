@@ -3,9 +3,11 @@
 # prime_sieve.py
 #
 
+from collections import Counter
 import math
-from utilities import sqrtInt
 import numpy as np
+from utilities import sqrtInt
+
 
 
 def zeroit(arr, starti, stepi):
@@ -155,7 +157,7 @@ def primeFactors(n):
                 retval[j].append(p)
     return retval
 
-
+    
 def spf(n: int):
     """
     Return the smallest prime factors of all integers
@@ -179,6 +181,22 @@ def lpf(n: int):
     for p in range(2, n+1):
         if not retval[p]: # p is prime
             retval[p:n+1:p] = p
+    return retval
+
+
+def factorizations(N: int):
+    """
+    Returns a length N+1 list of Counters, such that the
+    element in position n is the factorization of n.
+    """
+    lgpf = lpf(N)
+    retval = [None]*(N+1)
+    retval[1] = Counter()
+    for n in range(2, N+1):
+        p = lgpf[n]
+        fact = retval[n//p].copy()
+        fact[p] += 1
+        retval[n] = fact
     return retval
 
 
