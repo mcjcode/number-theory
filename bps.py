@@ -285,10 +285,10 @@ def bps_w_sign(xs,n):
             yield -s, x*pr
 
 
-def bps_w_sign_stack(xs, n):
+def bps_w_sign_stack(ps, n):
     """
-    For an increasing sequence xs of relatively
-    prime numbers and an upper bound n>=1, compute
+    For an increasing sequence ps of relatively
+    prime numbers ps and an upper bound n>=1, compute
     all of the products <=n of subsets of xs, along
     with a parity: +1 if an even number of elements
     are used, -1 if an odd number are used.
@@ -300,13 +300,13 @@ def bps_w_sign_stack(xs, n):
     Also, have found this 20x faster than bps_w_sign
     """
 
-    s = [(+1, 1, 0)]
-    lenxs = len(xs)
-    while s:
-        sgn, prd, idx = s.pop()
-        if idx < lenxs:
-            if (prdx:=(x:=xs[idx])*prd) <= n:
-                s.append(( sgn, prd,  idx+1))
-                s.append((-sgn, prdx, idx+1))
-        else:
-            yield sgn, prd
+    xs = [(+1,1)]
+    for p in ps:
+        ys = []
+        for s, x in xs:
+            if (xp:=x*p) <= n:
+                ys.append((-s, xp))
+        if not ys:
+            break
+        xs += ys
+    return xs
