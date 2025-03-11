@@ -9,7 +9,6 @@ from utilities import (
     isprime,
     factorize2,
     prod,
-    modpow2
     )
 
 
@@ -28,7 +27,7 @@ def legendre(a, p):
           = 1 if a is a quad residue mod p
           = -1 if a is a quad non-residue mod p
     """
-    a = a % p
+    a %= p
     if a == 0:
         return 0
     if a == 1:
@@ -80,7 +79,7 @@ def tonelli_shanks(a, p, safe=False):
         return a % p
 
     if p % 4 == 3:
-        return modpow2(a, (p+1)//4, p)
+        return pow(a, (p+1)//4, p)
     
     #
     # p=1(mod 4)
@@ -100,9 +99,9 @@ def tonelli_shanks(a, p, safe=False):
     # z is a non-residue mod p
 
     M = S
-    c = modpow2(z, Q, p)
-    t = modpow2(a, Q, p)
-    R = modpow2(a, (Q+1)//2, p)
+    c = pow(z, Q, p)
+    t = pow(a, Q, p)
+    R = pow(a, (Q+1)//2, p)
 
     while True:
         if t == 0:
@@ -117,7 +116,7 @@ def tonelli_shanks(a, p, safe=False):
 
         # now t**(2**i) = 1 (mod p)
 
-        b = modpow2(c, 2**(M-i-1), p)
+        b = pow(c, 2**(M-i-1), p)
         M = i
         c = b*b % p
         t = t*c % p
