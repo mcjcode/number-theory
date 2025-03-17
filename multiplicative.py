@@ -72,11 +72,22 @@ def partial_totient(n: int, k: int, ps: list[int] = []) -> int:
     :return: how many k in [1,n] are relatively prime to k.
     n and k should be positive
     """
-    ps = ps or (p for p,_ in factorize2(k))
-    xs = [(n,+1)]
+    ps = ps or [p for p,_ in factorize2(k)]
+    nps = len(ps)
+    xs = [0]*(2**nps)
+    xs[0] = (n, +1)
+    retval = n
+    i = 1
     for p in ps:
-        xs += [(x//p, -s) for x,s in xs]
-    return sum(x*s for x,s in xs)
+        for j in range(i):
+            x, s = xs[j]
+            if x>=p:
+                retval -= s*(xp:=x//p)
+                xs[i] = (xp, -s)
+                i += 1
+    return retval
+    #    xs += [(x//p, -s) for x,s in xs if x>=p]
+    #return sum(x*s for x,s in xs)
 
 
 def _partial_totient_alternate(n: int, k: int) -> int:
