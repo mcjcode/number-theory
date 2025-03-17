@@ -200,6 +200,18 @@ def factorizations(N: int):
     return retval
 
 
+def prime_factors(N: int):
+    lgpf = lpf(N)
+    retval = [None]*(N+1)
+    retval[1] = set()
+    for n in range(2, N+1):
+        p = lgpf[n]
+        ps = retval[n//p].copy()
+        ps.add(p)
+        retval[n] = ps
+    return retval
+
+
 def phiarray(n: int):
     """
     Return [_, phi(1), phi(2),..., phi(n)]
