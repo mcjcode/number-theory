@@ -299,14 +299,15 @@ def bps_w_sign_stack(ps, n):
     
     Also, have found this 20x faster than bps_w_sign
     """
+    s = [(+1, 1, 0)]
+    lenps = len(ps)
+    while s:
+        sgn, prd, idx = s.pop()
+        if idx < lenps:
+            p = ps[idx]
+            if p*prd <= n:                
+                s.append(( sgn, prd,   idx+1))
+                s.append((-sgn, prd*p, idx+1))
+                continue
+        yield sgn, prd
 
-    xs = [(+1,1)]
-    for p in ps:
-        ys = []
-        for s, x in xs:
-            if (xp:=x*p) <= n:
-                ys.append((-s, xp))
-        if not ys:
-            break
-        xs += ys
-    return xs
