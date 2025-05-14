@@ -34,6 +34,16 @@ def prod(xs, start=1):
     return functools.reduce(operator.mul, xs, start)
 
 
+def argmax(f, xs):
+    """
+    :param f: a function
+    :param xs: a (finite) sequence of elements
+    :return: an element x of xs for which f(x) is maximal
+    """
+    _, x = max((f(x), x) for x in xs)
+    return x
+
+
 def timeit(f):
     """
     :param f: a function
