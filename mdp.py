@@ -80,14 +80,15 @@ class MDP:
         old and new q-function.
         """
         maxdiff = 0
-        q1 = q.copy()
-        for s in q.states:
-            for a in q.actions:
+        q1 = {s:{a:q[s][a] for a in q[s]} for s in q}
+        for s in q:
+            qs = q[s]
+            for a in qs:
                 dist = self.transition_model(s, a)
-                x = sum(p*max(q.get(s0, a) for a in q.actions) for (s0, p) in dist.items())
+                x = sum(p*max(qs0[a] for a in qs0) for (s0, p) in dist.items() for qs0 in [q[s0]])
                 v = self.reward_fn(s, a) + self.discount_factor*x
-                maxdiff = max(abs(v - q.get(s, a)), maxdiff)
-                q1.set(s, a, v)
+                maxdiff = max(abs(v - qs[a]), maxdiff)
+                q1[s][a] = v
         return q1, maxdiff
 
 
