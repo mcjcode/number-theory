@@ -311,3 +311,22 @@ def bps_w_sign_stack(ps, n):
                 continue
         yield sgn, prd
 
+
+def bpsk(ps, N, k, i=0):
+    """
+    Yield k-tuples of strictly increasing elements of the
+    list increasing list ps[i:] whose product is less than
+    or equal to N.
+    """
+    if k==0:
+        yield ()
+    else:
+        pi = i
+        p = ps[pi]
+        while p**k < N:
+            for t in bpsk(ps, N//p, k-1, pi+1):
+                yield (p,) + t
+            pi += 1
+            if pi==len(ps):
+                break
+            p = ps[pi]  
