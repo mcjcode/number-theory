@@ -156,14 +156,10 @@ def bps_facts_w_rep(n, ps):
         # 2) less than what is left
         #
         pi = num_primes-1
-        p = ps[pi]
-        while p > val[-1][3]:
+        while (pi>=0) and (p:=ps[pi]) > val[-1][3]:
             if p < val[-1][0]:
                 break
             pi -= 1
-            if pi < 0:
-                break
-            p = ps[pi]
 
         if pi < 0:
             return
@@ -318,15 +314,43 @@ def bpsk(ps, N, k, i=0):
     list increasing list ps[i:] whose product is less than
     or equal to N.
     """
+    if k>len(ps)-i or N<1: # even the empty tuple has a product of '1'.
+        return
     if k==0:
-        yield ()
+        yield (), 1
     else:
         pi = i
         p = ps[pi]
-        while p**k < N:
-            for t in bpsk(ps, N//p, k-1, pi+1):
-                yield (p,) + t
+        while p**k <= N:
+            for t, x in bpsk(ps, N//p, k-1, pi+1):
+                yield (p,)+t, x*p
             pi += 1
             if pi==len(ps):
                 break
             p = ps[pi]  
+
+def bpsk_w_rep(ps, N, k, i=0):
+    """
+    Yield k-tuples of strictly increasing elements of the
+    list increasing list ps[i:] whose product is less than
+    or equal to N.
+    """
+    if k>len(ps)-i or N<1: # even the empty factorization has a product of '1'.
+        return
+    elif k==0:
+        yield (), 1
+    else:
+        pi = i
+        p = ps[pi]
+        while p**k <= N:
+            j = 1
+            pj = p**j
+            while pj <= N:
+                for t, x in bpsk_w_rep(ps, N//pj, k-1, pi+1):
+                    yield ((p, j),)+t, x*pj
+                j += 1
+                pj = pj*p
+            pi += 1
+            if pi==len(ps):
+                break
+            p = ps[pi]
