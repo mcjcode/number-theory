@@ -3,11 +3,12 @@
 # prime_sieve.py
 #
 
+import itertools
 from collections import Counter
 import math
 import numpy as np
 from utilities import sqrtInt
-
+from quadratic_extensions import tonelli_shanks
 
 
 def zeroit(arr, starti, stepi):
@@ -212,8 +213,33 @@ def prime_factors(N: int):
     return retval
 
 
-def phiarray(n: int):
+def quadratic_sieve(N):
     """
-    Return [_, phi(1), phi(2),..., phi(n)]
+    Return a list, such that for n from 1 to N, xs[n]
+    is the factorization of n**2+1. 
     """
-    pass
+    xs = [[] for _ in range(N+1)]
+    rs = [n**2+1 for n in range(N+1)]
+    ps = segmented_sieve(N)
+    for p in ps:
+        if p==2:
+            avals = range(1, N+1, 2)
+        elif p%4==1:
+            a1 = tonelli_shanks(-1, p, safe=True)
+            a2 = p-a1
+            avals = itertools.chain(range(a1, N+1, p), range(a2, N+1, p))
+        else:
+            avals = ()
+        for a in avals:
+            y = rs[a]//p
+            e = 1
+            while y%p==0:
+                y //= p
+                e += 1
+            xs[a].append((p, e))
+            rs[a]=y
+    for n in range(1, N+1):
+        if rs[n]!=1:
+            xs[n].append((rs[n], 1))
+    return xs
+    
