@@ -389,17 +389,10 @@ def primitive_root(p):
     :param p: a prime number
     :return: a generator of the (cyclic) multiplicative group :math:`(Z/pZ)^*`.
     """
-    facts = list(factorize2(p-1))
-    a = 2
-    while a < p:
-        ok = True
-        for q, e in facts:
-            if pow(a, (p-1)//q, p)==1:
-                ok = False
-                break
-        if ok:
+    facts = dict(factorize2(p-1))
+    for a in range(1, p):
+        if all(pow(a, (p-1)//q, p)!=1 for q in facts):
             return a
-        a += 1
 
 
 def modpow(a, k, p):

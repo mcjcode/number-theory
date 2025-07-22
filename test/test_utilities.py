@@ -21,9 +21,13 @@ from utilities import (
     cbrtInt,
     issq,
     step_modp_pascal,
+    order,
     factorize2,
+    primitive_root,
     cardano,
 )
+
+from prime_sieve import segmented_sieve
 
 
 class UtilitiesTest(unittest.TestCase):
@@ -111,6 +115,11 @@ class UtilitiesTest(unittest.TestCase):
                 n2 *= p**e
             self.assertEqual(n, n2)
 
+    def test_primitive_root(self):
+        for p in segmented_sieve(100):
+            with self.subTest(p=p):
+                self.assertEqual(order(primitive_root(p), p), p-1)
+                
     def test_trial_division_exception(self):
         with self.assertRaises(Exception):
             f = factorize2(41*43, 10)
