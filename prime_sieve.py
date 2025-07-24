@@ -17,14 +17,18 @@ def zeroit(arr, starti, stepi):
 
 def segmented_sieve(n, trace=False):
     """
-    Return the list of all prime numbers
-    less than or equal to n.  Runtime
-    complexity of O(n) (or a bit better)
-    with space complexity of O(sqrt(n)).
+    Yield the prime numbers <= n. Runtime complexity O(n),
+    space complexity O(sqrt(n)).
     """
-    if n<=2:
-        if n==2:
-            yield 2
+    #
+    # Handle these small cases separately and return
+    #
+    if n<=6:
+        for p in 2, 3, 5:
+            if p<=n:
+                yield p
+            else:
+                break
         return
 
     seglen = int((n+1)**(2/3))
