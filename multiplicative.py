@@ -50,11 +50,8 @@ def sum_sigma0(n):
     :param n: a positive integer
     :return: :math:`\displaystyle\sum_{k\in[1\dots n]} d(k)`
     """
-    sqrtk = sqrtInt(n)
-    part1 = sum(n//d for d in range(1, n//sqrtk+1))
-    part2 = sum(((n//d)-(n//(d+1)))*d for d in range(1, sqrtk))
-    return part1+part2
-
+    u = sqrtInt(n)
+    return 2*sum(n//k for k in range(1, u+1)) - u**2
 
 def sum_sigma1(n):
     r"""
@@ -65,6 +62,7 @@ def sum_sigma1(n):
     part1 = sum(d*(n//d) for d in range(1, n//sqrtk+1))
     part2 = sum(sumrange(n//(d+1), n//d)*d for d in range(1, sqrtk))
     return part1+part2
+
 
 
 def partial_totient(n: int, k: int, ps: list[int] = []) -> int:
