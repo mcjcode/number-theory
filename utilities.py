@@ -649,6 +649,23 @@ def divisors(n):
         yield prod(p**e for ((p,_),e) in zip(f,exponents))
 
 
+def divisors(f):
+    """
+    Return a list of all divisors of n
+    """
+    if type(f)==int:
+        f = dict(list(factorize2(f)))
+        
+    retval = [0]*prod(e+1 for e in f.values())
+    retval[0] = 1
+    m = 1
+    for p, e in f.items():
+        for i in range(m, m*(e+1)):
+            retval[i] = retval[i-m]*p
+        m *= (e+1)
+    return retval
+
+        
 def wagons_algorithm(p):
     """
     For a prime p=1(4), return a pair of numbers a < b,

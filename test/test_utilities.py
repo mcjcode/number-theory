@@ -25,6 +25,7 @@ from utilities import (
     factorize2,
     primitive_root,
     cardano,
+    divisors,
 )
 
 from prime_sieve import segmented_sieve
@@ -128,3 +129,7 @@ class UtilitiesTest(unittest.TestCase):
     def test_cardano(self):
         for x in range(1, 10):
             self.assertAlmostEqual(cardano(0.0, -x), math.cbrt(x), places=10)
+
+    def test_divisors(self):
+        assert sum(divisors(10))==1+2+5+10
+        assert sum(divisors({2:3, 3:2}))==(1 + 2 + 2**2 + 2**3)*(1 + 3 + 3**2)
