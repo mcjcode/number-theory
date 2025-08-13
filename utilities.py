@@ -125,6 +125,21 @@ def cbrtInt(a: int) -> int:
     return xi
 
 
+def nrtInt(n: int, a: int) -> int:
+    """
+    :param n: a non-negative integer
+    :param a: a non-negative integer
+    :return: the largest integer z such that z**`n` <= `a`
+    """
+    if a==0:
+        return 0
+        
+    ans = int(a**(1/n))
+    while (ans+1)**n <= a:
+        ans += 1
+    return ans
+
+
 def multiplicities(xs):
     """
     :param xs: a list of elements
@@ -665,6 +680,24 @@ def divisors(f):
         m *= (e+1)
     return retval
 
+
+def unitary_divisors(f):
+    """
+    Return a list of all unitary divisors of n
+    """
+    if type(f)==int:
+        f = dict(list(factorize2(f)))
+
+    retval = [0]*pow(2, len(f))
+    retval[0] = 1
+    m = 1
+    for p, e in f.items():
+        pe = p**e
+        for i in range(m, 2*m):
+            retval[i] = retval[i-m]*pe
+        m *= 2
+    return retval
+        
         
 def wagons_algorithm(p):
     """
