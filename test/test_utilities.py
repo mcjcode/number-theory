@@ -10,6 +10,7 @@ import math
 
 from utilities import (
     argmax,
+    argmin,
     powerset,
     isprime,
     isprime_miller_rabin,
@@ -41,6 +42,11 @@ class UtilitiesTest(unittest.TestCase):
         f = math.sin
         xs = [2*math.pi*x/100 for x in range(100)]
         self.assertEqual(f(argmax(f, xs)), max(map(f, xs)))
+
+    def test_argmin(self):
+        f = math.sin
+        xs = [2*math.pi*x/100 for x in range(100)]
+        self.assertEqual(f(argmin(f, xs)), min(map(f, xs)))        
         
     def test_powerset(self):
         nn = len(list(powerset([1, 2, 3, 4, 5])))
