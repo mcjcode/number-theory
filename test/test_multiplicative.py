@@ -5,6 +5,9 @@ import unittest
 from utilities import gcd
 from multiplicative import (
     phi,
+    mu,
+    little_omega,
+    big_omega,
     partial_totient,
     _partial_totient_alternate,
     coprime,
@@ -12,6 +15,7 @@ from multiplicative import (
     sum_sigma0,
     sum_sigma1,
 )
+from prime_sieve import segmented_sieve
 
 
 class PhiTest(unittest.TestCase):
@@ -50,3 +54,26 @@ class SumSigmaTest(unittest.TestCase):
         for nn in range(1, 100):
             ss0 = sum([divisor_function(0, kk) for kk in range(1, nn+1)])
             self.assertEqual(ss0, sum_sigma0(nn))
+
+def test_mu():
+    assert mu(1)==1
+    for i in range(1, 100):
+        assert abs(mu(i))<=1
+
+    for p in segmented_sieve(100):
+        assert mu(p)==-1
+        assert mu(p**2)==0
+
+        
+def test_big_omega():
+    assert big_omega(1)==0
+    for p in segmented_sieve(100):
+        assert big_omega(p)==1
+        assert big_omega(p**2)==2
+
+        
+def test_little_omega():
+    for p in segmented_sieve(100):
+        assert little_omega(p)==1
+        assert little_omega(p**2)==1
+        

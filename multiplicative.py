@@ -14,6 +14,7 @@ from utilities import (
     sqrtInt,
 )
 
+from factoring import factorize
 
 def phi(nn):
     r"""
@@ -26,9 +27,16 @@ def phi(nn):
 
 
 def mu(n: int) -> int:
-    n = sum(1 for _ in factorize2(n))
-    return (-1)**(n%2)
-
+    f = factorize(n)
+    if any(e>1 for _, e in f):
+        return 0
+    else:
+        s = sum(1 for _ in factorize2(n))
+        if s%2:
+            return -1
+        else:
+            return +1
+            
 
 def divisor_function(kk, nn):
     r"""
@@ -39,6 +47,24 @@ def divisor_function(kk, nn):
     factors = factorize2(nn)
     return prod([(ee+1) if kk == 0 else (pp**(kk*(ee+1))-1)//(pp**kk-1)
                  for (pp, ee) in factors])
+
+
+def little_omega(n: int) -> int:
+    """
+    Return the number of distinct prime divisors of n
+
+    e.g. 24=2**3*3, so big_omega(24)=2
+    """
+    return sum(1 for _ in factorize(n))
+
+
+def big_omega(n: int) -> int:
+    """
+    Return the number of prime divisors of n (with multiplicity)
+
+    e.g. 24=2*2*2*3, so big_omega(24)=4
+    """
+    return sum(e for _, e in factorize(n))
 
 
 def sumrange(a, b):
