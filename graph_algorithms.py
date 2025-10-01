@@ -84,7 +84,7 @@ def exit_probabilities_weighted(G, end, before):
     M = np.zeros((n, n),dtype=float)
     for v, i in indices.items():
         if v!=end and v not in before:
-            for w, p in G[v]:
+            for w, p in G[v].items():
                 j = indices[w]
                 M[i,j] = p
     b = np.array([v==end for v in G])
@@ -124,10 +124,15 @@ def conditional_expected_exit_time(G, end, other):
     which essentially entails defining a conditioned transition
     matrix that is a Bayesean update of the original one.
     """
+    #
     # first compute the probabilities that a random
-    # walk
+    # walk exits at end as a function of start
+    #
+    v = next(iter(G))
+    if type(G[v]) in {list, set}:
+        G = {node:{nbr:1/len(G[node]) for nbr in G[node]} for node in G}
     n = len(G)
-    probs = exit_probabilities(G, end, other)
+    probs = exit_probabilities_weighted(G, end, other)
     I = np.identity(n)
     M = np.zeros((n,n),dtype=float)
     indices = {v:i for (i,v) in enumerate(G)}
@@ -135,10 +140,9 @@ def conditional_expected_exit_time(G, end, other):
         if v==end or v in other:
             M[i,i] = 0.0
         else:
-            for w in G:
-                if w in G[v]:
-                    j = indices[w]
-                    M[i,j] = probs[w]/probs[v]*(1/len(G[v]))
+            for w, p in G[v].items():
+                j = indices[w]
+                M[i,j] = probs[w]/probs[v]*p
     b = np.array([v!=end for v in G])
     return dict(zip(G, np.linalg.solve(I-M, b)))
 
