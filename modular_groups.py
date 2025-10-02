@@ -72,28 +72,28 @@ def U(corners):
     return list(map(Uz, corners))
 
 
-def halfplane_to_poincare_disk(zz):
+def halfplane_to_poincare_disk(z):
     r"""
     Send zs —> (zs-i)/(-i*zs+1) = (i*zs+1)/(zs+i) = i + 2/(zs+i)
     """
-    if zz == -1.0j:
+    if z == -1.0j:
         return infj
-    elif zz == infj:
+    elif z == infj:
         return 1.0j
     else:
-        return (zz-1.0j)/(-1.0j*zz+1)
+        return (z-1.0j)/(-1.0j*z+1)
 
 
-def poincare_disk_to_halfplane(ww):
+def poincare_disk_to_halfplane(w):
     r"""
     send ws -> (ws+i)/(i*ws+1) = (-i*ws+1)/(ws-i) = -i + 2/(ws-i)
     """
-    if ww == 1.0j:
+    if w == 1.0j:
         return infj
-    elif ww == infj:
+    elif w == infj:
         return -1.0j
     else:
-        return (ww+1.0j)/(1.0j*ww+1)
+        return (w+1.0j)/(1.0j*w+1)
 
 
 def z1z2_to_pts(z1, z2, n, model):
@@ -109,7 +109,7 @@ def z1z2_to_pts(z1, z2, n, model):
     #
     if abs(x1 - x2) < 0.00000001:
         dy = (y2 - y1) / n
-        hp_pts = [(x1, y1 + ii * dy) for ii in range(n + 1)]
+        hp_pts = [(x1, y1 + i * dy) for i in range(n + 1)]
     else:
         #
         # compute the point on the real axis
@@ -147,16 +147,16 @@ def z1z2_to_pts(z1, z2, n, model):
                 theta2 = np.pi + theta2
 
         dtheta = (theta2 - theta1) / n
-        hp_pts = [(x + cos(theta1 + ii * dtheta) * radius, 
-                   0 + sin(theta1 + ii * dtheta) * radius)
-                  for ii in range(n + 1)]
+        hp_pts = [(x + cos(theta1 + i * dtheta) * radius, 
+                   0 + sin(theta1 + i * dtheta) * radius)
+                  for i in range(n + 1)]
 
     if model == 'halfplane':
         return hp_pts
     else:
         zs = [xi+1.0j*yi for (xi, yi) in hp_pts]
         zs = map(halfplane_to_poincare_disk, zs)
-        return [(zz.real, zz.imag) for zz in zs]
+        return [(z.real, z.imag) for z in zs]
 
 
 def tile_patch(corners, model='halfplane', **kwdargs):
@@ -190,7 +190,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
 
             s, t = w2.real, w2.imag
             cx, cy = (s**2+(t-1)**2)/(2*s), 1.0
-            rr = abs(cx)
+            r = abs(cx)
             if s < 0:
                 th1 = -atan(-(t-cy)/(s-cx))
                 th2 = 0.0
@@ -203,7 +203,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
                     th1 += np.pi
 
             dth = (th2-th1)/(2*k+1)
-            pts = [(cx+rr*cos(th), cy+rr*sin(th))
+            pts = [(cx+r*cos(th), cy+r*sin(th))
                    for th in np.arange(th1, th2+0.5*dth, dth)]
             pth = [Path.MOVETO] + [Path.CURVE3]*(len(pts)-1)
             assert(len(pts) == len(pth))
@@ -212,7 +212,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
 
             s, t = w3.real, w3.imag
             cx, cy = (s**2+(t-1)**2)/(2*s), 1.0
-            rr = abs(cx)
+            r = abs(cx)
             if s < 0:
                 th1 = 0.0
                 th2 = -atan(-(t-cy)/(s-cx))
@@ -225,7 +225,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
                     th2 += np.pi
 
             dth = (th2-th1)/(2*k)
-            pts1 = [(cx+rr*cos(th), cy+rr*sin(th))
+            pts1 = [(cx+r*cos(th), cy+r*sin(th))
                     for th in np.arange(th1, th2+0.5*dth, dth)]
             pts += pts1
             pth += [Path.CURVE3]*len(pts1)
@@ -258,9 +258,9 @@ def tile_patch(corners, model='halfplane', **kwdargs):
 # D = (rho, rho**2, 0.0+0.0j)
 
 
-def parse_to_mat(ss):
+def parse_to_mat(cs):
     M = np.array([[1, 0], [0, 1]], dtype=int)
-    for c in ss:
+    for c in cs:
         if c == 'S':
             A = np.array([[0, -1], [1, 0]], dtype=int)
         elif c == 'T':
@@ -287,14 +287,14 @@ def mat_to_fcn(M):
         else:
             return num/den
 
-    def ff(zs):
+    def f(zs):
         return list(map(ffz, zs))
 
-    return ff
+    return f
 
 
-def parse_word(ss):
-    mat = parse_to_mat(ss)
+def parse_word(s):
+    mat = parse_to_mat(s)
     return mat_to_fcn(mat)
 
 
@@ -302,28 +302,28 @@ def invert_letter(letter):
     return {'S': 'S', 'T': 'U', 'U': 'T', 'I': 'I'}[letter]
 
 
-def invert_word(ss):
-    return ''.join(invert_letter(s) for s in reversed(ss))
+def invert_word(s):
+    return ''.join(list(map(invert_letter, reversed(s))))
 
 
-def _inv22(mm):
-    a, b = mm[0, 0], mm[0, 1]
-    c, d = mm[1, 0], mm[1, 1]
+def _inv22(m):
+    a, b = m[0, 0], m[0, 1]
+    c, d = m[1, 0], m[1, 1]
     return np.array([[+d, -b],
                      [-c, +a]], dtype=int)
 
 
-def _eq(m1, m2, qq):
+def _eq(m1, m2, q):
     [a, b, c, d] = (m1.dot(_inv22(m2))).ravel()
-    if qq > 0:
-        return ((a % qq == 1 and b % qq == 0 and c % qq == 0 and d % qq == 1) or
-                ((a+1) % qq == 0 and b % qq == 0 and c % qq == 0 and (d+1) % qq == 0))
-    else:  # qq=0
+    if q > 0:
+        return ((a % q == 1 and b % q == 0 and c % q == 0 and d % q == 1) or
+                ((a+1) % q == 0 and b % q == 0 and c % q == 0 and (d+1) % q == 0))
+    else:  # q=0
         return ((a == 1 and b == 0 and c == 0 and d == 1) or
                 (a == -1 and b == 0 and c == 0 and d == -1))
 
 
-def coset_reps_alt(qq, return_generators=False):
+def coset_reps_alt(q, return_generators=False):
     r"""
     Yield coset representatives for Gamma(q) in SL(2, Z).
     """
@@ -338,13 +338,13 @@ def coset_reps_alt(qq, return_generators=False):
 
     i = 0
     while i < len(retval):
-        mm = retval[i]
-        mminv = _inv22(mm)
+        m = retval[i]
+        minv = _inv22(m)
         for A in [S, T, U]:  # [S, S.dot(T).dot(S), S.dot(U).dot(S)]:
-            mat1 = mm.dot(A)
+            mat1 = m.dot(A)
             found = False
             for mat2 in retval:
-                if _eq(mat1, mat2, qq):
+                if _eq(mat1, mat2, q):
                     found = True
                     if not _eq(mat1, mat2, 0):
                         found2 = False
@@ -364,50 +364,50 @@ def coset_reps_alt(qq, return_generators=False):
         return retval
 
 
-def coset_reps(qq):
+def coset_reps(q):
     r"""
     Yield coset representatives for Gamma(q) in SL(2, Z).
     """
-    zq2 = itertools.product(range(qq), range(qq))
+    zq2 = itertools.product(range(q), range(q))
     #
     # this pattern matching no longer seems to work in python 3.6
     #
-    # f=lambda (cc, dd):gcd(cc, gcd(dd, qq))==1
+    # f=lambda (c, d):gcd(c, gcd(d, q))==1
     #
     # so replace it with this:
     #
 
     def f(pair):
-        cc, dd = pair
-        return gcd(cc, gcd(dd, qq)) == 1
+        c, d = pair
+        return gcd(c, gcd(d, q)) == 1
 
-    for (cc, dd) in filter(f, zq2):
-        ii = 0
-        if cc == 0:
-            if dd != 1:
-                cc = qq
+    for (c, d) in filter(f, zq2):
+        i = 0
+        if c == 0:
+            if d != 1:
+                c = q
         while True:
-            if gcd(cc, dd-ii*qq) == 1:
-                dd -= ii*qq
+            if gcd(c, d-i*q) == 1:
+                d -= i*q
                 break
-            elif gcd(cc, dd+ii*qq) == 1:
-                dd += ii*qq
+            elif gcd(c, d+i*q) == 1:
+                d += i*q
                 break
-            ii += 1
-        # cc and dd are now relatively prime.
-        zq2 = itertools.product(range(qq), range(qq))
-        for (aa, bb) in zq2:
-            quot, rem = divmod(aa*dd-bb*cc, qq)
+            i += 1
+        # c and d are now relatively prime.
+        zq2 = itertools.product(range(q), range(q))
+        for (a, b) in zq2:
+            quot, rem = divmod(a*d-b*c, q)
             if rem == 1:
-                # now aa*dd-bb*cc = 1 (mod qq)
-                for (ee, ff) in [(ee, ff) for ee in range(-2*qq, 2*qq) for ff in range(-2*qq, 2*qq)]:
-                    if (aa+ee*qq)*dd-(bb+ff*qq)*cc == 1:
-                        yieldval = np.array([[aa+ee*qq, bb+ff*qq], [cc, dd]], dtype=int)
+                # now a*d-b*c = 1 (mod q)
+                for (e, f) in [(e, f) for e in range(-2*q, 2*q) for f in range(-2*q, 2*q)]:
+                    if (a+e*q)*d-(b+f*q)*c == 1:
+                        yieldval = np.array([[a+e*q, b+f*q], [c, d]], dtype=int)
                         # now normalize so that the image of D under this
                         # transformation lies between -1/2 and q-1/2.
                         f = mat_to_fcn(yieldval)
-                        mm = int(floor(f([0.5j])[0].real))
-                        yieldval = np.array([[1, mm % qq-mm], [0, 1]], dtype=int).dot(yieldval)
+                        m = int(floor(f([0.5j])[0].real))
+                        yieldval = np.array([[1, m % q-m], [0, 1]], dtype=int).dot(yieldval)
                         yield yieldval
                         break
 
@@ -416,24 +416,24 @@ def name_to_latex(name):
     retval = '$'
     i = 0
     while i < len(name):
-        cc = name[i]
+        c = name[i]
         j = 1
         while i+j < len(name):
-            if name[i+j] == cc:
+            if name[i+j] == c:
                 j += 1
             else:
                 break
-        if cc == 'T':
+        if c == 'T':
             if j == 1:
                 retval += 'T'
             else:
                 retval += 'T^{%d}' % (j, )
-        elif cc == 'U':
+        elif c == 'U':
             retval += 'T^{%d}' % (-j, )
-        elif cc == 'S':
+        elif c == 'S':
             if j % 2 == 1:
                 retval += 'S'
-        else:  # cc=='I'
+        else:  # c=='I'
             pass
         i += j
     retval += '$'
@@ -471,7 +471,7 @@ def plot_regions(tile_names, center, shift_name, transform_names):
     vert_xcoords = []
     for f, name in zip(transforms, names):
         for tile in map(f, tiles):
-            vert_xcoords += [zz.real for zz in tile]
+            vert_xcoords += [z.real for z in tile]
     xmax = np.amax(np.array(vert_xcoords))
     xmin = np.amin(np.array(vert_xcoords))
 
@@ -513,8 +513,8 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
         transfs = [mat_to_fcn(g.dot(tile_mat)) for tile_mat in tile_mats]
         tiles = [f(D) for f in transfs]
         for tile in tiles:
-            vert_xcoords += [zz.real for zz in tile]
-            vert_ycoords += [(1.25 if zz == infj else zz.imag) for zz in tile]
+            vert_xcoords += [z.real for z in tile]
+            vert_ycoords += [(1.25 if z == infj else z.imag) for z in tile]
         tile_groups.append(tiles)
 
     xmax = np.amax(np.array(vert_xcoords))
@@ -558,10 +558,10 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
                                     facecolor=color, 
                                     linewidth=0.2))
             if model == 'halfplane':
-                zz = f([1.3333j])[0]
+                z = f([1.3333j])[0]
             else:
-                zz = halfplane_to_poincare_disk(f([1.3333j])[0])
-            xx, yy = zz.real, zz.imag
+                z = halfplane_to_poincare_disk(f([1.3333j])[0])
+            x, y = z.real, z.imag
             labeli += 1
 
     plt.show()
@@ -576,7 +576,7 @@ def plot_gamma_2():
                  np.exp(2*np.pi*1.0j/6.0),
                  'I',
                  # 'SUUS',
-                 ['I', 'TT', 'UU', 'STTS', 'TTSTTS', 'TSTTSU', 'SUUS'])
+                 ['I', 'T''T', 'U''U', 'STTS', 'TTSTTS', 'TSTTSU', 'SUUS'])
 
 
 def plot_gamma_3():
@@ -597,18 +597,18 @@ def plot_gammak(k, model='halfplane'):
     plot_mat(reps, [np.array([[1, 0], [0, 1]], dtype=int)]+shifts, model=model)
 
 
-def psl2q_order(qq):
+def psl2q_order(q):
     """
     Return the order of :math:`PSL(2,Z/qZ)`.
     """
-    ps = list(set(factorize(qq)))
-    if qq == 2:
+    ps = list(set(factorize(q)))
+    if q == 2:
         return 6
     else:
-        retval = qq**3
-        for pp in ps:
-            retval *= pp**2-1
-            retval /= pp**2
+        retval = q**3
+        for p in ps:
+            retval *= p**2-1
+            retval /= p**2
         return retval/2
 
 

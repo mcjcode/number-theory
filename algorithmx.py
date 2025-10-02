@@ -257,7 +257,7 @@ def test1():
 1 0 0 1 0 0 0
 0 1 0 0 0 0 1
 0 0 0 1 1 0 1"""
-    a = np.array([[int(xx) for xx in row.split(' ')] for row in matrix.split('\n')])
+    a = np.array([[int(x) for x in row.split(' ')] for row in matrix.split('\n')])
     print('  A B C D E F G')
     print(a)
     h, cols = wire_dlx_from_matrix(a, names = list('ABCDEFG'))

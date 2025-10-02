@@ -32,7 +32,7 @@ class MDP:
     actions: list or set of actions
     discount_factor: real, greater than 0, less than or equal to 1
     start: optional instance of DDist, specifying initial state dist
-       if it's unspecified, we'll use a uniform over states
+       if it's unspecified, we will use a uniform over states
     These are functions:
     transition_model: function from (state, action) into distribution over next state
     reward_fn: function from (state, action) to real-valued reward

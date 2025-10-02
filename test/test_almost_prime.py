@@ -77,5 +77,3 @@ def test_pqrs():
         ans2 = pqrs(n, ps, V, S0)
         assert ans1==ans2
 
-def test_pi2():
-    

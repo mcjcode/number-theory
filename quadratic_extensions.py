@@ -240,10 +240,10 @@ def factorize_in(p, d):
         return p,
     else:
         # the minimal polynomial is x**2 - x - (d-1)/4
-        zz = (d-1)/4
+        z = (d-1)/4
         x = 0
         while x < p:
-            if (x*(x-1) - zz) % p == 0:
+            if (x*(x-1) - z) % p == 0:
                 return p, QuadInt(d, -x, 1)
             x += 1
         return p,

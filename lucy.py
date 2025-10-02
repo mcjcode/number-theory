@@ -12,12 +12,12 @@ debug = False
 
 def printV(V,tag=''):
     if debug:
-        fmtstr = '%%%dd' % (fwidth,)
+        fmtstr = '%' + f'{fwidth}' + 'd'
         print(' '.join([fmtstr % (i,) for i in V[-column_limit:]])+(' :%s'%(tag,)))
 
 def printS(V,S,tag=''):
     if debug:
-        fmtstr = '%%%dd' % (fwidth,)
+        fmtstr = '%' + f'{fwidth}' + 'd'
         print(' '.join([fmtstr % (S[i],) for i in V[-column_limit:]])+(' :%s'%(tag,)))
 
 def printRuler(V,tag=''):

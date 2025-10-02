@@ -31,8 +31,8 @@ def jacobi_sum_quartic(p):
     zeta = GaussianInteger(0, 1)
     avals = [0] + [modpow(a, k, p) for k in range(1, p)]
     achars = [GaussianInteger(0)] + [zeta ** (k % 4) for k in range(1, p)]
-    bvals = [(1 - aa) % p for aa in avals]
-    binds = [avals.index(bb) for bb in bvals]
+    bvals = [(1 - a) % p for a in avals]
+    binds = [avals.index(b) for b in bvals]
     bchars = [achars[bi] for bi in binds]
     retval = GaussianInteger(0)
     for val in (ac * bc for (ac, bc) in zip(achars, bchars)):
@@ -49,7 +49,7 @@ def run1():
     zeta3 = np.cos(2*np.pi/3) + 1j*np.sin(2*np.pi/3)
 
     # These are all going to
-    for p in (pp for pp in range(7, 200, 12) if isprime(pp)):
+    for p in filter(isprime, range(7, 200, 12)):
 
         nnp = p if (p % 4 == 1) else p*p
 
@@ -79,19 +79,19 @@ def run1():
                     if order(elt) == p*p-1:
                         return elt
 
-        xx = prim_elt()
+        x = prim_elt()
         powers = [(0, 0), (1, 0)]
         cnt = 0
         while cnt < nnp-2:
-            powers.append(mul(powers[-1], xx))
+            powers.append(mul(powers[-1], x))
             cnt += 1
 
         chars = [0.0] + list(map(lambda n: zeta3**n, range(p*p)))
         avals = powers
-        bvals = map(lambda yy: add((1, 0), mul((-1, 0), yy)), avals)
-        bindices = [avals.index(bb) for bb in bvals]
+        bvals = map(lambda y: add((1, 0), mul((-1, 0), y)), avals)
+        bindices = [avals.index(b) for b in bvals]
         bchars = [chars[bi] for bi in bindices]
-        jsum = sum(aa*bb for (aa, bb) in zip(chars, bchars))
+        jsum = sum(a*b for (a, b) in zip(chars, bchars))
 
         # express jsum as an integral combination of 1 and zeta3=(-1+sqrt(3))/2
         #
@@ -99,7 +99,7 @@ def run1():
         tmp = jsum - c2*zeta3
         c1 = tmp.real
 
-        print('%6d %10d %35s %7.1f %7.1f %35s %s' % (p, p*p, jsum, c1, c2, c1+c2*zeta3, '%d+%di' % xx))
+        print('%6d %10d %35s %7.1f %7.1f %35s %s' % (p, p*p, jsum, c1, c2, c1+c2*zeta3, '%d+%di' % x))
 
 
 def f(x, y, p):

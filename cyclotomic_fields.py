@@ -28,46 +28,47 @@ from multiplicative import (
 
 import jacobi
 
+
 class CyclotomicInteger(object):
 
     @staticmethod
-    def one(nn):
-        return CyclotomicInteger([1] + [0]*(nn-1))
+    def one(n):
+        return CyclotomicInteger([1] + [0]*(n-1))
 
     @staticmethod
-    def zero(nn):
-        return CyclotomicInteger([0]*nn)
+    def zero(n):
+        return CyclotomicInteger([0]*n)
 
     @staticmethod
-    def random(nn):
-        coefs = np.random.randint(0, 20, (nn, )).tolist()
+    def random(n):
+        coefs = np.random.randint(0, 20, (n, )).tolist()
         return CyclotomicInteger(coefs)
 
     @staticmethod
-    def zeta(nn):
-        return CyclotomicInteger([0, 1] + [0]*(nn-2))
+    def zeta(n):
+        return CyclotomicInteger([0, 1] + [0]*(n-2))
 
     @staticmethod
-    def periods(nn, kk):
+    def periods(n, k):
         """
-        :param nn:
-        :param kk: the order of the periods to return
+        :param n:
+        :param k: the order of the periods to return
         :return: a list of the order n gaussian periods
         """
 
-        zero = CyclotomicInteger.zero(nn)
-        one = CyclotomicInteger.one(nn)
+        zero = CyclotomicInteger.zero(n)
+        one = CyclotomicInteger.one(n)
 
-        order = phi(nn)
-        r = primitive_root(nn)
-        powers = [modpow(r, k, nn) for k in range(1, order+1)]
-        rts = [CyclotomicInteger.zeta(nn)**rr for rr in powers]
+        order = phi(n)
+        r = primitive_root(n)
+        powers = [modpow(r, k, n) for k in range(1, order+1)]
+        rts = [CyclotomicInteger.zeta(n)**r for r in powers]
 
-        if kk == 1:
+        if k == 1:
             return rts
 
         arr = np.array(rts)
-        arr.resize((kk, nn//kk))
+        arr.resize((k, n//k))
         arr = arr.transpose().tolist()
 
         return list(map(sum, arr))
@@ -85,18 +86,18 @@ class CyclotomicInteger(object):
         nc = len(self.coefs)
         for k in range(nc):
             if gcd(k, nc) == 1:
-                yield CyclotomicInteger([self.coefs[ii*k % nc] for ii in range(nc)])
+                yield CyclotomicInteger([self.coefs[i*k % nc] for i in range(nc)])
 
     def norm(self):
         """
         Return the product of the conjugates, as an integer.
         """
-        xx = np.prod(list(self.conjugates()))
-        assert len({yy for yy in xx.coefs[1:]}) == 1
-        return xx.coefs[0] - xx.coefs[1]
+        x = np.prod(list(self.conjugates()))
+        assert len({y for y in x.coefs[1:]}) == 1
+        return x.coefs[0] - x.coefs[1]
 
     def __eq__(self, other):
-        return len({xx - yy for (xx, yy) in zip(self.coefs, other.coefs)}) == 1
+        return len({x - y for (x, y) in zip(self.coefs, other.coefs)}) == 1
 
     def __ne__(self, other):
         return not (self == other)
@@ -104,16 +105,16 @@ class CyclotomicInteger(object):
     def __add__(self, other):
         if type(other) == int:
             other = CyclotomicInteger([other]+[0]*(len(self.coefs)-1))
-        return CyclotomicInteger([xx+yy for (xx, yy) in zip(self.coefs, other.coefs)])
+        return CyclotomicInteger([x+y for (x, y) in zip(self.coefs, other.coefs)])
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __sub__(self, other):
-        return CyclotomicInteger([xx-yy for (xx, yy) in zip(self.coefs, other.coefs)])
+        return CyclotomicInteger([x-y for (x, y) in zip(self.coefs, other.coefs)])
 
     def __neg__(self):
-        return CyclotomicInteger([-xx for xx in self.coefs])
+        return CyclotomicInteger([-x for x in self.coefs])
 
     def __mul__(self, other):
         if type(other) == int:
@@ -123,8 +124,8 @@ class CyclotomicInteger(object):
 
         nc = len(self.coefs)
         ret_coefs = [0]*nc
-        for ii in range(nc):
-            ret_coefs[ii] = sum([self.coefs[jj]*other.coefs[(ii-jj) % nc] for jj in range(nc)])
+        for i in range(nc):
+            ret_coefs[i] = sum([self.coefs[j]*other.coefs[(i-j) % nc] for j in range(nc)])
         return CyclotomicInteger(ret_coefs)
 
     def __rmul__(self, other):
@@ -139,28 +140,28 @@ class CyclotomicInteger(object):
         return retval
 
 
-def cyclotomic_polynomial(nn, kk=1):
+def cyclotomic_polynomial(n, k=1):
     """
-    Return the defining polynomial for the degree phi(nn)/kk
-    subfield of Q[zeta_nn].
+    Return the defining polynomial for the degree phi(n)/k
+    subfield of Q[zeta_n].
 
-    kk must divide phi(nn) and if kk!=1, only works for nn prime.
+    k must divide phi(n) and if k!=1, only works for n prime.
 
-    For kk=1, we just use the moebius inversion for Phi_n(x),
+    For k=1, we just use the moebius inversion for Phi_n(x),
 
-    For kk>1, we 'program by algebra' (i.e. spelling out the Gaussian
+    For k>1, we 'program by algebra' (i.e. spelling out the Gaussian
     periods and computing the elementary symmetric functions of them)
-    and is very very slow for large nn (and small kk).
+    and is very very slow for large n (and small k).
     """
     x = sympy.abc.x
-    if kk==1:
-        ans = sympy.poly(x-1, x, domain='ZZ')
-        for p, e in factorize2(nn):
+    if k==1:
+        ans = sympy.poly(x-1, x, domain='Z'*2)
+        for p, e in factorize2(n):
             ans = compose(ans, x**(p**e)) // compose(ans, x**(p**(e-1)))
         return ans
     else:
-        pds = CyclotomicInteger.periods(nn, kk)
-        coefs_ci = [(-1)**dd * symmetric_function(dd, pds) for dd in range(1, phi(nn)//kk + 1)]
+        pds = CyclotomicInteger.periods(n, k)
+        coefs_ci = [(-1)**d * symmetric_function(d, pds) for d in range(1, phi(n)//k + 1)]
         coefs = [ci.coefs[0]-ci.coefs[1] for ci in coefs_ci]
         return sympy.Poly([1]+coefs, x)
         
@@ -271,8 +272,8 @@ def gauss_formula(n):
     Acoeffs = [2] + [(2*z.a).numerator for z in ys[1:]]
     Bcoeffs = [0] + [(2*z.b).numerator for z in ys[1:]]
     
-    A = sympy.Poly(Acoeffs, x, domain='ZZ')
-    B = sympy.Poly(Bcoeffs, x, domain='ZZ')
+    A = sympy.Poly(Acoeffs, x, domain='Z'*2)
+    B = sympy.Poly(Bcoeffs, x, domain='Z'*2)
     
     return A, B
 
@@ -309,7 +310,7 @@ def lucas_formula(n):
     Dcoeffs = [int(-z.b) for z in ys[1::2]]
         
     x = sympy.abc.x
-    C = sympy.Poly(Ccoeffs, x, domain='ZZ')
-    D = sympy.Poly(Dcoeffs, x, domain='ZZ')
+    C = sympy.Poly(Ccoeffs, x, domain='Z'*2)
+    D = sympy.Poly(Dcoeffs, x, domain='Z'*2)
 
     return C, D

@@ -26,8 +26,8 @@ class GaussianInteger(object):
 
     @staticmethod
     def random():
-        xx, yy = np.random.randint(0, 20, (2, )).tolist()
-        return GaussianInteger(xx, yy)
+        x, y = np.random.randint(0, 20, (2, )).tolist()
+        return GaussianInteger(x, y)
 
     def __str__(self):
         if self.b == 0:

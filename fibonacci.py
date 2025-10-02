@@ -207,7 +207,7 @@ def cumulative_lrs(cs, xs):
 #     return rep_idxs, rep_fibs
 
 
-# def fibstr(zz):
+# def fibstr(zs):
 #     """
 #     If we write
 
@@ -220,7 +220,7 @@ def cumulative_lrs(cs, xs):
 #     """
 #     zstr = ''
 #     zprev= 0
-#     for z in zz:
+#     for z in zs:
 #         zstr += '-'*(z-zprev)+'*'
 #         zprev=z+1
 #     return zstr

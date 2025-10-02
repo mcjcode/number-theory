@@ -16,14 +16,14 @@ from utilities import (
 
 from factoring import factorize
 
-def phi(nn):
+def phi(n: int) -> int:
     r"""
-    :param nn: a positive integer
-    :return: the number of natural numbers 1 <= kk < nn
-             that are relatively prime to nn.
+    :param n: a positive integer
+    :return: the number of natural numbers 1 <= k < n
+             that are relatively prime to n.
     """
-    factors = factorize2(nn)
-    return prod([pp**(kk-1)*(pp-1) for (pp, kk) in factors])
+    factors = factorize2(n)
+    return prod([p**(k-1)*(p-1) for (p, k) in factors])
 
 
 def mu(n: int) -> int:
@@ -38,15 +38,15 @@ def mu(n: int) -> int:
             return +1
             
 
-def divisor_function(kk, nn):
+def divisor_function(k: int, n: int) -> int:
     r"""
-    :param kk: the exponent
-    :param nn: a positive integer
+    :param k: the exponent
+    :param n: a positive integer
     :return: :math:`\sum_{d|n} d^k`
     """
-    factors = factorize2(nn)
-    return prod([(ee+1) if kk == 0 else (pp**(kk*(ee+1))-1)//(pp**kk-1)
-                 for (pp, ee) in factors])
+    factors = factorize2(n)
+    return prod([(e+1) if k == 0 else (p**(k*(e+1))-1)//(p**k-1)
+                 for (p, e) in factors])
 
 
 def little_omega(n: int) -> int:

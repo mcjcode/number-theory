@@ -33,7 +33,7 @@ def sieve(n):
         if S[p]:
             S[2*p::p] = False
         p += 1
-    return filter(lambda pp: S[pp], range(n + 1))
+    return filter(lambda p: S[p], range(n + 1))
 
 
 def primesum_naive2(n):

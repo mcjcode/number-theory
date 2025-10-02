@@ -90,7 +90,7 @@ def eqrels(N):
         h2 = []
         for r in h:
             for j1 in range(len(r)):
-                h2.append([ss+([n]*(j2==j1)) for j2, ss in enumerate(r)])
+                h2.append([s+([n]*(j2==j1)) for j2, s in enumerate(r)])
             h2.append(r + [[n]])
         h = h2
     return h
@@ -101,15 +101,16 @@ def monomials(d: int, n: int):
     Yield the exponent vectors of all degree
     d monomials in n variables
     """
-    for vv in comb(n-1, 1, d+n-1):
-        yield [vv[0]-1] + [vv[i+1]-vv[i]-1 for i in range(n-2)] + [d+n-1-vv[-1]]
+    for v in comb(n-1, 1, d+n-1):
+        yield [v[0]-1] + [v[i+1]-v[i]-1 for i in range(n-2)] + [d+n-1-v[-1]]
 
 
-def conjugate_partition(p):
+def conjugate_partition(partition):
     """
-    Return the conjugate partition to p
+    Return the conjugate partition
     """
-    return [len([pp for pp in p if pp >= k]) for k in range(1, max(p)+1)]
+    return [len([1 for part in partition if part >= k])
+            for k in range(1, max(partition)+1)]
 
 
 def partitions(d, max_part=None):
@@ -122,10 +123,10 @@ def partitions(d, max_part=None):
     if d == 0:
         yield []
     else:
-        for pp in range(max_part, 0, -1):
-            for i in range(1, d//pp+1):  # number of parts of size pp
-                seg = [pp]*i
-                for part in partitions(d-i*pp,pp-1):
+        for p in range(max_part, 0, -1):
+            for i in range(1, d//p+1):  # number of parts of size p
+                seg = [p]*i
+                for part in partitions(d-i*p,p-1):
                     yield seg + part
 
 
@@ -236,10 +237,10 @@ def chromatic_polynomial2(G):
     ne = len(edges)
     retval = intpoly1d([0]*n + [(-1)**(ne)])
     it = powerset(edges); next(it)
-    for ss in it:
-        na = len(ss)
+    for s in it:
+        na = len(s)
         G = {v:set() for v in vertices}
-        for (i,j) in ss:
+        for (i,j) in s:
             G[i].add(j)
             G[j].add(i)
         cA = nconnected_components(G)

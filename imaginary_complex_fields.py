@@ -27,11 +27,11 @@ def form_disc(a, b, c):
 
 
 def genus(a, b, c):
-    def f(xx, yy):
-        return a*xx**2 + b*xx*yy + c*yy**2
+    def f(x, y):
+        return a*x**2 + b*x*y + c*y**2
     disc = form_disc(a, b, c)
     val = sorted(list(set([f(x, y) % (-disc) for x in range(-disc) for y in range(-disc)])))
-    return filter(lambda xx: gcd(xx, -disc) == 1, val)
+    return filter(lambda x: gcd(x, -disc) == 1, val)
 
 
 def proper_reduced_form(a, b, c):
@@ -111,12 +111,12 @@ def principal_representations(n, m):
     a**2 + n * b**2 = m
     """
     ub = sqrtInt(m/n)
-    ii = 0
-    while ii <= ub:
-        xx = m - n*ii**2
-        if issq(xx):
-            yield sqrtInt(xx), ii
-        ii += 1
+    i = 0
+    while i <= ub:
+        x = m - n*i**2
+        if issq(x):
+            yield sqrtInt(x), i
+        i += 1
 
 
 def repmod11(p):
@@ -152,9 +152,9 @@ def repsmod11():
 
 
 def makelist():
-    for xx in list(islice(repsmod11(), 100)):
-        print("%5d =" % (xx[0], ), end='')
-        print(xx[1])
+    for x in list(islice(repsmod11(), 100)):
+        print("%5d =" % (x[0], ), end='')
+        print(x[1])
 
 
 def foo():

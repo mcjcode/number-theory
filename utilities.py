@@ -158,7 +158,7 @@ def multiplicities(xs):
     items = sorted(list(set(xs)))
     counts = []
     for item in items:
-        counts.append(len([xx for xx in xs if xx == item]))
+        counts.append(len([x for x in xs if x==item]))
     return items, counts
 
 
@@ -376,17 +376,17 @@ def factors(f):
     """
     retval = [1]
     for p, e in f:
-        xs = [b*p**ee for b in retval for ee in range(1, e+1)]
+        xs = [b*p**e0 for b in retval for e0 in range(1, e+1)]
         retval += xs
     return retval
 
 
-def squarefree(mm):
+def squarefree(m):
     """
-    :param mm: a positive integer
-    :return: True if mm is square free, False otherwise.
+    :param m: a positive integer
+    :return: True if m is square free, False otherwise.
     """
-    factors = factorize(abs(mm))
+    factors = factorize(abs(m))
     for i in range(len(factors) - 1):
         if factors[i] == factors[i + 1]:
             return False
@@ -446,7 +446,7 @@ def powerset(xs):
              the largest subsets
     """
     lengths = range(len(xs)+1)
-    return itertools.chain(*[itertools.combinations(xs, nn) for nn in lengths])
+    return itertools.chain(*[itertools.combinations(xs, n) for n in lengths])
 
 
 def fastpow(a, k, mul, one):
@@ -497,8 +497,8 @@ def legendre_ch(p):
     def ch(a):
         if a % p == 0:
             return 0
-        rr = pow(a, (p-1)//2, p)
-        return (-1) if (rr == p - 1) else +1
+        r = pow(a, (p-1)//2, p)
+        return (-1) if (r == p - 1) else +1
 
     return ch
 

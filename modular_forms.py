@@ -7,12 +7,12 @@ from base_complex import infj
 from utilities import gcd, bezout
 
 
-def _rectangle_n_points(nn):
-    for ii in range(2*nn):
-        yield -nn+ii, nn
-        yield nn, nn-ii
-        yield nn-ii, -nn
-        yield -nn, -nn+ii
+def _rectangle_n_points(n):
+    for i in range(2*n):
+        yield -n+i, n
+        yield n, n-i
+        yield n-i, -n
+        yield -n, -n+i
 
 
 def plot_rectangle_n_points():
@@ -27,17 +27,17 @@ def plot_rectangle_n_points():
     plt.show()
 
 
-def _eisenstein_bound(eps, k, zz):
+def _eisenstein_bound(eps, k, z):
     """
     Return the number of rectangles of lattice points to compute phi_0, k(z) within eps.
     """
 
-    xx = zz.real
-    yy = zz.imag
+    x = z.real
+    y = z.imag
 
-    hh = min(yy, yy/sqrt(xx**2+yy**2))
+    h = min(y, y/sqrt(x**2+y**2))
 
-    nmax = int(floor((8/(hh**(2*k)*(2*k-2)*eps))**(1./(2*k-2))))
+    nmax = int(floor((8/(h**(2*k)*(2*k-2)*eps))**(1./(2*k-2))))
 
     return nmax
 
@@ -54,11 +54,11 @@ def unrestricted_eisenstein(k, z):
     nmax = _eisenstein_bound(1e-08, k, z)
 
     retval = 0.0
-    for nn in range(nmax, 0, -1):
-        for (cc, dd) in _rectangle_n_points(nn):
-            if cc >= 0 and (cc > 0 or dd > 0):
-                vv = 1./(cc*z+dd)**(2*k)
-                retval += vv
+    for n in range(nmax, 0, -1):
+        for (c, d) in _rectangle_n_points(n):
+            if c >= 0 and (c > 0 or d > 0):
+                v = 1./(c*z+d)**(2*k)
+                retval += v
     return retval
 
 
@@ -73,11 +73,11 @@ def eisenstein(k, z):
     nmax = _eisenstein_bound(1e-08, k, z)
 
     retval = 0.0
-    for nn in range(nmax, 0, -1):
-        for (cc, dd) in _rectangle_n_points(nn):
-            if cc >= 0 and (cc > 0 or dd > 0) and gcd(cc, dd) == 1:
-                vv = 1/(cc*z+dd)**(2*k)
-                retval += vv
+    for n in range(nmax, 0, -1):
+        for (c, d) in _rectangle_n_points(n):
+            if c >= 0 and (c > 0 or d > 0) and gcd(c, d) == 1:
+                v = 1/(c*z+d)**(2*k)
+                retval += v
     return retval
 
 
@@ -92,25 +92,25 @@ def poincare(k, nu, z):
     nmax = _eisenstein_bound(1e-08, k, z)
 
     retval = 0.0
-    for nn in range(nmax, 0, -1):
-        for (cc, dd) in _rectangle_n_points(nn):
-            if cc >= 0 and (cc > 0 or dd > 0) and gcd(cc, dd) == 1:
-                bb, aa = bezout(cc, dd)
-                Tz = (aa*z-bb)/(cc*z+dd)
-                vv = np.exp(2.0*np.pi*nu*1.0j*Tz)/(cc*z+dd)**(2*k)
-                retval += vv
+    for n in range(nmax, 0, -1):
+        for (c, d) in _rectangle_n_points(n):
+            if c >= 0 and (c > 0 or d > 0) and gcd(c, d) == 1:
+                b, a = bezout(c, d)
+                Tz = (a*z-b)/(c*z+d)
+                v = np.exp(2.0*np.pi*nu*1.0j*Tz)/(c*z+d)**(2*k)
+                retval += v
     return retval
 
 
 rho = np.exp(2.0*np.pi*1.0j/6.0)
 
 
-def _coset_reps(nn):
-    for aa in range(1, nn+1):
-        if nn % aa == 0:
-            dd = nn // aa
-            for bb in range(dd):
-                yield aa, bb, cc, dd
+def _coset_reps(n):
+    for a in range(1, n+1):
+        if n % a == 0:
+            d = n // a
+            for b in range(d):
+                yield a, b, c, d
 
 
 def transf(a, b, c, d):

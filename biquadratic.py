@@ -10,7 +10,7 @@ from jacobi import jacobi_sum_quartic
 
 def maptochar(x, pi):
     zero = GaussianInteger(0)
-    roots = map(lambda nn: GaussianInteger(0, 1)**nn, range(4))
+    roots = map(lambda n: GaussianInteger(0, 1)**n, range(4))
     for root in roots:
         if (x-root) % pi == zero:
             return root
@@ -30,18 +30,18 @@ def biquad(pi1, pi2):
 
 class Character(object):
 
-    def __init__(self, xx):
-        if type(xx) == GaussianInteger:
-            self.f = lambda aa: biquad(xx, aa)
+    def __init__(self, x):
+        if type(x) == GaussianInteger:
+            self.f = lambda a: biquad(x, a)
         else:
-            self.f = xx
+            self.f = x
 
-    def __call__(self, aa):
-        return self.f(aa)
+    def __call__(self, a):
+        return self.f(a)
 
     def __mul__(self, other):
-        def f(aa):
-            return self.f(aa)*other.f(aa)
+        def f(a):
+            return self.f(a)*other.f(a)
         return Character(f)
 
 
@@ -50,9 +50,9 @@ def jacobi_sum(chi1, chi2, p):
     Return the Jacobi sum of two mod p characters.
     """
     retval = GaussianInteger(0)
-    for aa in range(p):
-        aa = GaussianInteger(aa)
-        retval = retval + chi1(aa)*chi2(GaussianInteger(1)-aa)
+    for a in range(p):
+        a = GaussianInteger(a)
+        retval = retval + chi1(a)*chi2(GaussianInteger(1)-a)
     return retval
 
 
@@ -62,7 +62,7 @@ def flip(gint):
 
 def table2():
     maxp = 75
-    q2primes = [flip(jacobi_sum_quartic(qq)) for qq in range(5, maxp, 4) if isprime(qq)]
+    q2primes = [flip(jacobi_sum_quartic(q)) for q in range(5, maxp, 4) if isprime(q)]
 
     for pi1 in q2primes:
         for pi in [pi1, GaussianInteger(pi1.real(), -pi1.imag()),
@@ -88,8 +88,8 @@ def biquadratic_residue_table():
     """)
 
     maxp = 75
-    qprimes = [(flip(jacobi_sum_quartic(qq)) if (qq % 4 == 1) else GaussianInteger(qq))
-               for qq in range(3, maxp, 2) if isprime(qq)]
+    qprimes = [(flip(jacobi_sum_quartic(q)) if (q % 4 == 1) else GaussianInteger(q))
+               for q in range(3, maxp, 2) if isprime(q)]
     pprimes = qprimes
 
     print('%5s' % ' ', end=' ')

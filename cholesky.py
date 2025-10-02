@@ -5,12 +5,12 @@ import numpy as np
 from fractions import Fraction
 
 
-def cholesky(mm):
+def cholesky(m):
     """
     Take a symmetric matrix m and calculate an upper
     triangular matrix a s.t. tr(a)*m*a is diagonal.
     """    
-    mat = mm.copy()
+    mat = m.copy()
     n = mat.shape[0]
     a = np.array([[Fraction(0, 1)]*n]*n, dtype=Fraction)
     for i in range(n):

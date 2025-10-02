@@ -28,16 +28,16 @@ def gs_numerical(ch, m, k):
     :math:`\omega = e^{2\pi/m}`
 
     """
-    ww = np.exp(2.0j*np.pi/m)
-    return sum(ch(a)*ww**(k*a) for a in range(1, m))
+    w = np.exp(2.0j*np.pi/m)
+    return sum(ch(a)*w**(k*a) for a in range(1, m))
 
 
 def L_one_chi(ch, m):
     r"""
     Compute the value of the Dirichlet L-series L(s, ch) at s=1.
     """
-    zz = np.exp(2.0j*np.pi/m)
-    return -(1.0/m) * sum(gs_numerical(ch, m, k)*np.log(1-zz**(-k)) for k in range(1, m) if gcd(k, m) == 1)
+    z = np.exp(2.0j*np.pi/m)
+    return -(1.0/m) * sum(gs_numerical(ch, m, k)*np.log(1-z**(-k)) for k in range(1, m) if gcd(k, m) == 1)
 
 
 def all_modm_chars(m):
@@ -49,23 +49,23 @@ def all_modm_chars(m):
     if not isprime(m):
         raise ValueError("%d is not a prime." % (m, ))
     a = primitive_root(m)
-    zz = np.exp(2.0j*np.pi/(m-1))
+    z = np.exp(2.0j*np.pi/(m-1))
 
     vals = [None]*(m-1)
     pows = [0] + [pow(a, k, m) for k in range(m-1)]
     for k in range(m-1):
-        pows2 = [0] + [(zz**k)**i for i in range(m-1)]
+        pows2 = [0] + [(z**k)**i for i in range(m-1)]
         vals[k] = dict(zip(pows, pows2))
-    return map(lambda val: (lambda ii: val[ii % m]), vals)
+    return map(lambda val: (lambda i: val[i%m]), vals)
 
-# Calculate the value of kappa for the QQ[z_5], the cyclotomic
+# Calculate the value of kappa for the Q[z_5], the cyclotomic
 # field of 5th roots of unity.  This has 4 complex embeddings,
 # no real embeddings, (s=2, r=0, n=r+s=2), (1+z_5) is a fundamental
 # unit, the regulator = (1/2)log(||(1+z_5)||), the discriminant
-# of the QQ[z_5] is 5^(5-2) (i.e. disc(QQ[z_p])=p^(p-2)), and there
+# of the Q[z_5] is 5^(5-2) (i.e. disc(Q[z_p])=p^(p-2)), and there
 # are 5 roots of unity in the field.
 #
-# >>> (2.0*np.pi)**2.0*(0.5)*np.log((1+zz)*(1+zz).conj())/(5.0*np.sqrt(abs(5**3)))
+# >>> (2.0*np.pi)**2.0*(0.5)*np.log((1+z)*(1+z).conj())/(5.0*np.sqrt(abs(5**3)))
 # (0.33983727824052351+0j)
 #
 # now compare to the product of the L(1, ch) as ch runs over
@@ -106,26 +106,26 @@ def kappa(m):
         return np.pi / (w*np.sqrt(abs(disc)))
 
 
-def ideal_class_number(dd):
+def ideal_class_number(d):
     r"""
-    Return the ideal class number of Q[√d], for squarefree integer dd.
+    Return the ideal class number of Q[√d], for squarefree integer d.
     """
-    if not squarefree(dd):
-        raise ValueError("%d is not squarefree." % (dd, ))
+    if not squarefree(d):
+        raise ValueError("%d is not squarefree." % (d, ))
 
-    if dd == 1:
+    if d == 1:
         return 1
 
-    abs_disc = abs(discriminant(dd))
+    abs_disc = abs(discriminant(d))
 
-    ch = legendre_ch(dd)
+    ch = legendre_ch(d)
 
     z = np.exp(2.0j*np.pi/abs_disc)
     rho = np.abs(1.0/np.sqrt(abs(abs_disc)) * sum(
         ch(k) * np.log(1-z**(-k)) for k in range(1, abs_disc) if gcd(k, abs_disc) == 1)
         )
 
-    k = kappa(dd)
+    k = kappa(d)
 
     # magically rho should be an integral multiple of kappa.
     # make sure this is true before we return the rounded answer.

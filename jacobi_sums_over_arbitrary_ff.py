@@ -28,9 +28,9 @@ def run():
     pi = -1-3*zeta
     for p in [7, 13]:
         if isprime(p):
-            for ii in range(1, 5):
-                ff = FiniteField(p, ii)
-                c0, c1 = ff.jacobi_sum(3)
-                nk = count_diagonal_cubic_points(ff)
+            for i in range(1, 5):
+                ffield = FiniteField(p, i)
+                c0, c1 = ffield.jacobi_sum(3)
+                nk = count_diagonal_cubic_points(ffield)
                 print(u'%6d    %+.0f%+.0f\u03c9   %4.0f   %4d' %
-                      (p**ii, c0, c1, (p**ii+1)-(-1)**ii*(pi**ii + pi.conj()**ii).real, nk))
+                      (p**i, c0, c1, (p**i+1)-(-1)**i*(pi**i + pi.conj()**i).real, nk))

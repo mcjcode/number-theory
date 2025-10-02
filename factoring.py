@@ -218,12 +218,12 @@ def hart_one_line(n):
             
         ni = n
         while True:
-            x = sqrtInt(ni)  ## hot spot I
+            x = sqrtInt(ni)  ## hot spot 1
             if x*x < ni:
                 x += 1
             x2 = (x*x)%n
             if issq(x2):
-                t = sqrtInt(x2)  ## hot spot II
+                t = sqrtInt(x2)  ## hot spot 2
                 g = gcd(x-t, n)
                 if g > 1 and g < n:
                     if isprobprime(g):
@@ -464,7 +464,7 @@ def cfrac(n, trace=False):
         def formatVec(v):
             return ' '.join(('%6d'%x if x else '      ') for x in v)
 
-        for kk in range(1):
+        for k in range(1):
             col = N.dot(np.random.randint(0, 2, (N.shape[1],)))%2
             Q2s = [Qs[i] for i in range(len(Qs)) if col[i]]
             A2s = [As[i] for i in range(len(As)) if col[i]]
@@ -483,7 +483,7 @@ def cfrac(n, trace=False):
                     print('Q\'s considered = ', nQs_considered)
                     print('number of eligible Q/A pairs = ', len(Qs))
                     print('number of primes in factor base = ',nps)
-                    print('number of null-vectors attempted = ',kk+1)
+                    print('number of null-vectors attempted = ',k+1)
                     print('l = ', n//orign)
                     print(table)
                     print('factors', g, g2, 'found')

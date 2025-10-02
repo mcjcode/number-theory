@@ -29,8 +29,8 @@ def normalize(a, b):
     return a, b
 
 
-def gauss_polynomial(ff):
-    return lambda x, y: x**2 + y**2 + x**2*y**2 - ff.one()
+def gauss_polynomial(ffield):
+    return lambda x, y: x**2 + y**2 + x**2*y**2 - ffield.one()
 
 
 def run():
@@ -60,9 +60,9 @@ def run():
 
     for p in range(5, 200, 4):
         if isprime(p):
-            ff = FiniteField(p, 1)
-            f = gauss_polynomial(ff)
-            np = count_curve_points_affine(f, ff)
-            js = ff.jacobi_sum(4)
+            ffield = FiniteField(p, 1)
+            f = gauss_polynomial(ffield)
+            np = count_curve_points_affine(f, ffield)
+            js = ffield.jacobi_sum(4)
             a, b = normalize(js[0], js[1])
             print('%4d %5d+2 = p-1%+3d, J=%+2.0f%+2.0fi' % (p, np, (np+2-p+1), a, b))

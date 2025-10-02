@@ -182,12 +182,12 @@ def squares_mod_d(d):
 def norm_search(p, d):
     md = None
     if (d % 4) != 1:
-        for nn in range(1, 20000):
-            for mm in [nn**2*d+p, nn**2*d-p]:
-                if issq(mm):
-                    m2 = int(sqrt(mm))
-                    if (gcd(nn, p) == 1) or (gcd(m2, p) == 1):
-                        md = QuadInt(d, m2, nn)
+        for n in range(1, 20000):
+            for m in [n**2*d+p, n**2*d-p]:
+                if issq(m):
+                    m2 = int(sqrt(m))
+                    if (gcd(n, p) == 1) or (gcd(m2, p) == 1):
+                        md = QuadInt(d, m2, n)
                         break
     return md
 
@@ -220,18 +220,18 @@ def fundamental_unit(d):
         raise ValueError('%d is not >= 2' % (d, ))
 
     if d % 4 == 3 or d % 4 == 2:
-        return next(aa for aa in approximants(d) if abs(aa.norm()) == 1)
+        return next(a for a in approximants(d) if abs(a.norm()) == 1)
     else:
         if d == 5:
             return QuadInt(5, 0, 1)
-        aa = next(aa for aa in approximants(d) if abs(aa.norm()) in [1, 4])
-        if abs(aa.norm()) == 1:
-            return aa
+        a = next(a for a in approximants(d) if abs(a.norm()) in [1, 4])
+        if abs(a.norm()) == 1:
+            return a
         else:
-            if aa.a % 2 == 0 and aa.b % 2 == 0:
-                aa.a /= 2
-                aa.b /= 2
-            return aa
+            if a.a % 2 == 0 and a.b % 2 == 0:
+                a.a /= 2
+                a.b /= 2
+            return a
 
 
 def class_group_info(d):
@@ -245,7 +245,7 @@ def class_group_info(d):
     print('Discriminant = %d' % disc)
     print('Minkowski Bound = %d' % (mb, ))
     split_primes = []
-    for p in [pp for pp in range(2, mb+1) if isprime(pp)]:
+    for p in [p for p in range(2, mb+1) if isprime(p)]:
         fact = factorize_in(p, d)
         if fact == (p, ):
             print(fact)
@@ -257,7 +257,7 @@ def class_group_info(d):
 
     if (d % 4) != 1 and d > 0:
         print('approximant based elements and norms')
-        print([(xx, xx.norm()) for xx in approximants(d)])
+        print([(x, x.norm()) for x in approximants(d)])
 
     if not split_primes:
         print('No non principal primes under the Minkowski bound!')
@@ -266,17 +266,17 @@ def class_group_info(d):
     print(split_primes)
     print('Split primes that are not squares mod %d' % (d, ))
     sq = squares_mod_d(d)
-    print([pp for pp in split_primes if (pp not in sq) and ((d-pp) not in sq)])
+    print([p for p in split_primes if (p not in sq) and ((d-p) not in sq)])
 
-    for ii in range(len(split_primes)):
-        for jj in range(ii, len(split_primes)):
-            p = split_primes[ii]*split_primes[jj]
+    for i in range(len(split_primes)):
+        for j in range(i, len(split_primes)):
+            p = split_primes[i]*split_primes[j]
             md = norm_search(p, d)
             print(p, md)
 
-    for ii in range(len(split_primes)):
-        for jj in range(ii, len(split_primes)):
-            for kk in range(jj, len(split_primes)):
-                p = split_primes[ii] * split_primes[jj] * split_primes[kk]
+    for i in range(len(split_primes)):
+        for j in range(i, len(split_primes)):
+            for k in range(j, len(split_primes)):
+                p = split_primes[i] * split_primes[j] * split_primes[k]
                 md = norm_search(p, d)
                 print(p, md)
