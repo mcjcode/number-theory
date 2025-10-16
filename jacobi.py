@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 import numpy as np
 from utilities import primitive_root, modpow, squarefree, isprime
 from gaussian_integer import GaussianInteger
