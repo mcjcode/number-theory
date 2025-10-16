@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 """
 Routines for counting partitions.

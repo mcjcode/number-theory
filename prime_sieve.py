@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # prime_sieve.py
 #

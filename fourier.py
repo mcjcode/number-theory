@@ -1,4 +1,3 @@
-#!/usr/bin/env python -i
 #
 # fourier.py
 #

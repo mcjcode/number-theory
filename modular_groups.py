@@ -1,4 +1,3 @@
-#!/usr/bin/env python -i
 # -*- coding: utf-8 -*-
 
 import itertools
