@@ -2,10 +2,9 @@ import itertools
 from collections import defaultdict, OrderedDict
 import numpy as np
 from heaps import heapset
-
 import pynauty
-
 from utilities import argmin
+from polynomial import intpoly1d
 
 
 def dijkstra(start, end, costs, neighbors):
@@ -285,3 +284,136 @@ def nhamiltonians(g: pynauty.Graph,
         # states there are at each stage.
         # print(j+1, len(h))
     return sum(count for _, _, count in h.values())
+
+
+def peterson_graph():
+    """
+    Return the adjacency matrix of the
+    Peterson graph
+    """
+    A = np.identity(n=10,dtype=int)
+    for i in range(5):
+        A[i,(i+1)%5] = 1
+        A[5+i,5+((i+2)%5)] = 1
+        
+        A[(i+1)%5,i] = 1
+        A[5+((i+2)%5),5+i] = 1
+        
+        A[i,5+i] = 1
+        A[5+i,i] = 1
+    return A
+
+
+def connected_components(G):
+    """
+    Input: G - a graph
+    Output: the connected_components of G
+    """
+    V = defaultdict(lambda:True)
+    components = []
+    for v in G:
+        if V[v]:
+            component = []
+            stack = [v]
+            while stack:
+                v = stack.pop()
+                component.append(v)
+                V[v] = False
+                for w in G[v]:
+                    if V[w]:
+                        stack.append(w)
+            C = {v:G[v] for v in component}
+            components.append(C)
+    return components
+
+
+def nconnected_components(G):
+    """
+    Input: G - a graph
+    Output: the # of connected_components of G
+    """
+    return len(connected_components(G))
+
+
+def traverse(start, neighbors):
+    """
+    start: the start node
+    neighbors: a function taking a node and returning a
+        sequence of neigboring nodes.
+
+    yields: a sequence of all the nodes reachable
+        from start.
+    """
+    visited = {start}
+    stack = [start]
+    while stack:
+        node = stack.pop()
+        for nbr in neighbors(node):
+            if nbr not in visited:
+                visited.add(nbr)
+                stack.append(nbr)
+        yield node
+
+
+def chromatic_polynomial2(G):
+    vertices = list(G)
+    n = len(G)
+    edges = set()
+    for i in G:
+        for j in G[i]:
+            if (i, j) not in edges and (j, i) not in edges:
+                edges.add((i,j))
+    edges = list(edges)
+    ne = len(edges)
+    retval = intpoly1d([0]*n + [(-1)**(ne)])
+    it = powerset(edges); next(it)
+    for s in it:
+        na = len(s)
+        G = {v:set() for v in vertices}
+        for (i,j) in s:
+            G[i].add(j)
+            G[j].add(i)
+        cA = nconnected_components(G)
+        retval = retval + (-1)**((ne-na)%2) * intpoly1d([0]*cA+[1])
+    return (retval.coefs[-1])*retval        
+
+
+def chromatic_polynomial(G):
+    """
+    Return the chromatic polynomial p of
+    the graph G.
+
+    Algorithm is O(2**(#edges(G))), and spends
+    almost all of its time computing the number
+    of connected components of the subgraphs
+    of G.
+    """
+    vertices = list(G)
+    edges = set()
+    for i in G:
+        for j in G[i]:
+            if (i, j) not in edges and (j, i) not in edges:
+                edges.add((i,j))
+    edges = list(edges)
+    sgn = 1
+    retval = [0]*len(G) + [sgn]
+
+    # walk through every subgraph of G, using
+    # a graycode to avoid having to construct
+    # every subgraph from scratch
+    g = graybits()
+    G2 = {v:set() for v in vertices}
+    for _ in range(2**len(edges)-1):
+        i, j = edges[next(g)]
+        if j in G2[i]:
+            G2[i].remove(j)
+            G2[j].remove(i)
+        else:
+            G2[i].add(j)
+            G2[j].add(i)
+        sgn = -sgn
+        cA = nconnected_components(G2)
+        retval[cA] += sgn
+        
+    return intpoly1d(retval)
+
