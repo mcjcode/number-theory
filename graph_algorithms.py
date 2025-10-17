@@ -5,6 +5,7 @@ from heaps import heapset
 import pynauty
 from utilities import argmin
 from polynomial import intpoly1d
+from combinatorics import graybits
 
 
 def dijkstra(start, end, costs, neighbors):
