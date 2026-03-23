@@ -47,3 +47,24 @@ def pythagorean_triple_tree(cond):
             new_abc = m@abc
             if cond(*new_abc):
                 stack.append(new_abc)
+
+
+def farey(N):
+    """
+    A linear time, constant memory algorithm for producing the farey
+    series of reduced fractions a/b with b<=N in order of size.
+
+    Taken from Bjorn Edstrom's comment on P198, attributing it to
+    Knuth in Concrete Mathematics.
+    """
+    a, b, c, d = 0, 1, 1, N
+    yield (a, b)
+    yield (c, d)
+    if N==1:
+        return
+    q, w = None, None
+    while (q, w) != (1, 1):
+        q = ((b+N)//d)*c - a
+        w = ((b+N)//d)*d - b
+        yield (q, w)
+        a, b, c, d = c, d, q, w
