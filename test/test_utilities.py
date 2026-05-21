@@ -9,6 +9,7 @@ import unittest
 import math
 
 from utilities import (
+    take,
     argmax,
     argmin,
     powerset,
@@ -31,6 +32,12 @@ from utilities import (
 )
 
 from prime_sieve import segmented_sieve
+
+
+def test_take():
+    it = iter(range(10))
+    assert list(take(5, it))==[0, 1, 2, 3, 4]
+    assert list(take(5, it))==[5, 6, 7, 8, 9]
 
 
 class UtilitiesTest(unittest.TestCase):

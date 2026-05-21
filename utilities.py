@@ -24,6 +24,12 @@ def show(x):
     return x
 
 
+def take(n, it):
+    while n:
+        yield next(it)
+        n -= 1
+
+
 def prod(xs, start=1):
     """
     :param xs: a sequence of elements to multiply

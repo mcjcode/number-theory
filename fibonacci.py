@@ -1,86 +1,96 @@
+from itertools import pairwise
 import numpy as np
-import sympy
-from utilities import fastpow
+from sympy import (
+    resultant, symbols, Poly, factor, Matrix, degree, sqf_list, expand
+)
+
+from utilities import fastpow, prod
 
 
 def _matrix_modpow(a, k, p):
     one = np.identity(a.shape[0], dtype=object)
-    mul = lambda x, y: x.dot(y) % p
-    return fastpow(a, k, mul, one)
+    return fastpow(a, k, mul=lambda x, y: x.dot(y) % p, one=one)
 
 
-def tribonacci(a=0,b=0,c=1,modulus=2):
+def fibonacci(a=0, b=1, modulus=0):
+    """
+    Yield the sequence of fibonacci numbers, reduced
+    by the given modulus.
+    """
+    while True:
+        yield a
+        a, b = b, (a+b) % modulus
+
+
+def tribonacci(a=0, b=0, c=1, modulus=2):
+    """
+    Yield the sequence of tribonacci numbers, reduced
+    by the given modulus.
+    """
     while True:
         yield a
         a, b, c = b, c, (a+b+c) % modulus
 
 
-def tribonacci2(modulus):
-    a, b, c = 0, 0, 1
-    while True:
-        yield a, b
-        d = (a+b+c)%modulus
-        e = (b+c+d)%modulus
-        a, b, c = c, d, e
-
-
-def fastfib(n, modulus, coeffs=[1, 1], init=[0,1]):
+def fastfib(n, modulus, coeffs=[1, 1], init=[0, 1]):
     """
     By default, return the n'th fibonacci number,
     where the indexing is the following:
-    
+
     is F0 = 0, F1 = 1, F2 = 1, F3 = 2 ...
-    
+
     Use this when you just want a single fibonacci number
     with large n.
-    
+
     >>> [fastfib(i,1000) for i in range(13)]
     [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
-    
+
     More generally, this will produce the n^th term in
     a linear recursive sequence specified by the given
     coefficients and starting values.
-    
+
     coeffs = [a1, a2, ...]
     init   = [F0, F1, ...]
-    
+
     Fn = a1*F(n-1) + a2*F(n-2) + ...
     """
     coeffs = coeffs[::-1]
     order = len(coeffs)
-    I = np.identity(order-1, dtype=object)
-    Z = np.zeros((order-1,1), dtype=object)
-    C = np.array([coeffs], dtype=object)    
-    F = np.block([[Z,I],
-                  [ C ]])
-    return _matrix_modpow(F, n, modulus).dot(np.array(init).transpose())[0] % modulus
+    Id = np.identity(order-1, dtype=object)
+    Z = np.zeros((order-1, 1), dtype=object)
+    C = np.array([coeffs], dtype=object)
+    F = np.block([[Z, Id], [C]])
+
+    M = _matrix_modpow(F, n, modulus)
+
+    return M.dot(np.array(init).transpose())[0] % modulus
 
 
 def fastfib_decimate(n, modulus, coeffs=[1, 1], init=[0, 1], m=1, i=0):
     """
     Return the n'th element of the sequence
-    
+
     F(i), F(m+i), F(2*m+i), ...
-    
+
     where F is specified by the given coefficients and initial values.
     """
     coeffs = coeffs[::-1]
     order = len(coeffs)
-    I = np.identity(order-1, dtype=object)
-    Z = np.zeros((order-1,1), dtype=object)
+    Id = np.identity(order-1, dtype=object)
+    Z = np.zeros((order-1, 1), dtype=object)
     C = np.array([coeffs], dtype=object)
-    F = np.block([[Z,I],
-                  [ C ]])
-    
-    init = [fastfib(i+j, modulus, coeffs[::-1], init) for j in range(len(coeffs))]
+    F = np.block([[Z, Id], [C]])
+
+    init = [fastfib(i+j, modulus, coeffs[::-1], init) for j in range(order)]
     F = _matrix_modpow(F, m, modulus)
-    
-    return _matrix_modpow(F, n, modulus).dot(np.array(init).transpose())[0] % modulus
+    M = _matrix_modpow(F, n, modulus)
+
+    return M.dot(np.array(init).transpose())[0] % modulus
 
 
 def fastfib_sum1(n, m):
     """return the sum of the first n fibonacci numbers, mod m"""
-    return fastfib(n+1, m)
+    return fastfib(n+1, m) - 1
 
 
 def fastfib_sum2(n, m):
@@ -93,56 +103,92 @@ def fastfib_sum3(n, m):
     if n<=1:
         return 0
     else:
-        return (fastfib(3*n-1,m)+(-1)**n*6*fastfib(n-2,m)+5)//10
+        return ((fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)*pow(10, -1, m)) % m
+        #return ((fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)//10)%m
 
-    
+
 def find_recursion(xs, deg):
     """
     Find a linear recursion of degree deg that is satisfied
     by the sequence xs.
     """
-    amat = [ xs[i  :deg+i  ] for i in range(deg)]
-    A = sympy.Matrix(amat)
-    bmat = [ xs[i+1:deg+i+1] for i in range(deg)]
-    B = sympy.Matrix(bmat)
-    return list((B*A.inv())[-1,:])[::-1]
+    amat = [xs[i:deg+i] for i in range(deg)]
+    A = Matrix(amat)
+    bmat = [xs[i+1:deg+i+1] for i in range(deg)]
+    B = Matrix(bmat)
+    return list((B*A.inv())[-1, :])[::-1]
+
+
+def find_recursion2(xs, deg):
+    """
+    Find a linear recursion of degree deg that is satisfied
+    by the sequence xs.
+    """
+    a = np.array([xs[i:deg+i] for i in range(deg)], dtype=float)
+    b = np.array(xs[deg:deg+deg], dtype=float)
+    vs = list(map(round, np.linalg.solve(a, b)))
+    for i in range(4*deg-1):
+        x = xs[i+deg]
+        y = sum(v*x for (v, x) in zip(vs, xs[i:i+deg]))
+        if x != y:
+            raise ValueError(f'{deg=} {x=} {y=} Failed, higher degree?')
+    return vs
 
 
 def cumulative_lrs(cs, xs):
     """
     if we have a linear recursive sequence with initial values
-    
+
     x0, x1, ...
-    
+
     satisfying
-    
+
     xn = c1 x(n-1) + c2 x(n-2) + ...
-    
+
     return the coefficients and initial terms for the sequence
     of cumulative sums.
-    
+
     e.g. the cumulative sum of Fibonacci numbers starts 0, 1, 2
     and satisfies a(n) = 2*a(n-1)-a(n-3).
-    
+
     >>> cumulative_lrs([1,1],[0,1])
-    
-    ([2, 0, -1], array([0, 1, 2]))
+
+    ([2, 0, -1], [0, 1, 2])
     """
-    
-    nextx = sum( c*x for (c,x) in zip(cs[::-1],xs) )
-    cumcs = [cs[0]+1] + [c1-c0 for (c1,c0) in zip(cs[:-1], cs[1:])] + [-cs[-1]]
-    cumxs = np.cumsum(xs+[nextx])
+
+    nextx = sum(c*x for (c, x) in zip(reversed(cs), xs))
+    # cumcs = [cs[0]+1] + [c0-c1 for (c0, c1) in
+    #                     pairwise(cs)] + [-cs[-1]]
+    cumcs = [c0-c1 for (c0, c1) in 
+             pairwise([2*cs[0]+1] + cs + [2*cs[-1]])]
+    cumxs = list(np.cumsum(xs+[nextx]))
     return cumcs, cumxs
 
 
+def power_lrs(cs, k):
 
+    def radical(P):
+        return prod(fact for fact, mult in sqf_list(P)[1])
+        
+    x, y = symbols('x y')
+    P = x**len(cs) - sum(c*x**k for (k, c) in enumerate(reversed(cs)))
+    Q = P
+    while k-1:
+        P = resultant(y**degree(P) * P.subs(x, x/y), Q.subs(x, y), y)
+        k -= 1
+        P = radical(P)
+
+    power_cs = [expand(P).coeff(x, i) for i in range(degree(P)+1)]
+    power_cs = list(reversed([-x for x in power_cs][:-1]))
+    return power_cs
+    
 # Here are some examples of using this to get various
 # sequences:
 
 #
 # The fibonacci numbers
 #
-[fastfib(i,10**6,[1,1],[0,1]) for i in range(13)]
+# [fastfib(i,10**6,[1,1],[0,1]) for i in range(13)]
 
 #
 # Sums of fibonacci numbers
@@ -159,7 +205,6 @@ def cumulative_lrs(cs, xs):
 #
 # [fastfib(i,10**6,[2,2,-1],[0,1,2]) for i in range(13)]
 
-
 #
 # Cubes of fibonacci numbers:
 #
@@ -169,8 +214,6 @@ def cumulative_lrs(cs, xs):
 # Sums of cubes of fibonacci numbers
 #
 # [fastfib(i,10**6,[4,3,-9,2,1],[0,1,2,10,37]) for i in range(13)]
-
-
 
 # from math import sqrt, log, ceil
 
@@ -191,7 +234,7 @@ def cumulative_lrs(cs, xs):
 #         fibs.append(a)
 #         a, b = b, a+b
 #     #print(fibs)
-    
+
 #     rep_fibs = []
 #     rep_idxs = []
 #     i = len(fibs)-1
