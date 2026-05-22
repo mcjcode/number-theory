@@ -25,9 +25,29 @@ def show(x):
 
 
 def take(n, it):
+    """
+    Yield the first n items of it.  An exception is raised
+    if `it` does not have enough items.
+    """
     while n:
         yield next(it)
         n -= 1
+
+
+def listtake(n, it):
+    """
+    Convenience function when you want to take n items
+    but want a list
+    """
+    return list(take(n, it))
+
+
+def listmap(f, *iterables):
+    """
+    Convenience function when you want to do a map but
+    want to return a list
+    """
+    return list(map(f, *iterables))
 
 
 def prod(xs, start=1):
