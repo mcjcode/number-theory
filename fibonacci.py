@@ -1,7 +1,7 @@
 from itertools import pairwise
 import numpy as np
 from sympy import (
-    resultant, symbols, Poly, factor, Matrix, degree, sqf_list, expand
+    resultant, symbols, Matrix, degree, sqf_list, expand
 )
 
 from utilities import fastpow, prod
@@ -30,6 +30,17 @@ def tribonacci(a=0, b=0, c=1, modulus=2):
     while True:
         yield a
         a, b, c = b, c, (a+b+c) % modulus
+
+
+def lrs(cs, xs):
+    """
+    Yield the terms of the linear recursive sequence
+    with initial terms xs and coefficients cs
+    """
+    rcs = list(reversed(cs))
+    while True:
+        yield xs[0]
+        *(xs[:-1]), xs[-1] = *(xs[1:]), sum(c*x for (c, x) in zip(rcs, xs))
 
 
 def fastfib(n, modulus, coeffs=[1, 1], init=[0, 1]):
@@ -104,7 +115,6 @@ def fastfib_sum3(n, m):
         return 0
     else:
         return ((fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)*pow(10, -1, m)) % m
-        #return ((fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)//10)%m
 
 
 def find_recursion(xs, deg):
@@ -132,7 +142,7 @@ def find_recursion2(xs, deg):
         y = sum(v*x for (v, x) in zip(vs, xs[i:i+deg]))
         if x != y:
             raise ValueError(f'{deg=} {x=} {y=} Failed, higher degree?')
-    return vs
+    return list(reversed(vs))
 
 
 def cumulative_lrs(cs, xs):
@@ -157,10 +167,8 @@ def cumulative_lrs(cs, xs):
     """
 
     nextx = sum(c*x for (c, x) in zip(reversed(cs), xs))
-    # cumcs = [cs[0]+1] + [c0-c1 for (c0, c1) in
-    #                     pairwise(cs)] + [-cs[-1]]
-    cumcs = [c0-c1 for (c0, c1) in 
-             pairwise([2*cs[0]+1] + cs + [2*cs[-1]])]
+    cumcs = [cs[0]+1] + [c1-c0 for (c0, c1) in
+                        pairwise(cs)] + [-cs[-1]]
     cumxs = list(np.cumsum(xs+[nextx]))
     return cumcs, cumxs
 
@@ -169,7 +177,7 @@ def power_lrs(cs, k):
 
     def radical(P):
         return prod(fact for fact, mult in sqf_list(P)[1])
-        
+
     x, y = symbols('x y')
     P = x**len(cs) - sum(c*x**k for (k, c) in enumerate(reversed(cs)))
     Q = P
@@ -181,7 +189,7 @@ def power_lrs(cs, k):
     power_cs = [expand(P).coeff(x, i) for i in range(degree(P)+1)]
     power_cs = list(reversed([-x for x in power_cs][:-1]))
     return power_cs
-    
+
 # Here are some examples of using this to get various
 # sequences:
 

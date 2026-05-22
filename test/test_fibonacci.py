@@ -1,3 +1,4 @@
+from itertools import accumulate
 from utilities import take
 
 
@@ -12,6 +13,7 @@ from fibonacci import (
     find_recursion,
     find_recursion2,
     cumulative_lrs,
+    lrs,
     power_lrs,
 )
 
@@ -63,14 +65,14 @@ def test_fastfib_sum2():
     n = 100
     m = 10**9+7
     g = fibonacci(modulus=m)
-    assert sum(map(lambda x:x*x, take(n, g)))%m==fastfib_sum2(n, m=m)
+    assert sum(map(lambda x: x*x, take(n, g)))%m==fastfib_sum2(n, m=m)
 
 
 def test_fastfib_sum3():
     n = 17
     m = 10**9+7
     g = fibonacci(modulus=m)
-    assert sum(map(lambda x:x**3, take(n, g)))%m==fastfib_sum3(n, m=m)
+    assert sum(map(lambda x: x**3, take(n, g)))%m==fastfib_sum3(n, m=m)
 
 
 def test_find_recursion():
@@ -100,7 +102,7 @@ def test_cumulative_lrs():
     xs = [0, 1]
     cumcs, cumxs = cumulative_lrs(cs, xs)
 
-    assert cumcs==[2, 0,-1]
+    assert cumcs==[2, 0, -1]
     assert cumxs==[0, 1, 2]
 
     # tribonacci case
@@ -109,7 +111,17 @@ def test_cumulative_lrs():
     cumcs, cumxs = cumulative_lrs(cs, xs)
 
     assert cumcs==[2, 0, 0, -1]
-    assert cumxs==[0, 0, 1,  2]
+    assert cumxs==[0, 0, 1, 2]
+
+    cs = [1, 0, 1]
+    xs = [1, 1, 1]
+    cumcs, cumxs = cumulative_lrs(cs, xs)
+
+    xs = list(accumulate(list(take(10, lrs(cs, xs)))))
+    ys = list(take(10, lrs(cumcs, cumxs)))
+
+    assert xs==ys
+
 
 def test_power_lrs():
 
@@ -128,17 +140,18 @@ def test_power_lrs():
     xs = list(x**3 for x in take(N, fibonacci(modulus=p)))
     xs2 = xs[:len(cb_cs)]
     for _ in range(N-len(cb_cs)):
-        xs2.append(sum(x*c for (x, c) in zip(xs2[-len(cb_cs):], reversed(cb_cs))))
+        xcs = zip(xs2[-len(cb_cs):], reversed(cb_cs))
+        xs2.append(sum(x*c for (x, c) in xcs))
 
     assert xs2==xs
-    
+
     # tribonacci square case
     cs = [1, 1, 1]
     sq_cs = power_lrs(cs, 2)
     xs = list(x**2 for x in take(N, tribonacci(modulus=p)))
     xs2 = xs[:len(sq_cs)]
     for _ in range(N-len(sq_cs)):
-        xs2.append(sum(x*c for (x, c) in zip(xs2[-len(sq_cs):], reversed(sq_cs))))
+        xcs = zip(xs2[-len(sq_cs):], reversed(sq_cs))
+        xs2.append(sum(x*c for (x, c) in xcs))
 
     assert xs2==xs
-    
