@@ -17,9 +17,14 @@ def fibonacci(a=0, b=1, modulus=0):
     Yield the sequence of fibonacci numbers, reduced
     by the given modulus.
     """
-    while True:
-        yield a
-        a, b = b, (a+b) % modulus
+    if modulus:
+        while True:
+            yield a
+            a, b = b, (a+b) % modulus
+    else:
+        while True:
+            yield a
+            a, b = b, a+b
 
 
 def tribonacci(a=0, b=0, c=1, modulus=2):
