@@ -1,4 +1,4 @@
-from utilities import issq, sqrtInt
+from roots import issq, sqrtInt
 
 def cornacchias_algorithm(d, m, rs):
     """

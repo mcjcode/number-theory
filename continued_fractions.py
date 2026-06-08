@@ -1,5 +1,5 @@
 from fractions import Fraction
-from utilities import sqrtInt
+from roots import sqrtInt
 
 def continued_fraction(n,d):
     """

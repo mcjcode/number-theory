@@ -3,7 +3,7 @@
 #
 
 from math import ceil
-from utilities import sqrtInt
+from roots import sqrtInt
 
 
 def _gauss_circle1(r):

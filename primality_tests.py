@@ -2,9 +2,9 @@ import random
 import math
 
 
+from roots import issq
 from utilities import (
     is_miller_rabin_witness,
-    issq,
 )
 
 def isprobprime(p, prob=1.0/(10**12)):

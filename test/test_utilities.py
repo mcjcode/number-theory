@@ -8,6 +8,7 @@ arithmetic routines.
 import unittest
 import math
 
+from roots import sqrtInt, cbrtInt, nrtInt, issq
 from utilities import (
     take,
     argmax,
@@ -19,10 +20,6 @@ from utilities import (
     gcd,
     bezout,
     modinv,
-    sqrtInt,
-    cbrtInt,
-    nrtInt,
-    issq,
     step_modp_pascal,
     order,
     factorize2,

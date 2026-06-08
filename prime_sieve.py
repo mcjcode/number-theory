@@ -6,7 +6,7 @@ import itertools
 from collections import Counter
 import math
 import numpy as np
-from utilities import sqrtInt
+from roots import sqrtInt
 from quadratic_extensions import tonelli_shanks
 
 

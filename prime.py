@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from utilities import isprime, factorize2, sqrtInt
+from roots import sqrtInt
+from utilities import isprime, factorize2
 from itertools import chain
 
 

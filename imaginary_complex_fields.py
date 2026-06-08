@@ -4,10 +4,9 @@
 from math import sqrt
 from fractions import Fraction
 import numpy as np
+from roots import sqrtInt, issq
 from utilities import (
     gcd,
-    sqrtInt,
-    issq,
     isprime,
     )
 from itertools import islice

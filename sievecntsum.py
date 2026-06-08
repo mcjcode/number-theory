@@ -1,5 +1,5 @@
 #
-from utilities import sqrtInt
+from roots import sqrtInt
 
 
 def sievecntsum(n):

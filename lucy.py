@@ -3,7 +3,8 @@
 #
 
 import math
-from utilities import sqrtInt, cbrtInt, modinv
+from roots import sqrtInt, cbrtInt
+from utilities import modinv
 
 fwidth = 5
 column_limit = 20

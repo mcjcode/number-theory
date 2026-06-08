@@ -4,7 +4,8 @@ Routines for looping over numbers formed from a
 given sequence of primes below a fixed bound.
 """
 
-from utilities import sqrtInt, prod
+from roots import sqrtInt
+from utilities import prod
 
 
 def bps(n, xs):

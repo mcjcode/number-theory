@@ -1,4 +1,5 @@
-from utilities import sqrtInt, cbrtInt, factorize2
+from roots import sqrtInt, cbrtInt
+from utilities import factorize2
 from prime_sieve import segmented_sieve
 from lucy import sievecnt
 

@@ -6,11 +6,11 @@ and their summations.
 
 import numpy as np
 
+from roots import sqrtInt
 from utilities import (
     prod,
     factorize2,
     gcd,
-    sqrtInt,
 )
 
 from factoring import factorize

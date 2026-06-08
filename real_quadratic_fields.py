@@ -3,11 +3,10 @@
 from math import sqrt, floor
 import mpmath
 
+from roots import sqrtInt, issq
 from utilities import (
     isprime,
     gcd,
-    sqrtInt,
-    issq,
     prod,
     )
 

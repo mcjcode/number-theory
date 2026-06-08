@@ -1,6 +1,7 @@
 import math
 
-from utilities import factorize2, sqrtInt, cbrtInt, nrtInt
+from roots import sqrtInt, cbrtInt, nrtInt
+from utilities import factorize2
 from prime_sieve import segmented_sieve
 from lucy import sievecnt
 

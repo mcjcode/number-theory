@@ -4,7 +4,8 @@ import random
 from collections import Counter
 import math; from math import gcd, log, sqrt, exp
 import utilities
-from utilities import timeit, prod, sqrtInt, cbrtInt, issq, digits, trial_division, isprime, is_miller_rabin_witness
+from roots import sqrtInt, cbrtInt, issq
+from utilities import timeit, prod, digits, trial_division, isprime, is_miller_rabin_witness
 from prime_sieve import segmented_sieve
 from primality_tests import isprobprime
 from quadratic_extensions import legendre
