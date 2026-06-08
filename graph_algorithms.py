@@ -2,7 +2,13 @@ import itertools
 from collections import defaultdict, OrderedDict
 import numpy as np
 from heaps import heapset
-import pynauty
+
+try:
+    import pynauty
+except:
+    class pynauty():
+        Graph = None
+
 from utilities import argmin
 from polynomial import intpoly1d
 from combinatorics import graybits
