@@ -19,7 +19,6 @@ from utilities import (
     squarefree,
     gcd,
     bezout,
-    modinv,
     step_modp_pascal,
     order,
     factorize2,
@@ -84,13 +83,6 @@ class UtilitiesTest(unittest.TestCase):
                 x, y = bezout(a, b)
                 g = gcd(a, b)
                 self.assertEqual(g, x*a + y*b, f'gcd ({g}) != x*a+y*b ({x}*{a}+{y}*{b})')
-
-    def test_modinv(self):
-        for m in range(2, 100):
-            for a in range(1,m):
-                if gcd(m, a)==1:
-                    b = modinv(m, a)
-                    self.assertEqual((a*b)%m, 1, f'{a}*{b}%{m} != 1')
 
     def test_sqrtInt(self):
         for n in range(1, 1000):

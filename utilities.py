@@ -501,20 +501,6 @@ def bezout(a:int, b:int) -> (int, int):
         
     return x1*sa, y1*sb
         
-def modinv(m:int, a:int) -> int:
-    """
-    :param m: a positive integer
-    :param a: an integer, with (m,a)==1
-    :return: the multiplicative inverse of a(mod m)
-    """
-    x, y = bezout(m, a)
-
-    if x*m + y*a != 1:
-        raise ValueError(f'{a} is not relatively prime to {m}')
-    #
-    # now we have xp+ya=1
-    #
-    return y % m
 
 
 def crt(r1, m1, r2, m2):

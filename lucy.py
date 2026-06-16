@@ -4,7 +4,6 @@
 
 import math
 from roots import sqrtInt, cbrtInt
-from utilities import modinv
 
 fwidth = 5
 column_limit = 20
@@ -261,7 +260,7 @@ def sievecnt_modp(
         printS(Vr, S[i])
     printRuler(Vr)
 
-    invs = {i:modinv(q, i) for i in residues}
+    invs = {i:pow(i, -1, q) for i in residues}
     for p in range(2, sqrtn+1):
         p2 = p*p
         for i in residues:
