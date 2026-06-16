@@ -6,7 +6,7 @@ from gauss_last_entry import gauss_polynomial, normalize
 from finite_field import (
     FiniteField,
     count_curve_points_affine
-    )
+)
 
 
 class GaussLastEntryTest(unittest.TestCase):

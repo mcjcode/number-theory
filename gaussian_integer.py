@@ -10,17 +10,19 @@ class GaussianInteger(object):
         self.b = b
 
     _one = None
+
     @classmethod
     def one(cls):
         if not cls._one:
             cls._one = GaussianInteger(1, 0)
         return cls._one
-            
-    _zero = None    
+
+    _zero = None
+
     @classmethod
     def zero(cls):
         if not cls._zero:
-            cls._zero =  GaussianInteger(0, 0)
+            cls._zero = GaussianInteger(0, 0)
         return cls._zero
 
     @staticmethod
@@ -78,14 +80,16 @@ class GaussianInteger(object):
         if type(other)==int:
             return GaussianInteger(self.a*other, self.b*other)
         else:
-            return GaussianInteger(self.a*other.a - self.b*other.b, self.a*other.b+self.b*other.a)
+            return GaussianInteger(self.a*other.a - self.b*other.b,
+                                   self.a*other.b+self.b*other.a)
 
     def __rmul__(self, other):
         if type(other)==int:
             return GaussianInteger(other*self.a, other*self.b)
         else:
-            return GaussianInteger(self.a*other.a - self.b*other.b, self.a*other.b+self.b*other.a)
-        
+            return GaussianInteger(self.a*other.a - self.b*other.b,
+                                   self.a*other.b+self.b*other.a)
+
     # TODO: should make this a 'fastpow'
     def __pow__(self, n):
         retval = GaussianInteger(1, 0)
@@ -95,14 +99,13 @@ class GaussianInteger(object):
             cnt += 1
         return retval
 
-    #def __div__(self, other):
-
+    # def __div__(self, other):
 
     def __floordiv__(self, other):
         nrm = other.norm()
         numer = self * other.conj()
         return GaussianInteger(numer.real()//nrm, numer.imag()//nrm)
-    
+
     def conj(self):
         return GaussianInteger(self.a, -self.b)
 

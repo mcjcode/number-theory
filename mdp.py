@@ -9,7 +9,7 @@ def uniform_dist(elts):
     @param elts: list of any kind of item
     """
     p = 1.0 / len(elts)
-    return {e:p for e in elts}
+    return {e: p for e in elts}
 
 
 def draw(dist):
@@ -34,12 +34,13 @@ class MDP:
     start: optional instance of DDist, specifying initial state dist
        if it's unspecified, we will use a uniform over states
     These are functions:
-    transition_model: function from (state, action) into distribution over next state
+    transition_model: function from (state, action) into distribution
+        over next state
     reward_fn: function from (state, action) to real-valued reward
     """
-    
-    def __init__(self, states, actions, transition_model, reward_fn, 
-                     discount_factor = 1.0, start_dist = None):
+
+    def __init__(self, states, actions, transition_model, reward_fn,
+                 discount_factor=1.0, start_dist=None):
         self.states = states
         self.actions = actions
         self.transition_model = transition_model
@@ -70,8 +71,7 @@ class MDP:
         """
         return (self.reward_fn(s, a),
                 self.init_state() if self.terminal(s) else
-                    draw(self.transition_model(s, a)))
-
+                draw(self.transition_model(s, a)))
 
     def q_update(self, q):
         """
@@ -80,17 +80,17 @@ class MDP:
         old and new q-function.
         """
         maxdiff = 0
-        q1 = {s:{a:q[s][a] for a in q[s]} for s in q}
+        q1 = {s: {a: q[s][a] for a in q[s]} for s in q}
         for s in q:
             qs = q[s]
             for a in qs:
                 dist = self.transition_model(s, a)
-                x = sum(p*max(qs0[a] for a in qs0) for (s0, p) in dist.items() for qs0 in [q[s0]])
+                x = sum(p*max(qs0[a] for a in qs0)
+                        for (s0, p) in dist.items() for qs0 in [q[s0]])
                 v = self.reward_fn(s, a) + self.discount_factor*x
                 maxdiff = max(abs(v - qs[a]), maxdiff)
                 q1[s][a] = v
         return q1, maxdiff
-
 
     def value_iteration(self, q, eps=0.01, interactive_fn=None):
         """
@@ -105,7 +105,6 @@ class MDP:
             if interactive_fn:
                 interactive_fn(q, horizon=h)
         return q
-    
 
 
 class TabularQ:
@@ -113,11 +112,14 @@ class TabularQ:
         self.actions = actions
         self.states = states
         self.q = dict([((s, a), 0.0) for s in states for a in actions])
+
     def copy(self):
         q_copy = TabularQ(self.states, self.actions)
         q_copy.q.update(self.q)
         return q_copy
+
     def set(self, s, a, v):
-        self.q[(s,a)] = v
+        self.q[(s, a)] = v
+
     def get(self, s, a):
-        return self.q[(s,a)]
+        return self.q[(s, a)]

@@ -59,7 +59,7 @@ def nrtInt(n: int, a: int) -> int:
 _issq_pe = [p**int(math.log(100)/math.log(p)) for p in [2, 3, 5, 7, 11, 13]]
 _sqlowbits = {}
 for pe in _issq_pe:
-    #_pmax = p**e
+    # _pmax = p**e
     bits = [True]*pe
     for x in range(pe):
         bits[(x*x)%pe] = False
@@ -76,5 +76,3 @@ def issq(n: int) -> bool:
         if bits[n%pe]:
             return False
     return sqrtInt(n)**2==n
-
-

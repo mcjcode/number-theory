@@ -13,7 +13,7 @@ def farey(n):
     It is also a convenient way to obtain a sequence of
     all pairs (a, b) with a <= b <= n with gcd(a, b)=1.
 
-    An O(n) time algorithm with O(1) memory footprint. 
+    An O(n) time algorithm with O(1) memory footprint.
     """
     (a, b, c, d) = (0, 1, 1, n)
     yield a, b

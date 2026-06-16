@@ -1,8 +1,10 @@
-# Drew from many sources in compiling this code together including CMU & Stanford
+# Drew from many sources in compiling this code together
+# including CMU & Stanford
 # To all those with other open source code on the internet I thank you
 # Find the lowest common ancestor in the blossom tree
 
 __all__=['max_matching']
+
 
 def lca(match, base, p, a, b):
     used = [False] * len(match)
@@ -19,12 +21,15 @@ def lca(match, base, p, a, b):
         b = p[match[b]]
 
 # Mark the path from v to the base of the blossom
+
+
 def mark_path(match, base, blossom, p, v, b, children):
     while base[v] != b:
         blossom[base[v]] = blossom[base[match[v]]] = True
         p[v] = children
         children = match[v]
         v = p[match[v]]
+
 
 def find_path(graph, match, p, root):
     n = len(graph)

@@ -8,7 +8,7 @@ def cholesky(m):
     """
     Take a symmetric matrix m and calculate an upper
     triangular matrix a s.t. tr(a)*m*a is diagonal.
-    """    
+    """
     mat = m.copy()
     n = mat.shape[0]
     a = np.array([[Fraction(0, 1)]*n]*n, dtype=Fraction)

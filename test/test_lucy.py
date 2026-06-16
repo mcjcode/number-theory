@@ -18,13 +18,13 @@ from prime_sieve import (
 
 
 class LucyTest(unittest.TestCase):
-    answer_key = {10**1:4,
-                  10**2:25,
-                  10**3:168,
-                  10**4:1229,
-                  10**5:9592,
-                  10**6:78498}
-    
+    answer_key = {10**1: 4,
+                  10**2: 25,
+                  10**3: 168,
+                  10**4: 1229,
+                  10**5: 9592,
+                  10**6: 78498}
+
     def test_sievecnt(self):
         for k, v in self.answer_key.items():
             V, S = sievecnt(k)

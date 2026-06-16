@@ -5,7 +5,7 @@ from heaps import heapset
 
 try:
     import pynauty
-except:
+except Exception:
     class pynauty():
         Graph = None
 
@@ -32,6 +32,7 @@ def dijkstra(start, end, costs, neighbors):
                     h.heappush(this_cost, nbr)
         visited.add(node)
 
+
 def dijkstra2(G, start, end):
     visited = set()
     h = heapset()
@@ -50,6 +51,7 @@ def dijkstra2(G, start, end):
                     h.heappush(this_cost, nbr)
         visited.add(node)
 
+
 def exit_probabilities(G, end, before):
     """
     Inputs
@@ -64,10 +66,11 @@ def exit_probabilities(G, end, before):
     to the probability that a (uniform) random walk on G will arrive
     at 'end' before first arriving at one of the nodes in 'before'.
     """
-    I = np.identity(len(G))
-    M = np.array([[ 1/len(G[v])*(w in G[v])*(v!=end)*(v not in before) for w in G] for v in G])
+    Id = np.identity(len(G))
+    M = np.array([[1/len(G[v])*(w in G[v])*(v!=end)*(v not in before)
+                 for w in G] for v in G])
     b = np.array([v==end for v in G])
-    return dict(zip(G,np.linalg.solve(I-M,b)))
+    return dict(zip(G, np.linalg.solve(Id-M, b)))
 
 
 def exit_probabilities_weighted(G, end, before):
@@ -85,16 +88,16 @@ def exit_probabilities_weighted(G, end, before):
     at 'end' before first arriving at one of the nodes in 'before'.
     """
     n = len(G)
-    I = np.identity(n)
-    indices = {v:i for (i,v) in enumerate(G)}
-    M = np.zeros((n, n),dtype=float)
+    Id = np.identity(n)
+    indices = {v: i for (i, v) in enumerate(G)}
+    M = np.zeros((n, n), dtype=float)
     for v, i in indices.items():
         if v!=end and v not in before:
             for w, p in G[v].items():
                 j = indices[w]
-                M[i,j] = p
+                M[i, j] = p
     b = np.array([v==end for v in G])
-    return dict(zip(G,np.linalg.solve(I-M,b)))
+    return dict(zip(G, np.linalg.solve(Id-M, b)))
 
 
 def expected_exit_time(G, end):
@@ -111,10 +114,10 @@ def expected_exit_time(G, end):
     will take to arrive at 'end'.
     """
 
-    I = np.identity(len(G))
+    Id = np.identity(len(G))
     M = np.array([[1/len(G[v])*(w in G[v])*(v!=end) for w in G] for v in G])
     b = np.array([v!=end for v in G])
-    return dict(zip(G,np.linalg.solve(I-M, b)))
+    return dict(zip(G, np.linalg.solve(Id-M, b)))
 
 
 def conditional_expected_exit_time(G, end, other):
@@ -136,21 +139,21 @@ def conditional_expected_exit_time(G, end, other):
     #
     v = next(iter(G))
     if type(G[v]) in {list, set}:
-        G = {node:{nbr:1/len(G[node]) for nbr in G[node]} for node in G}
+        G = {node: {nbr: 1/len(G[node]) for nbr in G[node]} for node in G}
     n = len(G)
     probs = exit_probabilities_weighted(G, end, other)
-    I = np.identity(n)
-    M = np.zeros((n,n),dtype=float)
-    indices = {v:i for (i,v) in enumerate(G)}
+    Id = np.identity(n)
+    M = np.zeros((n, n), dtype=float)
+    indices = {v: i for (i, v) in enumerate(G)}
     for i, v in enumerate(G):
         if v==end or v in other:
-            M[i,i] = 0.0
+            M[i, i] = 0.0
         else:
             for w, p in G[v].items():
                 j = indices[w]
-                M[i,j] = probs[w]/probs[v]*p
+                M[i, j] = probs[w]/probs[v]*p
     b = np.array([v!=end for v in G])
-    return dict(zip(G, np.linalg.solve(I-M, b)))
+    return dict(zip(G, np.linalg.solve(Id-M, b)))
 
 
 def isconnected(G):
@@ -160,7 +163,7 @@ def isconnected(G):
     """
     n = len(G)
 
-    V = defaultdict(lambda:True)
+    V = defaultdict(lambda: True)
     components = []
     for v in G:
         if V[v]:
@@ -173,10 +176,9 @@ def isconnected(G):
                 for w in G[v]:
                     if V[w]:
                         stack.append(w)
-            C = {v:G[v] for v in component}
+            C = {v: G[v] for v in component}
             return len(C)==n
-    return True # the empty graph is connected
-
+    return True  # the empty graph is connected
 
 
 #
@@ -185,7 +187,8 @@ def isconnected(G):
 #
 
 def delete_node(G, node):
-    return {n:[nbr for nbr in nbrs if nbr!=node] for (n, nbrs) in G.items() if n!=node}
+    return {n: [nbr for nbr in nbrs if nbr!=node]
+            for (n, nbrs) in G.items() if n!=node}
 
 
 def relabel(Gt, perm):
@@ -205,12 +208,14 @@ def normalizer(Gt, node):
 
     n = len(Gt)
     nds = tuple(nd for nd, _ in Gt)
-    perm = {nd:i for i, nd in enumerate(nds)}
+    perm = {nd: i for i, nd in enumerate(nds)}
     Gt = relabel(Gt, perm)
     node = perm[node]
-    f = lambda p: (relabel(Gt, {i:j for i,j in enumerate(p)}), p[node])
+
+    def f(p):
+        return (relabel(Gt, {i: j for i, j in enumerate(p)}), p[node])
     p = argmin(f, itertools.permutations(range(n)))
-    return {nd:p[perm[nd]] for nd in nds}
+    return {nd: p[perm[nd]] for nd in nds}
 
 
 def normalizer2(Gt, node):
@@ -220,25 +225,26 @@ def normalizer2(Gt, node):
     # as a graph on {0, . . ., n-1}
     #
     nds = tuple(nd for nd, _ in Gt)
-    perm = {nd:i for i, nd in enumerate(nds)}
-    Gt = relabel(Gt, perm); node = perm[node]
+    perm = {nd: i for i, nd in enumerate(nds)}
+    Gt = relabel(Gt, perm)
+    node = perm[node]
     g = pynauty.Graph(n)
     for nd, nbrs in Gt:
         g.connect_vertex(nd, list(nbrs))
     g.set_vertex_coloring([{node}])
 
     labels = pynauty.canon_label(g)
-    return {nd:labels[perm[nd]] for nd in nds}
+    return {nd: labels[perm[nd]] for nd in nds}
 
 
 def nhamiltonians0(G, start):
     def tuplify(G):
-        return tuple((nd,tuple(nbrs)) for nd, nbrs in G.items())
+        return tuple((nd, tuple(nbrs)) for nd, nbrs in G.items())
 
     def dictify(tG):
-        return {nd:list(nbrs) for (nd, nbrs) in tG}
+        return {nd: list(nbrs) for (nd, nbrs) in tG}
 
-    h = {(tuplify(G), start):1}
+    h = {(tuplify(G), start): 1}
     for j in range(len(G)-1):
         h2 = defaultdict(int)
         for (g, last), count in h.items():
@@ -266,16 +272,20 @@ def nhamiltonians(g: pynauty.Graph,
     starting at the node 'start'.
     """
     g.set_vertex_coloring([{start}])
-    h = {pynauty.certificate(g):(g, start, 1)}
+    h = {pynauty.certificate(g): (g, start, 1)}
     for j in range(len(g.adjacency_dict)-1):
         h2 = {}
         for cert, (g, last, count) in h.items():
             n = len(g.adjacency_dict)
             for nd in g.adjacency_dict[last]:
 
-                new_adj_dict = {nd:(set(g.adjacency_dict[nd]) - {last}) for nd in g.adjacency_dict if nd!=last}
-                perm = {nd:i for i, nd in enumerate(new_adj_dict.keys())}
-                new_adj_dict = {perm[nd]:list(map(perm.__getitem__, new_adj_dict[nd])) for nd in new_adj_dict}
+                new_adj_dict = {
+                    nd: (set(g.adjacency_dict[nd]) - {last})
+                    for nd in g.adjacency_dict if nd!=last}
+                perm = {nd: i for i, nd in enumerate(new_adj_dict.keys())}
+                new_adj_dict = {
+                    perm[nd]: list(map(perm.__getitem__, new_adj_dict[nd]))
+                    for nd in new_adj_dict}
                 nd = perm[nd]
 
                 new_g = pynauty.Graph(number_of_vertices=len(new_adj_dict),
@@ -298,16 +308,16 @@ def peterson_graph():
     Return the adjacency matrix of the
     Peterson graph
     """
-    A = np.identity(n=10,dtype=int)
+    A = np.identity(n=10, dtype=int)
     for i in range(5):
-        A[i,(i+1)%5] = 1
-        A[5+i,5+((i+2)%5)] = 1
-        
-        A[(i+1)%5,i] = 1
-        A[5+((i+2)%5),5+i] = 1
-        
-        A[i,5+i] = 1
-        A[5+i,i] = 1
+        A[i, (i+1)%5] = 1
+        A[5+i, 5+((i+2)%5)] = 1
+
+        A[(i+1)%5, i] = 1
+        A[5+((i+2)%5), 5+i] = 1
+
+        A[i, 5+i] = 1
+        A[5+i, i] = 1
     return A
 
 
@@ -316,7 +326,7 @@ def connected_components(G):
     Input: G - a graph
     Output: the connected_components of G
     """
-    V = defaultdict(lambda:True)
+    V = defaultdict(lambda: True)
     components = []
     for v in G:
         if V[v]:
@@ -329,7 +339,7 @@ def connected_components(G):
                 for w in G[v]:
                     if V[w]:
                         stack.append(w)
-            C = {v:G[v] for v in component}
+            C = {v: G[v] for v in component}
             components.append(C)
     return components
 
@@ -369,20 +379,21 @@ def chromatic_polynomial2(G):
     for i in G:
         for j in G[i]:
             if (i, j) not in edges and (j, i) not in edges:
-                edges.add((i,j))
+                edges.add((i, j))
     edges = list(edges)
     ne = len(edges)
     retval = intpoly1d([0]*n + [(-1)**(ne)])
-    it = powerset(edges); next(it)
+    it = powerset(edges)
+    next(it)
     for s in it:
         na = len(s)
-        G = {v:set() for v in vertices}
-        for (i,j) in s:
+        G = {v: set() for v in vertices}
+        for (i, j) in s:
             G[i].add(j)
             G[j].add(i)
         cA = nconnected_components(G)
         retval = retval + (-1)**((ne-na)%2) * intpoly1d([0]*cA+[1])
-    return (retval.coefs[-1])*retval        
+    return (retval.coefs[-1])*retval
 
 
 def chromatic_polynomial(G):
@@ -400,7 +411,7 @@ def chromatic_polynomial(G):
     for i in G:
         for j in G[i]:
             if (i, j) not in edges and (j, i) not in edges:
-                edges.add((i,j))
+                edges.add((i, j))
     edges = list(edges)
     sgn = 1
     retval = [0]*len(G) + [sgn]
@@ -409,7 +420,7 @@ def chromatic_polynomial(G):
     # a graycode to avoid having to construct
     # every subgraph from scratch
     g = graybits()
-    G2 = {v:set() for v in vertices}
+    G2 = {v: set() for v in vertices}
     for _ in range(2**len(edges)-1):
         i, j = edges[next(g)]
         if j in G2[i]:
@@ -421,6 +432,5 @@ def chromatic_polynomial(G):
         sgn = -sgn
         cA = nconnected_components(G2)
         retval[cA] += sgn
-        
-    return intpoly1d(retval)
 
+    return intpoly1d(retval)

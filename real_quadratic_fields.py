@@ -8,14 +8,14 @@ from utilities import (
     isprime,
     gcd,
     prod,
-    )
+)
 
 from quadratic_extensions import (
     QuadInt,
     factorize_in,
     discriminant,
     minkowski_bound,
-    )
+)
 
 
 def cont_frac(m):
@@ -119,7 +119,7 @@ def approximants(d):
         if c == 1:
             break
         h0, k0 = h1, k1
-        h1, k1 = h,  k
+        h1, k1 = h, k
 
 
 def approximants2(d):
@@ -139,7 +139,7 @@ def approximants2(d):
         if h**2 - d*k**2 == 1:
             break
         h0, k0 = h1, k1
-        h1, k1 = h,  k
+        h1, k1 = h, k
 
 
 def pell(d):
@@ -168,9 +168,9 @@ def pell(d):
             if h**2 - d*k**2 == +1:
                 return h, k
         h0, k0 = h1, k1
-        h1, k1 = h,  k
+        h1, k1 = h, k
         h0s, k0s = h1s, k1s
-        h1s, k1s = hs,  ks
+        h1s, k1s = hs, ks
 
 
 def squares_mod_d(d):

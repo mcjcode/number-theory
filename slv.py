@@ -4,21 +4,23 @@
 
 import math
 
+
 def lagrange(u, v):
     """
     An implementation of the two-dimensional Gauss-Lagrange
     algorithm for computing a reduced basis w.r.t. the L2 norm.
-    
+
     :param u: a vector in Rn
     :param v: a vector in Rn
     :return: a reduced basis for the lattice spanned by u and v.
- 
+
     A reduced basis u, v is a basis for which |u| <= |v| <= |v-ku|
     for all integers k.  For a reduced basis u, v, |u| is the minimum
     of the norm on the lattice, and |v| either equals |u| or is the
     next largest value taken on by the norm on the lattice.
     """
-    norm = lambda v: v.dot(v)
+    def norm(v):
+        return v.dot(v)
     if norm(u)==0:
         return u, v
     if norm(u) > norm(v):
@@ -33,11 +35,13 @@ def lagrange(u, v):
         mu = int(round(u.dot(v)/norm(u)))
     return u, v
 
+
 def mint(u, v):
     """
     Find an integer t that minimizes ||v-tu||_1.
     """
-    f = lambda t: sum(abs(v-t*u))
+    def f(t):
+        return sum(abs(v-t*u))
 
     # if b==0, then the value of a-tb doesn't vary with t
     z = sorted([((a/b), a, b) for a, b in zip(v, u) if b])
@@ -46,7 +50,7 @@ def mint(u, v):
     for absb in absbs:
         slopes.append(slopes[-1]+2*absb)
 
-    m = math.inf 
+    m = math.inf
     argm = None
     for i in range(len(slopes)-1):
         if slopes[i]<=0 and slopes[i+1]>=0:
@@ -66,17 +70,18 @@ def lagrangeL1(u, v):
     """
     An implementation of the two-dimensional Gauss-Lagrange
     algorithm for computing a reduced basis w.r.t. the L1 norm.
-    
+
     :param u: a vector in Rn
     :param v: a vector in Rn
     :return: a reduced basis for the lattice spanned by u and v.
- 
+
     A reduced basis u, v is a basis for which |u| <= |v| <= |v-ku|
     for all integers k.  For a reduced basis u, v, |u| is the minimum
     of the norm on the lattice, and |v| either equals |u| or is the
     next largest value taken on by the norm on the lattice.
     """
-    norm = lambda w: sum(map(abs,w))
+    def norm(w):
+        return sum(map(abs, w))
     if norm(u) > norm(v):
         u, v = v, u
     mu = mint(u, v)
@@ -86,4 +91,3 @@ def lagrangeL1(u, v):
             u, v = v, u
         mu = mint(u, v)
     return u, v
-

@@ -13,9 +13,9 @@ class SolveTest(unittest.TestCase):
             if mod2linalg.det_mod_2(A)==1:
                 b = np.random.randint(0, 2, (N,), dtype=np.int8)
                 v = mod2linalg.solve_linear_equations_mod_2(A, b)
-                self.assertTrue(all((A.dot(v)%2)==b))   
-            
-    
+                self.assertTrue(all((A.dot(v)%2)==b))
+
+
 class NullSpace(unittest.TestCase):
     def runTest(self):
         for _ in range(100):

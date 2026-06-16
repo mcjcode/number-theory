@@ -33,7 +33,7 @@ class BPSTest(unittest.TestCase):
         ps = [2, 3, 5, 7, 11]
         N = prod(ps)
         assert sum(1 for _ in bps(N, ps))==2**len(ps)
-        
+
     def test_bps_facts_w_rep(self):
 
         lst1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
@@ -62,7 +62,7 @@ class BPSTest(unittest.TestCase):
             f = list(factorize2(x))
             assert all(e==1 for p, e in f)
             assert s==pow(-1, len(f))
-            
+
     def test_bps_w_rep(self):
         ps = [2, 3, 5, 7]
         N = 10
@@ -81,4 +81,3 @@ class BPSTest(unittest.TestCase):
         set1 = set(prod(p**e for p, e in f) for f in bps_facts_w_rep(N, ps))
         set2 = set(bps_w_rep(N, ps))
         assert set1==set2
-

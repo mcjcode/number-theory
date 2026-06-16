@@ -18,7 +18,8 @@ class QuadraticFormTests(unittest.TestCase):
 
 class SumOfSquaresAlgoTest(unittest.TestCase):
     def test_one(self):
-        ps = [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97, 101, 109, 113, 137, 149]
+        ps = [5, 13, 17, 29, 37, 41, 53, 61,
+              73, 89, 97, 101, 109, 113, 137, 149]
         for p in ps:
             a, b = sum_sq_rep(p)
             self.assertEqual(p, a*a+b*b)

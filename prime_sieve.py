@@ -31,7 +31,7 @@ def segmented_sieve(n, trace=False):
         return
 
     seglen = int((n+1)**(2/3))
-    #seglen = sqrtInt(n+1)
+    # seglen = sqrtInt(n+1)
 
     # always make seglen a multiple of 6
     # add 6 so that the first segment contains sqrt(n)
@@ -40,7 +40,7 @@ def segmented_sieve(n, trace=False):
     wheel = [4, 2]
     wheel_len = len(wheel)
     wheelis = [1, 0]
-    
+
     nsegs = (n+1)//seglen
     if seglen*nsegs < n+1:
         nsegs += 1
@@ -67,7 +67,7 @@ def segmented_sieve(n, trace=False):
 
     i = starti
     wheeli = 0
-    while i < endi: 
+    while i < endi:
         if seg[i]:
             yield (p:=seg_start+i)
             ps.append(p)
@@ -79,7 +79,7 @@ def segmented_sieve(n, trace=False):
     while i < maxi:
         if seg[i]:  # seq_start+i is prime
             yield (p:=seg_start+i)
-            ps.append(p) 
+            ps.append(p)
         i += wheel[wheeli]
         wheeli = wheelis[wheeli]
 
@@ -98,7 +98,7 @@ def segmented_sieve(n, trace=False):
         stepi = 2
         i = starti
         wheeli = 0
-        while i < endi: 
+        while i < endi:
             if seg[i]:
                 yield (p:=seg_start+i)
                 seg[p*p-seg_start::p] = 0
@@ -142,7 +142,7 @@ def sqfree_parts():
                 ps.append(p)
         if not ps:
             ps = [i]
-            g = indicator(i) 
+            g = indicator(i)
             _ = next(g)
             indicators.append((i, g))
         yield ps
@@ -161,7 +161,7 @@ def primeFactors(n):
                 retval[j].append(p)
     return retval
 
-    
+
 def spf(n: int):
     """
     Return the smallest prime factors of all integers
@@ -169,7 +169,7 @@ def spf(n: int):
     """
     retval = [0]*(n+1)
     for p in range(2, n+1):
-        if not retval[p]: # p is prime
+        if not retval[p]:  # p is prime
             for j in range(p, n+1, p):
                 if not retval[j]:
                     retval[j]=p
@@ -183,7 +183,7 @@ def lpf(n: int):
     """
     retval = np.array([0]*(n+1), dtype=object)
     for p in range(2, n+1):
-        if not retval[p]: # p is prime
+        if not retval[p]:  # p is prime
             retval[p:n+1:p] = p
     return retval
 
@@ -219,7 +219,7 @@ def prime_factors(N: int):
 def quadratic_sieve(N):
     """
     Return a list, such that for n from 1 to N, xs[n]
-    is the factorization of n**2+1. 
+    is the factorization of n**2+1.
     """
     xs = [[] for _ in range(N+1)]
     rs = [n**2+1 for n in range(N+1)]
@@ -245,4 +245,3 @@ def quadratic_sieve(N):
         if rs[n]!=1:
             xs[n].append((rs[n], 1))
     return xs
-    

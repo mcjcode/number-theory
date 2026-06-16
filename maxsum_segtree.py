@@ -9,7 +9,7 @@ contiguous subarray.
 from dataclasses import dataclass
 
 
-@dataclass(eq=False) #, match_args=False, slots=True)
+@dataclass(eq=False)  # , match_args=False, slots=True)
 class Node:
     """
     left - the maximum sum of contiguous subarray
@@ -24,17 +24,18 @@ class Node:
     tot: int = 0
     best: int = 0
 
+
 def combine(L: Node, R: Node, out: Node) -> None:
-    out.left = max(L.left, L.tot,  L.tot + R.left)
+    out.left = max(L.left, L.tot, L.tot + R.left)
     out.right = max(R.right, R.tot, L.right + R.tot)
     out.tot = L.tot + R.tot
     out.best = max(L.best, R.best, L.right + R.left)
 
 
 def update(t, pos: int, val) -> None:
-    pos += len(t)>>1
+    pos += len(t) >>1
     t[pos].left = t[pos].right = t[pos].tot = t[pos].best = val
-    
+
     pos >>= 1
     while pos:
         combine(t[2*pos], t[2*pos+1], t[pos])
@@ -59,5 +60,5 @@ def setval(t, pos: int, val):
     Set the element of t at position 'pos' to value val,
     without updating any of the parent elements.
     """
-    pos += len(t)>>1
+    pos += len(t) >>1
     t[pos].left = t[pos].right = t[pos].tot = t[pos].best = val

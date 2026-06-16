@@ -21,7 +21,7 @@ def _ch12(a):
     :return: 0/1/-1
     """
     # ----- 0.  1.  2.  3.  4.  5.  6.  7.  8.  9. 10  11
-    return [0, +1,  0,  0,  0, -1,  0, -1,  0,  0,  0, +1][a % 12]
+    return [0, +1, 0, 0, 0, -1, 0, -1, 0, 0, 0, +1][a % 12]
 
 
 class TonelliShanksTest(unittest.TestCase):
@@ -37,4 +37,5 @@ class LegendreCharacterTest(unittest.TestCase):
     def test_12(self):
         ch = legendre_ch(3)
         for xx in range(12):
-            self.assertEqual(ch(xx), _ch12(xx), 'mod 3*4 Legendre character incorrect')
+            self.assertEqual(ch(xx), _ch12(
+                xx), 'mod 3*4 Legendre character incorrect')

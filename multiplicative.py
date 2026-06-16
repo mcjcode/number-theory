@@ -15,6 +15,7 @@ from utilities import (
 
 from factoring import factorize
 
+
 def phi(n: int) -> int:
     r"""
     :param n: a positive integer
@@ -35,7 +36,7 @@ def mu(n: int) -> int:
             return -1
         else:
             return +1
-            
+
 
 def divisor_function(k: int, n: int) -> int:
     r"""
@@ -78,6 +79,7 @@ def sum_sigma0(n):
     u = sqrtInt(n)
     return 2*sum(n//k for k in range(1, u+1)) - u**2
 
+
 def sum_sigma1(n):
     r"""
     :param n: a positive integer
@@ -89,13 +91,12 @@ def sum_sigma1(n):
     return part1+part2
 
 
-
 def partial_totient(n: int, k: int, ps: list[int] = []) -> int:
     r"""
     :return: how many k in [1,n] are relatively prime to k.
     n and k should be positive
     """
-    ps = ps or [p for p,_ in factorize2(k)]
+    ps = ps or [p for p, _ in factorize2(k)]
     nps = len(ps)
     xs = [0]*(2**nps)
     xs[0] = (n, +1)
@@ -110,7 +111,7 @@ def partial_totient(n: int, k: int, ps: list[int] = []) -> int:
                 i += 1
     return retval
     #    xs += [(x//p, -s) for x,s in xs if x>=p]
-    #return sum(x*s for x,s in xs)
+    # return sum(x*s for x,s in xs)
 
 
 def _partial_totient_alternate(n: int, k: int) -> int:
@@ -120,7 +121,7 @@ def _partial_totient_alternate(n: int, k: int) -> int:
     """
     V = [n//i for i in range(1, sqrtInt(n)+1)]
     V += list(range(V[-1]-1, -1, -1))
-    S1 = {i:i for i in V}
+    S1 = {i: i for i in V}
     for p, _ in factorize2(k):
         for v in V:
             if v < p:
@@ -135,12 +136,13 @@ def coprime(lb: int, ub: int, ps: list[int]) -> int:
     :param ub: a positive integer greater than lb
     :param ps: a list of prime numbers
     :return: how many k in (lb, ub] are not divisible by the p's in ps
-    """    
+    """
     def f(i=0, prd=1):
         if i==len(ps):
             return ub//prd - lb//prd
         return f(i+1, prd) - f(i+1, prd*ps[i])
     return f()
+
 
 def coprime0(ub: int, ps: list[int]) -> int:
     r"""
@@ -149,6 +151,7 @@ def coprime0(ub: int, ps: list[int]) -> int:
     :return: how many k <= ub are not divisible by the p's in ps
     """
     nps = len(ps)
+
     def f(i=0, prd=1):
         if i==nps:
             return ub//prd

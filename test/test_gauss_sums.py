@@ -9,11 +9,15 @@ from gauss_sums import ideal_class_number
 class GaussSumTest(unittest.TestCase):
     def test_1(self):
         class_number = ideal_class_number(1)
-        self.assertEqual(class_number, 1, 'Class number of Q should be 1.  Was %d.' % class_number)
+        self.assertEqual(
+            class_number, 1,
+            'Class number of Q should be 1.  Was %d.' % class_number)
 
     def test_2(self):
         class_number = ideal_class_number(-1)
-        self.assertEqual(class_number, 1, 'Class number of Q[i] should be 1.  Was %d.' % class_number)
+        self.assertEqual(
+            class_number, 1,
+            'Class number of Q[i] should be 1.  Was %d.' % class_number)
 
     @staticmethod
     def test_ideal_class_number():

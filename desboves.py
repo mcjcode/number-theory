@@ -131,7 +131,8 @@ class DesbovesCurvePoint(object):
         return ans
 
     def __neg__(self):
-        return DesbovesCurvePoint(self.a, (self.xyz[1], self.xyz[0], self.xyz[2]))
+        return DesbovesCurvePoint(
+            self.a, (self.xyz[1], self.xyz[0], self.xyz[2]))
 
     def __sub__(self, other):
         if self.a != other.a:
@@ -140,7 +141,8 @@ class DesbovesCurvePoint(object):
 
     def __init__(self, a, xyz):
         if xyz[0]**3 + xyz[1]**3 != a * xyz[2]**3:
-            raise ValueError('(%s does not lie on x**3 + y**3 = %d * z**3' % (xyz, a))
+            raise ValueError(
+                '(%s does not lie on x**3 + y**3 = %d * z**3' % (xyz, a))
         else:
             self.xyz = xyz
             self.a = a

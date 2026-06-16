@@ -146,7 +146,7 @@ def z1z2_to_pts(z1, z2, n, model):
                 theta2 = np.pi + theta2
 
         dtheta = (theta2 - theta1) / n
-        hp_pts = [(x + cos(theta1 + i * dtheta) * radius, 
+        hp_pts = [(x + cos(theta1 + i * dtheta) * radius,
                    0 + sin(theta1 + i * dtheta) * radius)
                   for i in range(n + 1)]
 
@@ -173,15 +173,15 @@ def tile_patch(corners, model='halfplane', **kwdargs):
 
     k = 30
 
-    z1, z2, z3 = corners        
+    z1, z2, z3 = corners
     if z1 == infj or z2 == infj or z3 == infj:
         if z2 == infj:
             z1, z2, z3 = z2, z3, z1
         elif z3 == infj:
             z1, z2, z3 = z3, z1, z2
-        assert(z1 == infj)
-        assert(z2 != infj)
-        assert(z3 != infj)
+        assert z1 == infj
+        assert z2 != infj
+        assert z3 != infj
 
         if model == 'disk':
 
@@ -205,7 +205,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
             pts = [(cx+r*cos(th), cy+r*sin(th))
                    for th in np.arange(th1, th2+0.5*dth, dth)]
             pth = [Path.MOVETO] + [Path.CURVE3]*(len(pts)-1)
-            assert(len(pts) == len(pth))
+            assert len(pts) == len(pth)
 
             w3 = halfplane_to_poincare_disk(z3)
 
@@ -228,7 +228,7 @@ def tile_patch(corners, model='halfplane', **kwdargs):
                     for th in np.arange(th1, th2+0.5*dth, dth)]
             pts += pts1
             pth += [Path.CURVE3]*len(pts1)
-            assert(len(pts) == len(pth))
+            assert len(pts) == len(pth)
         else:
             pth = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO]
             x2, y2 = c2xy(z2)
@@ -315,11 +315,15 @@ def _inv22(m):
 def _eq(m1, m2, q):
     [a, b, c, d] = (m1.dot(_inv22(m2))).ravel()
     if q > 0:
-        return ((a % q == 1 and b % q == 0 and c % q == 0 and d % q == 1) or
-                ((a+1) % q == 0 and b % q == 0 and c % q == 0 and (d+1) % q == 0))
+        b0 = b % q == 0
+        c0 = c % q == 0
+        pos = a % q == 1 and b0 and c0 and d % q == 1
+        neg = (a+1) % q == 0 and b0 and c0 and (d+1) % q == 0
+        return pos or neg
     else:  # q=0
-        return ((a == 1 and b == 0 and c == 0 and d == 1) or
-                (a == -1 and b == 0 and c == 0 and d == -1))
+        pos0 = a == 1 and b == 0 and c == 0 and d == 1
+        neg0 = a == -1 and b == 0 and c == 0 and d == -1
+        return pos0 or neg0
 
 
 def coset_reps_alt(q, return_generators=False):
@@ -327,13 +331,13 @@ def coset_reps_alt(q, return_generators=False):
     Yield coset representatives for Gamma(q) in SL(2, Z).
     """
 
-    I = np.array([[1, 0], [0, 1]], dtype=int)
+    Id = np.array([[1, 0], [0, 1]], dtype=int)
     S = np.array([[0, -1], [1, 0]], dtype=int)
     T = np.array([[1, 1], [0, 1]], dtype=int)
     U = _inv22(T)
 
     gens = []
-    retval = [I]
+    retval = [Id]
 
     i = 0
     while i < len(retval):
@@ -348,7 +352,7 @@ def coset_reps_alt(q, return_generators=False):
                     if not _eq(mat1, mat2, 0):
                         found2 = False
                         mat3 = mat1.dot(_inv22(mat2))
-                        for mat4 in gens:           
+                        for mat4 in gens:
                             if _eq(mat3, mat4, 0):
                                 found2 = True
                         if not found2:
@@ -399,14 +403,17 @@ def coset_reps(q):
             quot, rem = divmod(a*d-b*c, q)
             if rem == 1:
                 # now a*d-b*c = 1 (mod q)
-                for (e, f) in [(e, f) for e in range(-2*q, 2*q) for f in range(-2*q, 2*q)]:
+                for (e, f) in [(e, f) for e in range(-2*q, 2*q)
+                               for f in range(-2*q, 2*q)]:
                     if (a+e*q)*d-(b+f*q)*c == 1:
-                        yieldval = np.array([[a+e*q, b+f*q], [c, d]], dtype=int)
+                        yieldval = np.array(
+                            [[a+e*q, b+f*q], [c, d]], dtype=int)
                         # now normalize so that the image of D under this
                         # transformation lies between -1/2 and q-1/2.
                         f = mat_to_fcn(yieldval)
                         m = int(floor(f([0.5j])[0].real))
-                        yieldval = np.array([[1, m % q-m], [0, 1]], dtype=int).dot(yieldval)
+                        yieldval = np.array(
+                            [[1, m % q-m], [0, 1]], dtype=int).dot(yieldval)
                         yield yieldval
                         break
 
@@ -443,12 +450,13 @@ def name_to_latex(name):
 
 def plot_regions(tile_names, center, shift_name, transform_names):
     r"""
-    :param tile_names: coset representatives for :math:`G\leqslant SL(2,\mathbb{Z})`
+    :param tile_names: coset reps for :math:`G\leqslant SL(2,\mathbb{Z})`
     :param center: complex number for the center of the fundamental region.
-    :param shift_name: the name of an element g of G, g(D) will be the center of the plot
-    :param transform_names: the name of elements of G for neighboring cells to plot
+    :param shift_name: name of an element g of G, g(D) will be center of plot
+    :param transform_names: names of elements of G for neighboring cells
 
-    Plot a fundamental domain and neighbors for :math:`G\leqslant SL(2,\mathbb{Z})`.
+    Plot a fundamental domain and neighbors for
+    :math:`G\leqslant SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, 0.0+0.0j)
@@ -497,9 +505,12 @@ def plot_regions(tile_names, center, shift_name, transform_names):
     plt.show()
 
 
-def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='halfplane'):
+def plot_mat(tile_mats,
+             shifts=[np.array([[1, 0], [0, 1]], dtype=int)],
+             model='halfplane'):
     r"""
-    Plot a fundamental domain and neighbors for :math:`G\leqslant of SL(2,\mathbb{Z})`.
+    Plot a fundamental domain and neighbors for
+    :math:`G\leqslant of SL(2,\mathbb{Z})`.
     """
     rho = np.exp(2*np.pi*1.0j/6.0)
     D = (rho, rho**2, infj)
@@ -536,7 +547,7 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
     ax = plt.subplot(111)
     plt.subplots_adjust(left=0, bottom=0, right=1,
                         top=1, wspace=0, hspace=0)
-    ax.set_xticks([])           
+    ax.set_xticks([])
     ax.set_yticks([])
     ax.set_xlim([xmin, xmax])
     ax.set_ylim([ymin, ymax])
@@ -554,7 +565,7 @@ def plot_mat(tile_mats, shifts=[np.array([[1, 0], [0, 1]], dtype=int)], model='h
         for tile, f in zip(group, transfs):
             ax.add_patch(tile_patch(tile,
                                     model=model,
-                                    facecolor=color, 
+                                    facecolor=color,
                                     linewidth=0.2))
             if model == 'halfplane':
                 z = f([1.3333j])[0]
@@ -653,8 +664,10 @@ def plot_arc(a1, a2):
     fig = plt.figure(figsize=(3, 3), facecolor='grey')
     ax = fig.gca()
 
-    ax.add_patch(mpatches.Circle((0, 0), 1, fill=True, alpha=0.5, color='grey'))
-    ax.add_patch(mpatches.Circle((cx, cy), radius, fill=False, color='g', alpha=0.1))
+    ax.add_patch(mpatches.Circle(
+        (0, 0), 1, fill=True, alpha=0.5, color='grey'))
+    ax.add_patch(mpatches.Circle((cx, cy), radius,
+                 fill=False, color='g', alpha=0.1))
     ax.add_patch(mpatches.Arrow(0, 0, x1, y1, width=0.01))
     ax.add_patch(mpatches.Arrow(0, 0, x2, y2, width=0.01))
     ax.add_patch(mpatches.Arrow(x1, y1, cx-x1, cy-y1, width=0.01))

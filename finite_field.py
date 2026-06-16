@@ -124,7 +124,8 @@ class FiniteField(object):
         # to be irreducible.
         #
         for coefs in itertools.product(*[range(self.p)]*(self.n-1)):
-            coefs = [1] + list(coefs) + [1]  # monic polynomial of degree self.n
+            # monic polynomial of degree self.n
+            coefs = [1] + list(coefs) + [1]
             trial_poly = poly1d(coefs)
             r = self.polynomial_remainder_modp(pr, trial_poly)
             if all(r.c == 0):
@@ -132,7 +133,10 @@ class FiniteField(object):
 
     def __eq__(self, other):
 
-        return self.p == other.p and self.n == other.n and self.rpoly == other.rpoly
+        same_p = self.p == other.p
+        same_n = self.n == other.n
+        same_rpoly = self.rpoly == other.rpoly
+        return same_p and same_n and same_rpoly
 
     def order2(self, a):
         """
@@ -168,7 +172,7 @@ class FiniteField(object):
                 a1 = a1**q
                 e *= q
         return e
-    
+
     def primitive_element(self):
         for elt in self:
             if elt == self.zero():
@@ -187,13 +191,15 @@ class FiniteField(object):
         for i in range(z.order+1):
             z[i] %= self.p
         z = self.polynomial_remainder_modp(z, self.rpoly)
-        return np.array(list(map(int,list(reversed(z.c))+[0]*(self.n-len(z.c)))))
+        return np.array(
+            list(map(int, list(reversed(z.c))+[0]*(self.n-len(z.c)))))
 
     def zero(self):
         return FiniteFieldElement(np.array([0]*self.n, dtype=int), self)
 
     def one(self):
-        return FiniteFieldElement(np.array([1]+[0]*(self.n-1), dtype=int), self)
+        return FiniteFieldElement(
+            np.array([1]+[0]*(self.n-1), dtype=int), self)
 
     def __iter__(self):
         return (FiniteFieldElement(np.array(val, dtype=int), self)

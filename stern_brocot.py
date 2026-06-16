@@ -30,15 +30,15 @@ def stern_brocot(continue_condition=lambda *y: True,
 
 
 def pythagorean_triple_tree(cond):
-    A=np.array([[+1, -2,  2],
-                [+2, -1,  2],
-                [+2, -2,  3]])
-    B=np.array([[+1,  2,  2],
-                [+2,  1,  2],
-                [+2,  2,  3]])
-    C=np.array([[-1,  2,  2],
-                [-2,  1,  2],
-                [-2,  2,  3]])
+    A=np.array([[+1, -2, 2],
+                [+2, -1, 2],
+                [+2, -2, 3]])
+    B=np.array([[+1, 2, 2],
+                [+2, 1, 2],
+                [+2, 2, 3]])
+    C=np.array([[-1, 2, 2],
+                [-2, 1, 2],
+                [-2, 2, 3]])
     stack = [(3, 4, 5)]
     while stack:
         abc = stack.pop()

@@ -6,7 +6,8 @@ def assert_equal(expected, actual, msg):
         print('.', end=' ')
         return True
     else:
-        raise Exception('testing "%s": %s expected, %s actual' % (msg, expected, actual))
+        raise Exception('testing "%s": %s expected, %s actual' %
+                        (msg, expected, actual))
 
 
 def assert_exception(f, msg):

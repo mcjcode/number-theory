@@ -60,7 +60,8 @@ def flip(gint):
 
 def table2():
     maxp = 75
-    q2primes = [flip(jacobi_sum_quartic(q)) for q in range(5, maxp, 4) if isprime(q)]
+    q2primes = [flip(jacobi_sum_quartic(q))
+                for q in range(5, maxp, 4) if isprime(q)]
 
     for pi1 in q2primes:
         for pi in [pi1, GaussianInteger(pi1.real(), -pi1.imag()),
@@ -75,8 +76,10 @@ def table2():
             chi = Character(pi)
             chi2 = chi*chi
 
-            print('%10s %10s %10s %10s' % (pi, chi(GaussianInteger(-1)), jacobi_sum(chi, chi, pi.norm()),
-                                           jacobi_sum(chi, chi2, pi.norm())))
+            print('%10s %10s %10s %10s' % (
+                pi, chi(GaussianInteger(-1)),
+                jacobi_sum(chi, chi, pi.norm()),
+                jacobi_sum(chi, chi2, pi.norm())))
 
 
 def biquadratic_residue_table():
@@ -86,7 +89,8 @@ def biquadratic_residue_table():
     """)
 
     maxp = 75
-    qprimes = [(flip(jacobi_sum_quartic(q)) if (q % 4 == 1) else GaussianInteger(q))
+    qprimes = [(flip(jacobi_sum_quartic(q)) if (q % 4 == 1)
+                else GaussianInteger(q))
                for q in range(3, maxp, 2) if isprime(q)]
     pprimes = qprimes
 

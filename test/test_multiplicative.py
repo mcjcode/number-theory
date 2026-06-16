@@ -32,7 +32,7 @@ class PhiTest(unittest.TestCase):
             for kk in range(1, nn):
                 self.assertEqual(partial_totient(nn, kk),
                                  _partial_totient_alternate(nn, kk))
-            
+
     def test_coprime(self):
         pfacts = [2, 3, 5, 7]
         xx = 2*3*5*7
@@ -55,6 +55,7 @@ class SumSigmaTest(unittest.TestCase):
             ss0 = sum([divisor_function(0, kk) for kk in range(1, nn+1)])
             self.assertEqual(ss0, sum_sigma0(nn))
 
+
 def test_mu():
     assert mu(1)==1
     for i in range(1, 100):
@@ -64,16 +65,15 @@ def test_mu():
         assert mu(p)==-1
         assert mu(p**2)==0
 
-        
+
 def test_big_omega():
     assert big_omega(1)==0
     for p in segmented_sieve(100):
         assert big_omega(p)==1
         assert big_omega(p**2)==2
 
-        
+
 def test_little_omega():
     for p in segmented_sieve(100):
         assert little_omega(p)==1
         assert little_omega(p**2)==1
-        

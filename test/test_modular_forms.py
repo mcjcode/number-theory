@@ -33,7 +33,10 @@ class EisensteinTest(unittest.TestCase):
         while True:
             x = np.random.rand() - 0.5
             y = np.random.rand()
-            if x ** 2 + y ** 2 <= 1 and (x - 1) ** 2 + y ** 2 >= 1 and (x + 1) ** 2 + y ** 2 > 1:
+            in_disk = x ** 2 + y ** 2 <= 1
+            left_arc = (x - 1) ** 2 + y ** 2 >= 1
+            right_arc = (x + 1) ** 2 + y ** 2 > 1
+            if in_disk and left_arc and right_arc:
                 break
         return x + 1.0j * y
 
@@ -60,7 +63,8 @@ class EisensteinTest(unittest.TestCase):
         zz = self._random_pt()
         for kk in range(3, 7):
             zeta2k = sum(1. / n ** (2 * kk) for n in range(100000, 0, -1))
-            self.assertAlmostEqual(unrestricted_eisenstein(kk, zz), zeta2k * eisenstein(kk, zz), places=6)
+            self.assertAlmostEqual(unrestricted_eisenstein(
+                kk, zz), zeta2k * eisenstein(kk, zz), places=6)
 
     def test_poincare(self):
         """

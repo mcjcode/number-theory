@@ -51,13 +51,14 @@ class CyclotomicIntegerTest(unittest.TestCase):
         self.assertEqual(xx.norm(), nn)
         self.assertEqual(yy.norm(), 1)
 
+
 class CyclotomicPolynomialTest(unittest.TestCase):
 
     def test_degree(self):
         """
         The degree of Phi_n(x) should equal phi(n)
         """
-        for n in range(1,100):
+        for n in range(1, 100):
             p = cyclotomic_polynomial(n)
             d = phi(n)
             self.assertEqual(p.degree(), d)
@@ -76,12 +77,12 @@ class CyclotomicPolynomialTest(unittest.TestCase):
                 if n%d==0:
                     rhs *= cyclotomic_polynomial(d)
             self.assertEqual(lhs, rhs)
-            
+
     def test_lucas_formula(self):
         """
         If n=1(4) is squarefree, then the lucas polynomials
         C and D satisfy
-        
+
         C_n^2 - n*x*D_n^2 = Phi_n
 
         Check that this holds for a range of n values
@@ -93,7 +94,7 @@ class CyclotomicPolynomialTest(unittest.TestCase):
         """
 
         x = sympy.abc.x
-        for n in range(5, 100, 4):            
+        for n in range(5, 100, 4):
             if all(e==1 for _, e in factorize2(n)):
                 C, D = lucas_formula(n)
                 Phi = cyclotomic_polynomial(n)

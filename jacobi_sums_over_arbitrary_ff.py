@@ -30,5 +30,6 @@ def run():
                 ffield = FiniteField(p, i)
                 c0, c1 = ffield.jacobi_sum(3)
                 nk = count_diagonal_cubic_points(ffield)
-                print(u'%6d    %+.0f%+.0f\u03c9   %4.0f   %4d' %
-                      (p**i, c0, c1, (p**i+1)-(-1)**i*(pi**i + pi.conj()**i).real, nk))
+                print(u'%6d    %+.0f%+.0f\u03c9   %4.0f   %4d' % (
+                    p**i, c0, c1,
+                    (p**i+1)-(-1)**i*(pi**i + pi.conj()**i).real, nk))

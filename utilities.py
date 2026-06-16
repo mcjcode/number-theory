@@ -84,7 +84,8 @@ def argmin(f, xs):
 def timeit(f):
     """
     :param f: a function
-    :return: a function with the side effect of printing the time it takes to run f
+    :return: a function with the side effect of printing the time it
+        takes to run f
 
     A decorator to wrap around functions when we
     want to measure the run time.
@@ -237,10 +238,10 @@ def lucas(n, nattempts=5, factoring_steps=0):
         g = gcd(a, n)
         if g>1 and g!=n:
             return False, g, 'Lucas: Found a factor'
-        
+
         if pow(a, n-1, n) != 1:
             return False, a, f'Lucas: order({a})!=n-1. n not prime'
-        
+
         if all(pow(a, (n-1)//p, n)!=1 for p, _ in f):
             return True, a, 'Lucas: found a primitive root'
 
@@ -263,11 +264,11 @@ def factorize(n):
 
 
 _ps = [2, 3, 5]
-_wheel = [ 1, 6, 5, 4, 3, 2,
-           1, 4, 3, 2, 1, 2,
-           1, 4, 3, 2, 1, 2,
-           1, 4, 3, 2, 1, 6,
-           5, 4, 3, 2, 1, 2 ]
+_wheel = [1, 6, 5, 4, 3, 2,
+          1, 4, 3, 2, 1, 2,
+          1, 4, 3, 2, 1, 2,
+          1, 4, 3, 2, 1, 6,
+          5, 4, 3, 2, 1, 2]
 
 
 def _trial_division(n, bound=0, ps=None):
@@ -280,10 +281,10 @@ def _trial_division(n, bound=0, ps=None):
 
     if ps is None:
         ps = _ps
-        
+
     for p in ps:
         if bound and p>bound:
-            raise ValueError(f'Exceeding max trial divisor.  Giving up.')            
+            raise ValueError(f'Exceeding max trial divisor.  Giving up.')
         if p*p > n:
             if n>1:
                 yield n, 1
@@ -311,7 +312,9 @@ def _trial_division(n, bound=0, ps=None):
     if n > 1:
         yield n, 1
 
+
 factorize2 = _trial_division
+
 
 def trial_division(n, bound=0, ps=None):
     fiter = _trial_division(n, bound=bound, ps=ps)
@@ -474,7 +477,7 @@ def gcd(a, b):
     return abs(b)
 
 
-def bezout(a:int, b:int) -> (int, int):
+def bezout(a: int, b: int) -> (int, int):
     """
     :param a: an integer
     :param b: an integer
@@ -483,24 +486,23 @@ def bezout(a:int, b:int) -> (int, int):
 
     sa = sign(a)
     sb = sign(b)
-    
+
     a = abs(a)
     b = abs(b)
-    
+
     if b == 0:
         return sa, 0
-    
-    x0, y0 = 1, 0 # x0*a + y0*b = a
-    x1, y1 = 0, 1 # x1*a + y1*b = b
-    q, r = divmod(a, b) # now r = a - q*b
+
+    x0, y0 = 1, 0  # x0*a + y0*b = a
+    x1, y1 = 0, 1  # x1*a + y1*b = b
+    q, r = divmod(a, b)  # now r = a - q*b
 
     while r:
         a, b = b, r
         (x0, y0), (x1, y1) = (x1, y1), (x0 - q*x1, y0 - q*y1)
         q, r = divmod(a, b)
-        
+
     return x1*sa, y1*sb
-        
 
 
 def crt(r1, m1, r2, m2):
@@ -559,28 +561,29 @@ def step_modp_pascal(row, p):
     :param row: a row of Pascal's triangle mod p, in compressed form
     :param p: the modulus, not necessary prime
     :return: the next row of Pascal's triangle mod p, in compressed form
-    
+
     compressed mod p pascal's triangle generation.
-    
+
     Given the nth row of pascal's triangle, generate the
     (n+1)st row, where both are represented in compressed
     form enumerating just the non-zero entries.
-    
+
     e.g. row=[(0,1),(1,1),(4,1),(5,1)] is the 5th row
     of the mod 2 triangle, then the result would be
     [(0,1),(2,1),(4,1),(6,1)], the 6th row.
     """
 
-    new_row = [(0,1)]
+    new_row = [(0, 1)]
     for k in range(len(row)-1):
         if row[k][0]+1 == row[k+1][0]:
             newval = (row[k][1] + row[k+1][1]) % p
             if newval:
-                new_row.append((row[k+1][0], newval)) # if p=2, you never land here
+                # if p=2, you never land here
+                new_row.append((row[k+1][0], newval))
         else:
-            new_row.append((row[k][0]+1,row[k][1]))
-            new_row.append((row[k+1][0],row[k+1][1]))
-    new_row.append((row[-1][0]+1,1))
+            new_row.append((row[k][0]+1, row[k][1]))
+            new_row.append((row[k+1][0], row[k+1][1]))
+    new_row.append((row[-1][0]+1, 1))
     return new_row
 
 
@@ -589,8 +592,8 @@ def divisors(n):
     Yield all of the divisors of n
     """
     f = list(factorize2(n))
-    for exponents in itertools.product(*[range(e+1) for (p,e) in f]):
-        yield prod(p**e for ((p,_),e) in zip(f,exponents))
+    for exponents in itertools.product(*[range(e+1) for (p, e) in f]):
+        yield prod(p**e for ((p, _), e) in zip(f, exponents))
 
 
 def divisors(f):
@@ -599,7 +602,7 @@ def divisors(f):
     """
     if type(f)==int:
         f = dict(list(factorize2(f)))
-        
+
     retval = [0]*prod(e+1 for e in f.values())
     retval[0] = 1
     m = 1
@@ -626,8 +629,8 @@ def unitary_divisors(f):
             retval[i] = retval[i-m]*pe
         m *= 2
     return retval
-        
-        
+
+
 def wagons_algorithm(p):
     """
     For a prime p=1(4), return a pair of numbers a < b,

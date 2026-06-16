@@ -13,17 +13,17 @@ def bps_w_rep(n, ps):
     num_primes = len(ps)
     if n < 1:
         return
-    
+
     yield 1
-    #yield []
-    
+    # yield []
+
     val = [[ps[-1], num_primes-1, 1, n//ps[-1]]]
     nval = ps[-1]
 
     while True:
         yield nval
-        #yield [(v[0], v[2]) for v in val]
-        
+        # yield [(v[0], v[2]) for v in val]
+
         #
         # find the largest prime that is
         # 1) as large or larger than the
@@ -71,4 +71,3 @@ def bps_w_rep(n, ps):
         else:
             val.append([p, pi, 1, val[-1][3]//p])
             nval *= p
-

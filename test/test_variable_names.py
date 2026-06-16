@@ -11,7 +11,8 @@ def test_no_doubled_chars():
             match = pattern.search(text)
             if match:
                 print(fn, match)
-            #assert match==None, '%s %s'%(fn, match)
+            # assert match==None, '%s %s'%(fn, match)
+
 
 if __name__=='__main__':
     test_no_doubled_chars()

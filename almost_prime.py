@@ -57,7 +57,7 @@ def almost_primes(k, N, i=0, j=1, ps=None, V=None, S0=None):
     if j==1:
         ps = list(segmented_sieve(sqrtInt(N)))
         V, S0 = sievecnt(N)
-        
+
     if k==1:
         retval = S0[N] - (i+1) + 1
     else:
@@ -67,7 +67,6 @@ def almost_primes(k, N, i=0, j=1, ps=None, V=None, S0=None):
             retval += almost_primes(k-1, N//p, i, j+1, ps, V, S0)
             i += 1
     return retval
-    
 
 
 def pi2(a, b, N, ps, V, S0):
@@ -80,7 +79,7 @@ def pi2(a, b, N, ps, V, S0):
 
     if b<2:
         raise ValueError(f'q exponent {b=} must be at least 2')
-        
+
     retval = 0
     for q in ps:
         if q**b > N:
@@ -90,6 +89,7 @@ def pi2(a, b, N, ps, V, S0):
         else:
             retval += S0[nrtInt(a, N//q**b)]
     return retval
+
 
 def pqr(N, ps, V, S0):
     #
@@ -102,6 +102,7 @@ def pqr(N, ps, V, S0):
         while (qi:=qi+1) < len(ps) and (q:=ps[qi])<=sqrtInt(N//p):
             retval += S0[N//(p*q)] - S0[q]
     return retval
+
 
 def p2qr(N, ps, V, S0):
     #
@@ -117,6 +118,7 @@ def p2qr(N, ps, V, S0):
             retval += (S0[N//(p**2*q)] - (p**3*q<=N)) - (S0[q] - (p<q))
     return retval
 
+
 def p2q2r(N, ps, V, S0):
     #
     # p2*q2*r
@@ -126,8 +128,10 @@ def p2q2r(N, ps, V, S0):
     while (pi:=pi+1) < len(ps) and (p:=ps[pi])<=nrtInt(4, N):
         qi = pi
         while (qi:=qi+1) < len(ps) and (q:=ps[qi])<=sqrtInt(N//p**2):
-            retval += S0[N//(p**2*q**2)] - (p<=N/(p**2*q**2)) - (q<=N/(p**2*q**2))
+            retval += S0[N//(p**2*q**2)] - \
+                (p<=N/(p**2*q**2)) - (q<=N/(p**2*q**2))
     return retval
+
 
 def pkqr(N, k, ps, V, S0):
     #
@@ -159,7 +163,8 @@ def pqrs(N, ps, V, S0):
             while (ri:=ri+1)<len(ps) and (r:=ps[ri])<=nrtInt(2, N//(p*q)):
                 retval += S0[N//(p*q*r)] - S0[r]
     return retval
-    
+
+
 def p2qrs(N, ps, V, S0, log=lambda *x: None):
     x = 0
     pi = -1
@@ -174,7 +179,8 @@ def p2qrs(N, ps, V, S0, log=lambda *x: None):
                     if r!=p:
                         bd = N//(p**2*q*r)
                         if bd > r:
-                            scount = (S0[bd] - (p<=bd) - (q<=bd) - (r<=bd)) - (S0[r] - (p<=r) - (q<=r) - (r<=r))
+                            scount = (S0[bd] - (p<=bd) - (q<=bd) - (r<=bd)
+                                      ) - (S0[r] - (p<=r) - (q<=r) - (r<=r))
                         else:
                             scount = 0
                         log(f'    {r=} {scount=}')

@@ -8,7 +8,7 @@ from utilities import (
     isprime,
     factorize2,
     prod,
-    )
+)
 
 
 def discriminant(d):
@@ -46,7 +46,7 @@ def legendre(a, p):
             return -1
         else:
             return 0
-    
+
     if not isprime(a):
         return prod([legendre(q, p) for q, e in factorize2(a) if e % 2])
 
@@ -79,7 +79,7 @@ def tonelli_shanks(a, p, safe=False):
 
     if p % 4 == 3:
         return pow(a, (p+1)//4, p)
-    
+
     #
     # p=1(mod 4)
     #
@@ -202,12 +202,14 @@ class QuadInt(object):
         if self.d != other.d:
             raise ValueError("integers are not from same field")
         return QuadInt(self.d, self.a-other.a, self.b-other.b)
-    
+
     def __mul__(self, other):
         if self.d != other.d:
             raise ValueError("integers are not from same field")
         else:
-            return QuadInt(self.d, self.a*other.a-self.d*self.b*other.b, self.a*other.b-self.b*other.b)
+            return QuadInt(self.d,
+                           self.a*other.a-self.d*self.b*other.b,
+                           self.a*other.b-self.b*other.b)
 
     def real(self):
         if self.d % 4 == 1:

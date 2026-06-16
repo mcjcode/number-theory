@@ -85,7 +85,8 @@ class CyclotomicInteger(object):
         nc = len(self.coefs)
         for k in range(nc):
             if gcd(k, nc) == 1:
-                yield CyclotomicInteger([self.coefs[i*k % nc] for i in range(nc)])
+                yield CyclotomicInteger(
+                    [self.coefs[i*k % nc] for i in range(nc)])
 
     def norm(self):
         """
@@ -104,13 +105,15 @@ class CyclotomicInteger(object):
     def __add__(self, other):
         if type(other) == int:
             other = CyclotomicInteger([other]+[0]*(len(self.coefs)-1))
-        return CyclotomicInteger([x+y for (x, y) in zip(self.coefs, other.coefs)])
+        return CyclotomicInteger(
+            [x+y for (x, y) in zip(self.coefs, other.coefs)])
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __sub__(self, other):
-        return CyclotomicInteger([x-y for (x, y) in zip(self.coefs, other.coefs)])
+        return CyclotomicInteger(
+            [x-y for (x, y) in zip(self.coefs, other.coefs)])
 
     def __neg__(self):
         return CyclotomicInteger([-x for x in self.coefs])
@@ -124,7 +127,8 @@ class CyclotomicInteger(object):
         nc = len(self.coefs)
         ret_coefs = [0]*nc
         for i in range(nc):
-            ret_coefs[i] = sum([self.coefs[j]*other.coefs[(i-j) % nc] for j in range(nc)])
+            ret_coefs[i] = sum(
+                [self.coefs[j]*other.coefs[(i-j) % nc] for j in range(nc)])
         return CyclotomicInteger(ret_coefs)
 
     def __rmul__(self, other):
@@ -160,13 +164,15 @@ def cyclotomic_polynomial(n, k=1):
         return ans
     else:
         pds = CyclotomicInteger.periods(n, k)
-        coefs_ci = [(-1)**d * symmetric_function(d, pds) for d in range(1, phi(n)//k + 1)]
+        coefs_ci = [(-1)**d * symmetric_function(d, pds)
+                    for d in range(1, phi(n)//k + 1)]
         coefs = [ci.coefs[0]-ci.coefs[1] for ci in coefs_ci]
         return sympy.Poly([1]+coefs, x)
-        
+
 
 #
-# We implement the algorithm of R.P.Brent (On Computing Factors of Cyclotomic Polynomials)
+# We implement the algorithm of R.P.Brent
+# (On Computing Factors of Cyclotomic Polynomials)
 # for computing the Gauss and Lucas identities.
 #
 
@@ -195,7 +201,7 @@ class QuadInt(object):
     def __add__(self, other):
         if type(other)==int or type(other)==Fraction:
             return QuadInt(self.d, self.a+other, self.b)
-        
+
         if self.d != other.d:
             raise ValueError("integers are not from same field")
         return QuadInt(self.d, self.a+other.a, self.b+other.b)
@@ -205,20 +211,22 @@ class QuadInt(object):
             return QuadInt(self.d, self.a+other, self.b)
         else:
             return self.__add__(other)
-        
+
     def __sub__(self, other):
         if self.d != other.d:
             raise ValueError("integers are not from same field")
         return QuadInt(self.d, self.a-other.a, self.b-other.b)
-    
+
     def __mul__(self, other):
         if type(other)==int or type(other)==Fraction:
             return QuadInt(self.d, self.a*other, self.b*other)
-        
+
         if self.d != other.d:
             raise ValueError("integers are not from same field")
         else:
-            return QuadInt(self.d, self.a*other.a+self.d*self.b*other.b, self.a*other.b+self.b*other.a)
+            return QuadInt(self.d,
+                           self.a*other.a+self.d*self.b*other.b,
+                           self.a*other.b+self.b*other.a)
 
     def __truediv__(self, other):
         if type(other)==int or type(other)==Fraction:
@@ -229,7 +237,7 @@ class QuadInt(object):
             return QuadInt(self.d, self.a*other, self.b*other)
         else:
             return self.__mul__(other)
-        
+
 
 #
 # put my own version here that uses 'true' division
@@ -258,30 +266,35 @@ def gauss_formula(n):
         for k in range(1, phi(n)//2+1):
             g = math.gcd(k, n)
             if g==1:
-                yield Fraction(mu(n),2) + jacobi.jacobi2(k, n)*QuadInt(s*n, Fraction(0,2), Fraction(1,2))
+                j2 = jacobi.jacobi2(k, n)
+                q0 = QuadInt(s*n, Fraction(0, 2), Fraction(1, 2))
+                yield Fraction(mu(n), 2) + j2 * q0
             else:
-                yield QuadInt(s*n, Fraction(mu(n//g)*phi(g), 2), Fraction(0, 2))
+                yield QuadInt(s*n, Fraction(mu(n//g)*phi(g), 2),
+                              Fraction(0, 2))
 
     x = sympy.abc.x
-    
+
     xs = list(p(n))
     ys = newtons_identity(xs)
     ys = [(-1)**i*y for i, y in enumerate(ys)]
-    
+
     Acoeffs = [2] + [(2*z.a).numerator for z in ys[1:]]
     Bcoeffs = [0] + [(2*z.b).numerator for z in ys[1:]]
-    
+
     A = sympy.Poly(Acoeffs, x, domain='Z'*2)
     B = sympy.Poly(Bcoeffs, x, domain='Z'*2)
-    
+
     return A, B
+
 
 def lucas_formula(n):
     """
     Return polynomials C(x) and D(x) such that C**2 +/- n*x*D**2
     equals the cyclotomic polynomial Phi_n(x)
     """
-    if not(n%2 and all(e==1 for _, e in factorize2(n))): # has to be odd and squarefree
+    # has to be odd and squarefree
+    if not (n%2 and all(e==1 for _, e in factorize2(n))):
         raise ValueError(f'n has to be odd and squarefree')
 
     def p(n):
@@ -299,7 +312,7 @@ def lucas_formula(n):
                     z = -1
                 else:
                     z = 0
-                #z = math.cos((n-1)*k*math.pi/4)
+                # z = math.cos((n-1)*k*math.pi/4)
                 yield QuadInt(n, mu(np/gp)*phi(gp)*int(z), 0)
 
     xs = list(p(n))
@@ -307,7 +320,7 @@ def lucas_formula(n):
     ys[0] = QuadInt(n, 1, 0)
     Ccoeffs = [int(z.a) for z in ys[0::2]]
     Dcoeffs = [int(-z.b) for z in ys[1::2]]
-        
+
     x = sympy.abc.x
     C = sympy.Poly(Ccoeffs, x, domain='Z'*2)
     D = sympy.Poly(Dcoeffs, x, domain='Z'*2)

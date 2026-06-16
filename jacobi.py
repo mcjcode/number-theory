@@ -97,7 +97,8 @@ def run1():
         tmp = jsum - c2*zeta3
         c1 = tmp.real
 
-        print('%6d %10d %35s %7.1f %7.1f %35s %s' % (p, p*p, jsum, c1, c2, c1+c2*zeta3, '%d+%di' % x))
+        print('%6d %10d %35s %7.1f %7.1f %35s %s' %
+              (p, p*p, jsum, c1, c2, c1+c2*zeta3, '%d+%di' % x))
 
 
 def f(x, y, p):
@@ -108,7 +109,8 @@ def run2():
     for p in []:
         if not isprime(p):
             continue
-            # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61] :
+            # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
+            #  31, 37, 41, 43, 47, 53, 59, 61] :
         cnt = 0
         for x in range(p):
             for y in range(p):

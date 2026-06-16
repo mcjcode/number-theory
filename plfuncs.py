@@ -15,17 +15,17 @@ class PLFunc1:
                 return self.ys[z]
         p = (x-self.xs[a])/(self.xs[b]-self.xs[a])
         return self.ys[a] + p*(self.ys[b]-self.ys[a])
-        
+
     def __add__(self, other):
         if type(other) in [int, float]:
-            return type(self)(self.xs, [y+other for y in  self.ys])
+            return type(self)(self.xs, [y+other for y in self.ys])
         xs = sorted(set(self.xs + other.xs))
         ys = [self(x)+other(x) for x in xs]
         return type(self)(xs, ys)
-        
+
     def __sub__(self, other):
         if type(other) in [int, float]:
-            return type(self)(self.xs, [y-other for y in  self.ys])
+            return type(self)(self.xs, [y-other for y in self.ys])
         xs = sorted(set(self.xs + other.xs))
         ys = [self(x)+other(x) for x in xs]
         return type(self)(xs, ys)
@@ -73,9 +73,9 @@ class PLFunc1:
         newxs.append(x2)
         newys.append(y2)
         return type(self)(newxs, newys)
-        
+
 # class PLFunc2:
-    
+
 #     def __init__(self, xys):
 #         self.xys = xys
 
@@ -91,17 +91,19 @@ class PLFunc1:
 #     def __add__(self, other):
 #         if type(other) in [int, float]:
 #             return type(self)([(x, y+other) for x, y in self.xys])
-#         xs = sorted(set([x for x, _ in self.xys] + [x for x, _ in other.xys]))
+#         xs = sorted(set([x for x, _ in self.xys]
+#                         + [x for x, _ in other.xys]))
 #         ys = [self(x)+other(x) for x in xs]
 #         return type(self)(list(zip(xs, ys)))
 
 #     def __sub__(self, other):
 #         if type(other) in [int, float]:
 #             return type(self)([(x, y-other) for x, y in self.xys])
-#         xs = sorted(set([x for x, _ in self.xys] + [x for x, _ in other.xys]))
+#         xs = sorted(set([x for x, _ in self.xys]
+#                         + [x for x, _ in other.xys]))
 #         ys = [self(x)+other(x) for x in xs]
 #         return type(self)(list(zip(xs, ys)))
-        
+
 #     def __radd__(self, other):
 #         return self.__add__(other)
 

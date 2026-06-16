@@ -8,13 +8,13 @@ from utilities import (
     modpow,
     gcd,
     squarefree,
-    )
+)
 from quadratic_extensions import legendre_ch
 
 from real_quadratic_fields import (
     fundamental_unit,
     discriminant,
-    )
+)
 
 
 def gs_numerical(ch, m, k):
@@ -36,7 +36,9 @@ def L_one_chi(ch, m):
     Compute the value of the Dirichlet L-series L(s, ch) at s=1.
     """
     z = np.exp(2.0j*np.pi/m)
-    return -(1.0/m) * sum(gs_numerical(ch, m, k)*np.log(1-z**(-k)) for k in range(1, m) if gcd(k, m) == 1)
+    return -(1.0/m) * sum(
+        gs_numerical(ch, m, k)*np.log(1-z**(-k))
+        for k in range(1, m) if gcd(k, m) == 1)
 
 
 def all_modm_chars(m):
@@ -64,7 +66,8 @@ def all_modm_chars(m):
 # of the Q[z_5] is 5^(5-2) (i.e. disc(Q[z_p])=p^(p-2)), and there
 # are 5 roots of unity in the field.
 #
-# >>> (2.0*np.pi)**2.0*(0.5)*np.log((1+z)*(1+z).conj())/(5.0*np.sqrt(abs(5**3)))
+# >>> (2.0*np.pi)**2.0*(0.5)*np.log((1+z)*(1+z).conj()) \
+# ...     / (5.0*np.sqrt(abs(5**3)))
 # (0.33983727824052351+0j)
 #
 # now compare to the product of the L(1, ch) as ch runs over
@@ -121,13 +124,14 @@ def ideal_class_number(d):
 
     z = np.exp(2.0j*np.pi/abs_disc)
     rho = np.abs(1.0/np.sqrt(abs(abs_disc)) * sum(
-        ch(k) * np.log(1-z**(-k)) for k in range(1, abs_disc) if gcd(k, abs_disc) == 1)
-        )
+        ch(k) * np.log(1-z**(-k))
+        for k in range(1, abs_disc) if gcd(k, abs_disc) == 1)
+    )
 
     k = kappa(d)
 
     # magically rho should be an integral multiple of kappa.
     # make sure this is true before we return the rounded answer.
-    assert(abs(round(rho/k) - rho/k) < 0.001)
+    assert abs(round(rho/k) - rho/k) < 0.001
 
     return int(round(rho/k))

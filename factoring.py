@@ -2,17 +2,21 @@ import time
 import numpy as np
 import random
 from collections import Counter
-import math; from math import gcd, log, sqrt, exp
+import math
+from math import gcd, log, sqrt, exp
 import utilities
 from roots import sqrtInt, cbrtInt, issq
-from utilities import timeit, prod, digits, trial_division, isprime, is_miller_rabin_witness
+from utilities import (timeit, prod, digits, trial_division, isprime,
+                       is_miller_rabin_witness)
 from prime_sieve import segmented_sieve
 from primality_tests import isprobprime
 from quadratic_extensions import legendre
-from mod2linalg import solve_linear_equations_mod_2, null_space_mod_2, det_mod_2
+from mod2linalg import (solve_linear_equations_mod_2, null_space_mod_2,
+                        det_mod_2)
 import random
 
 factorize = utilities.factorize2
+
 
 def factors(n):
     f, _ = trial_division(n)
@@ -40,12 +44,12 @@ def fermat_factor(n: int, a=1, b=1) -> tuple:
 
     if (a*b)%2==0:
         raise ValueError('a or b is even')
-    
+
     if n%2==0:
         return 2, n//2
 
     assert n%2==1
-    
+
     g = gcd(a*b, n)
     if g>1:
         return g, n//g
@@ -65,14 +69,14 @@ def fermat_factor(n: int, a=1, b=1) -> tuple:
         if xmy_prev - xmy < trial_division_threshold:
             facts = trial_division(n, bound=xmy_prev)
             return next(facts)
-        
+
     y = sqrtInt(z)
 
     assert (x-y)*(x+y) == a*b*n
 
     u, v = x-y, x+y
     # now clear the factors of a and b from u and v
-    
+
     g = gcd(a, u)
     u //= g
     a //= g
@@ -90,7 +94,7 @@ def fermat_factor(n: int, a=1, b=1) -> tuple:
     b //= g
 
     assert u*v == n
-    
+
     return u, v
 
 
@@ -161,25 +165,26 @@ def williams_p_plus_1(N: int, B: int, A: int) -> int:
         v=x
     return 0
 
+
 def lehman(n):
     if n<=21:
         return trial_division(n)
-    
+
     fs, n = trial_division(n, bound=cbrtInt(n))
     if n==1:
         return fs, 1
-    
+
     if isprobprime(n):
         return fs + [(n, 1)], 1
-    
+
     _nsixth = int(n**(1/6))
-    
+
     for k in range(1, cbrtInt(n)+1):
         _4kn = 4*k*n
         lb = sqrtInt(_4kn)
         if lb*lb != _4kn:
             lb += 1
-        
+
         for a in range(lb, lb + _nsixth//(4*sqrtInt(k))+1):
             b2 = a*a - _4kn
             if issq(b2):
@@ -189,7 +194,7 @@ def lehman(n):
                     f1, r1 = [(g, 1)], 1
                 else:
                     f1, r1 = trial_division(g)
-                    
+
                 if isprobprime(n//g):
                     f2, r2 = [(n//g, 1)], 1
                 else:
@@ -198,7 +203,7 @@ def lehman(n):
                 f1 = Counter(dict(f1))
                 f2 = Counter(dict(f2))
                 f = sorted(list((fs+f1+f2).items()))
-                
+
                 return f, r1*r2
 
 
@@ -209,58 +214,58 @@ def hart_one_line(n):
         if r==1:
             return [(p, 2*e) for p, e in f]
 
-    
     fs, n = trial_division(n, bound=cbrtInt(n))
     if n==1:
         return fs
     else:
         if isprobprime(n):
             return fs+[(n, 1)]
-            
+
         ni = n
         while True:
-            x = sqrtInt(ni)  ## hot spot 1
+            x = sqrtInt(ni)  # hot spot 1
             if x*x < ni:
                 x += 1
             x2 = (x*x)%n
             if issq(x2):
-                t = sqrtInt(x2)  ## hot spot 2
+                t = sqrtInt(x2)  # hot spot 2
                 g = gcd(x-t, n)
                 if g > 1 and g < n:
                     if isprobprime(g):
-                        f1, r1 = [(g,1)], 1
+                        f1, r1 = [(g, 1)], 1
                     else:
                         f1, r1 = trial_division(g)
                     if isprobprime(n//g):
                         f2, r2 = [(n//g, 1)], 1
                     else:
                         f2, r2 = trial_division(n//g)
-                        
+
                     if r1==1 and r2==1:
-                        fs = Counter({p:e for p, e in fs})
-                        f1 = Counter({p:e for p, e in f1})
-                        f2 = Counter({p:e for p, e in f2})
+                        fs = Counter({p: e for p, e in fs})
+                        f1 = Counter({p: e for p, e in f1})
+                        f2 = Counter({p: e for p, e in f2})
                         return sorted(list((fs+f1+f2).items()))
                     else:
                         break
             ni += n
 
 
-def pollard_rho(n, fxn = lambda x, n: (x*x+1) % n):
+def pollard_rho(n, fxn=lambda x, n: (x*x+1) % n):
     x = 2
     y = 2
     g = 1
 
-    f = lambda x: fxn(x, n)
-    
+    def f(x):
+        return fxn(x, n)
+
     while g==1:
         x = f(x)
         y = f(f(y))
         g = gcd(abs(x-y), n)
-    
+
     return g
-    
-    
+
+
 def compare_times(start, count, method='pollard_rho'):
     xs = []
     start += start%2==0
@@ -268,10 +273,9 @@ def compare_times(start, count, method='pollard_rho'):
         if not isprobprime(p):
             xs.append(p)
 
-
     for x in xs:
         print(x, end=' ')
-        
+
         if method=='pollard_rho':
             t0 = time.time()
             fs, r = trial_division(x, cbrtInt(x))
@@ -294,9 +298,9 @@ def compare_times(start, count, method='pollard_rho'):
                         f2, r2 = trial_division(r//y)
 
                     if r1==1 and r2==1:
-                        fs = Counter({p:e for p, e in fs})
-                        f1 = Counter({p:e for p, e in f1})
-                        f2 = Counter({p:e for p, e in f2})
+                        fs = Counter({p: e for p, e in fs})
+                        f1 = Counter({p: e for p, e in f1})
+                        f2 = Counter({p: e for p, e in f2})
                         f = sorted(list((fs+f1+f2).items()))
                         t1 = time.time()
                         print('%10.3f seconds*' % (t1-t0), f)
@@ -305,20 +309,20 @@ def compare_times(start, count, method='pollard_rho'):
             else:
                 t1 = time.time()
                 print('%10.3f seconds ' % (t1-t0), fs)
-        
+
         elif method=='hart_one_line':
             t0 = time.time()
             y = hart_one_line(x)
             t1 = time.time()
             print('%10.3f seconds' % (t1-t0), y)
-                  
+
         elif method=='lehman':
             t0 = time.time()
             y, r = lehman(x)
             assert r==1
             t1 = time.time()
             print('%10.3f seconds' % (t1-t0), y)
-                    
+
 
 def smooth_trial_division(n, ps=None):
     ans = []
@@ -343,7 +347,7 @@ def cont_frac(P, Q, n):
         P = Q*q-P
         Q = (n-P*P)//Q
         q = (P+q0)//Q
-                
+
         A, A0 = (q*A + A0) % n, A
         yield P, Q, q, A
         if q==2*q0:
@@ -353,14 +357,14 @@ def cont_frac(P, Q, n):
 def dixon(n, trace=False):
     """
     Implementation of Dixon's toy factoring method from
-    
+
     Dixon, J. D. (1981). "Asymptotically fast factorization of integers"
     Math. Comp. 36 (153): 255–260.
     """
 
     bound = int(exp(sqrt(log(n)*log(log(n))) / 2))
     ps = [p for p in segmented_sieve(bound) if legendre(n, p)==1]
-    pi = {p:i for i, p in enumerate(ps)}
+    pi = {p: i for i, p in enumerate(ps)}
     nps = len(ps)
     print(bound)
     print(ps)
@@ -372,9 +376,9 @@ def dixon(n, trace=False):
         Q = A*A % n
         if Q==0:
             # A is in [1,n) but n divides A*A.
-            return(gcd(A,n))
+            return gcd(A, n)
         f, r = smooth_trial_division(Q, ps)
-        #print('factoring', Q, f, r)
+        # print('factoring', Q, f, r)
         if r==1 and Q>1 and Q!=A**2:
             vec = [0]*nps
             for p, e in f:
@@ -382,11 +386,11 @@ def dixon(n, trace=False):
             vecs.append(vec)
             Qs.append(Q)
             As.append(A)
-            #print(Q, vec, A, f)
+            # print(Q, vec, A, f)
             cnt += 1
             if cnt>nps:
                 break
-    Amat = np.array(vecs, dtype=np.int8)     
+    Amat = np.array(vecs, dtype=np.int8)
     N = null_space_mod_2(Amat.transpose())
     while True:
         col = N.dot(np.random.randint(0, 2, (N.shape[1],)))%2
@@ -399,19 +403,29 @@ def dixon(n, trace=False):
         if n%g == 0 and g!=1 and g!=n:
             g2 = gcd(abs(x-y), n)
             if trace:
-                maxQdigits = max(len(str(Q)) for Q in Qs); fmtQstr = '%'+str(maxQdigits)+'d'
-                maxAdigits = max(len(str(A)) for A in As); fmtAstr = '%'+str(maxAdigits)+'d'
-                maxPdigits = max(len(str(p)) for p in ps); fmtPstr = '%'+str(maxPdigits)+'d'
+                maxQdigits = max(len(str(Q)) for Q in Qs)
+                fmtQstr = '%'+str(maxQdigits)+'d'
+                maxAdigits = max(len(str(A)) for A in As)
+                fmtAstr = '%'+str(maxAdigits)+'d'
+                maxPdigits = max(len(str(p)) for p in ps)
+                fmtPstr = '%'+str(maxPdigits)+'d'
+
                 def formatVec(v):
-                    return ' '.join((fmtPstr%x if x else ' '*maxPdigits) for x in v)
+                    return ' '.join(
+                        (fmtPstr%x if x else ' '*maxPdigits) for x in v)
                 star = ' *'
-                table = ' ' * (2+maxQdigits) + formatVec(ps) + '       \n'
+                header = ' ' * (2+maxQdigits) + formatVec(ps)
+                table = header + '       \n'
                 for i in range(Amat.shape[0]):
-                    table += star[col[i]] + ' ' +  (fmtQstr % Qs[i]) + formatVec(list(Amat[i])) + ' ' + (fmtAstr % As[i]) + '\n'
+                    fv = formatVec(list(Amat[i]))
+                    q_str = fmtQstr % Qs[i]
+                    a_str = fmtAstr % As[i]
+                    row = star[col[i]] + ' ' + q_str + fv + ' ' + a_str + '\n'
+                    table += row
                 table += str(x) + '^2 = ' + str(y) + '^2 mod ' + str(n) + '\n'
                 print('Q\'s considered = ', nQs_considered)
                 print('number of eligible Q/A pairs = ', len(Qs))
-                print('number of primes in factor base = ',nps)
+                print('number of primes in factor base = ', nps)
                 print(table)
                 print('factors', g, g2, 'found')
             return g, g2
@@ -422,7 +436,7 @@ def cfrac(n, trace=False):
         if trace:
             print(n, 'is prime')
         return None
-    
+
     orign = n
     while True:
         if trace:
@@ -430,10 +444,10 @@ def cfrac(n, trace=False):
 
         if issq(n):
             return sqrtInt(n)
-        
+
         bound = int(exp(sqrt(log(n)*log(log(n))) / 2))
         ps = [p for p in segmented_sieve(bound) if legendre(n, p)==1]
-        pi = {p:(i+1) for i, p in enumerate(ps)}
+        pi = {p: (i+1) for i, p in enumerate(ps)}
 
         nps = len(ps) + 1
 
@@ -459,7 +473,7 @@ def cfrac(n, trace=False):
         if Amat.shape[0]==0:
             n += orign
             continue
-            
+
         N = null_space_mod_2(Amat.transpose())
 
         def formatVec(v):
@@ -479,12 +493,14 @@ def cfrac(n, trace=False):
                     star = ' *'
                     table = '         ' + formatVec([-1] + ps) + '       \n'
                     for i in range(Amat.shape[0]):
-                        table += star[col[i]] + ' ' + formatVec([Qs[i]] + list(Amat[i]) + [As[i]]) + '\n'
-                    table += str(x) + '^2 = ' + str(y) + '^2 mod ' + str(n) + '\n'
+                        table += star[col[i]] + ' ' + \
+                            formatVec([Qs[i]] + list(Amat[i]) + [As[i]]) + '\n'
+                    table += str(x) + '^2 = ' + str(y) + \
+                        '^2 mod ' + str(n) + '\n'
                     print('Q\'s considered = ', nQs_considered)
                     print('number of eligible Q/A pairs = ', len(Qs))
-                    print('number of primes in factor base = ',nps)
-                    print('number of null-vectors attempted = ',k+1)
+                    print('number of primes in factor base = ', nps)
+                    print('number of null-vectors attempted = ', k+1)
                     print('l = ', n//orign)
                     print(table)
                     print('factors', g, g2, 'found')

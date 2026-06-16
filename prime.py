@@ -48,7 +48,7 @@ def sievesum1(n, p):
     Return the sum of all of the numbers not
     excluded by a sieve of [1..n] by all primes
     up to and including p.
-    
+
     Uses the lucy_hedgehog algorithm for summing
     the primes in [0, n] (faster than a sieve)
 
@@ -104,7 +104,7 @@ def sievecnt(n, p=None):
     Return the count of numbers not excluded
     by a sieve of [1..n] by all primes up to
     and including p.  If p is not given then
-    sieve up to sqrt(n). 
+    sieve up to sqrt(n).
     """
     if p is None:
         p = sqrtInt(n)

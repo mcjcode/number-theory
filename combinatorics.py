@@ -4,6 +4,7 @@ import itertools
 from collections import defaultdict
 from utilities import powerset
 
+
 def comb(k, a, b):
     """
     Yield the sequence of all k element subsets of the
@@ -52,7 +53,7 @@ def nchoosek(n, ks, p=0):
             for k in ks:
                 j = 1
                 while j<=k:
-                    retval = (retval*i)  % p
+                    retval = (retval*i) % p
                     i -= 1
                     retval = (retval*pow(j, -1, p)) % p
                     j += 1
@@ -83,7 +84,7 @@ def eqrels(N):
     """
     Return all possible equivalence relations on [0,n)
     """
-    h = [[]] # the equivalence relations on [0,1)
+    h = [[]]  # the equivalence relations on [0,1)
     for n in range(N):
         h2 = []
         for r in h:
@@ -124,7 +125,7 @@ def partitions(d, max_part=None):
         for p in range(max_part, 0, -1):
             for i in range(1, d//p+1):  # number of parts of size p
                 seg = [p]*i
-                for part in partitions(d-i*p,p-1):
+                for part in partitions(d-i*p, p-1):
                     yield seg + part
 
 
@@ -134,7 +135,7 @@ def gray(n):
     gray code.
     """
     n -= 1
-    return n^(n>>1)
+    return n ^(n >>1)
 
 
 def graybits():
@@ -145,7 +146,7 @@ def graybits():
     """
     i = 1
     while True:
-        a = gray(i)^gray(i+1)
+        a = gray(i) ^gray(i+1)
         retval = 0
         while a:
             a //= 2
@@ -165,7 +166,7 @@ def newtons_identity(ps):
     ps = [ x1**n + x2**n + x3**n for n in range(3)]
     es = newtons_identities(ps)
     assert es == [1, 6, 11, 6]
-    
+
     """
     es = [1]
     for j in range(1, len(ps)):

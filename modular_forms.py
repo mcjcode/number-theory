@@ -28,7 +28,8 @@ def plot_rectangle_n_points():
 
 def _eisenstein_bound(eps, k, z):
     """
-    Return the number of rectangles of lattice points to compute phi_0, k(z) within eps.
+    Return the number of rectangles of lattice points to compute
+    phi_0, k(z) within eps.
     """
 
     x = z.real
@@ -43,7 +44,8 @@ def _eisenstein_bound(eps, k, z):
 
 def unrestricted_eisenstein(k, z):
     """
-    Return the value G_k(z) of the unrestricted Eisenstein series of weight k at z.
+    Return the value G_k(z) of the unrestricted Eisenstein series
+    of weight k at z.
 
     G_k(z) = Sum_{(c, d), c>=0, d>0 if c=0} (1/(cz+d)^(2k)).
     """
@@ -131,5 +133,7 @@ def hecke_operator(n, k, f):
     Return the application of the nth hecke operator to a function.
     """
     def f(z):
-        return sum((c*z+d)**(2.*k)*transf(a, b, c, d)(z) for (a, b, c, d) in _coset_reps(n))
+        return sum(
+            (c*z+d)**(2.*k)*transf(a, b, c, d)(z)
+            for (a, b, c, d) in _coset_reps(n))
     return f

@@ -119,7 +119,9 @@ def fastfib_sum3(n, m):
     if n<=1:
         return 0
     else:
-        return ((fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)*pow(10, -1, m)) % m
+        return (
+            (fastfib(3*n-1, m)+(-1)**n*6*fastfib(n-2, m)+5)*pow(10, -1, m)
+        ) % m
 
 
 def find_recursion(xs, deg):
@@ -173,7 +175,7 @@ def cumulative_lrs(cs, xs):
 
     nextx = sum(c*x for (c, x) in zip(reversed(cs), xs))
     cumcs = [cs[0]+1] + [c1-c0 for (c0, c1) in
-                        pairwise(cs)] + [-cs[-1]]
+                         pairwise(cs)] + [-cs[-1]]
     cumxs = list(np.cumsum(xs+[nextx]))
     return cumcs, cumxs
 

@@ -8,12 +8,12 @@ from roots import sqrtInt, issq
 from utilities import (
     gcd,
     isprime,
-    )
+)
 from itertools import islice
 from quadratic_extensions import (
     factorize_in,
     minkowski_bound,
-    )
+)
 
 ordinar_chars_lower = "`1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm, ./"
 special_chars_lower = "`¡™£¢∞§¶•ªº–≠œ∑´®†¥¨ˆøπ“‘«åß∂ƒ©˙∆˚¬…æΩ≈ç√∫˜µ≤≥÷"
@@ -27,7 +27,8 @@ def genus(a, b, c):
     def f(x, y):
         return a*x**2 + b*x*y + c*y**2
     disc = form_disc(a, b, c)
-    val = sorted(list(set([f(x, y) % (-disc) for x in range(-disc) for y in range(-disc)])))
+    val = sorted(list(set([f(x, y) % (-disc)
+                 for x in range(-disc) for y in range(-disc)])))
     return filter(lambda x: gcd(x, -disc) == 1, val)
 
 
@@ -126,17 +127,21 @@ def repmod11(p):
         if (a-b) % 3 == 0:
             c = (a-b)/3
             if c > 0:
-                return u"3\u00B7%d\u00B2 + 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2" % (c, c, b, b)
+                fmt = u"3\u00B7%d\u00B2 + 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2"
+                return fmt % (c, c, b, b)
             else:
                 c = -c
-                return u"3\u00B7%d\u00B2 - 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2" % (c, c, b, b)
+                fmt = u"3\u00B7%d\u00B2 - 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2"
+                return fmt % (c, c, b, b)
         else:
             c = (a+b)/3
             if c > 0:
-                return u"3\u00B7%d\u00B2 - 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2" % (c, c, b, b)
+                fmt = u"3\u00B7%d\u00B2 - 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2"
+                return fmt % (c, c, b, b)
             else:
                 c = -c
-                return u"3\u00B7%d\u00B2 + 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2" % (c, c, b, b)
+                fmt = u"3\u00B7%d\u00B2 + 2\u00B7%d\u00B7%d + 4\u00B7%d\u00B2"
+                return fmt % (c, c, b, b)
 
 
 def repsmod11():
@@ -183,7 +188,8 @@ def ideal_class_group_info(d):
     """
     mb = minkowski_bound(d)
 
-    print("Minkowski bound.  All ideal classes contain an ideal of norm ≤ %d." % (mb, ))
+    print("Minkowski bound.  All ideal classes contain an ideal"
+          " of norm ≤ %d." % (mb, ))
 
     # split_primes = []
     for p in filter(isprime, range(2, mb+1)):
@@ -218,7 +224,7 @@ def rational_from_cf(cf):
 
 def sum_sq_rep(p):
     """
-    A prime p=2 or congruent to 1 (mod 4) has a 
+    A prime p=2 or congruent to 1 (mod 4) has a
     representation as a sum of 2 squares.
     Return such a representation
     """
