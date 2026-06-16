@@ -11,7 +11,7 @@ import operator
 import random
 import math
 import numpy as np
-from roots import sqrtInt, cbrtInt, nrtInt, issq
+from roots import sqrtInt #, cbrtInt, nrtInt, issq
 from digits import digits, num_from_digits
 
 import slv
@@ -443,24 +443,6 @@ def modpow2(a, k, p):
         a = a*a % p
         k = k >> 1
     return retval
-
-
-def legendre_ch(p):
-    """
-    :param p: an odd prime
-    :return: the mod p Legendre character
-    """
-    if not isprime(p) or p == 2:
-        raise ValueError("%d is not an odd prime." % (p, ))
-
-    def ch(a):
-        if a % p == 0:
-            return 0
-        r = pow(a, (p-1)//2, p)
-        return (-1) if (r == p - 1) else +1
-
-    return ch
-
 
 
 def bezout(a: int, b: int) -> (int, int):
