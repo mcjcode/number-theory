@@ -17,7 +17,6 @@ from utilities import (
     isprime,
     isprime_miller_rabin,
     squarefree,
-    gcd,
     bezout,
     step_modp_pascal,
     order,
@@ -76,14 +75,11 @@ class UtilitiesTest(unittest.TestCase):
         self.assertEqual(False, squarefree(4), '4 is not square free')
         self.assertEqual(False, squarefree(18), '18 is not square free')
 
-    def test_gcd(self):
-        self.assertEqual(gcd(2*3*5, 3*5*7), 3*5)
-
     def test_bezout(self):
         for a in range(-100, 100):
             for b in range(-100, 100):
                 x, y = bezout(a, b)
-                g = gcd(a, b)
+                g = math.gcd(a, b)
                 self.assertEqual(
                     g, x*a + y*b, f'gcd ({g}) != x*a+y*b ({x}*{a}+{y}*{b})')
 

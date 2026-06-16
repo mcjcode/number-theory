@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from math import sqrt
+from math import sqrt, gcd
 
 from utilities import (
     squarefree,
-    gcd,
     isprime,
     factorize2,
     prod,

@@ -13,7 +13,6 @@ from sympy.polys.polytools import (
 
 from utilities import (
     prod,
-    gcd,
     primitive_root,
     modpow,
     symmetric_function,
@@ -84,7 +83,7 @@ class CyclotomicInteger(object):
         """
         nc = len(self.coefs)
         for k in range(nc):
-            if gcd(k, nc) == 1:
+            if math.gcd(k, nc) == 1:
                 yield CyclotomicInteger(
                     [self.coefs[i*k % nc] for i in range(nc)])
 

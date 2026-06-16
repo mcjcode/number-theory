@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from utilities import gcd
+from math import gcd
 from multiplicative import (
     phi,
     mu,

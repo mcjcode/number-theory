@@ -235,7 +235,7 @@ def lucas(n, nattempts=5, factoring_steps=0):
 
     for _ in range(nattempts):
         a = random.randint(1, n)
-        g = gcd(a, n)
+        g = math.gcd(a, n)
         if g>1 and g!=n:
             return False, g, 'Lucas: Found a factor'
 
@@ -462,20 +462,6 @@ def legendre_ch(p):
     return ch
 
 
-def gcd(a, b):
-    """
-    :param a: an integer
-    :param b: an integer
-    :return: the greatest common divisor of a and b.
-
-    Uses the Euclidean algorithm.
-    """
-    if a == 0 or b == 0:
-        return abs(a + b)
-    while a % b != 0:
-        a, b = b, a % b
-    return abs(b)
-
 
 def bezout(a: int, b: int) -> (int, int):
     """
@@ -539,8 +525,8 @@ def ea3(a, b, c):
     Uses the Euclidean algorithm twice.
     """
     x, y = bezout(a, b)
-    assert x*a + y*b == gcd(a, b)
-    s, t = bezout(gcd(a, b), c)
+    assert x*a + y*b == math.gcd(a, b)
+    s, t = bezout(math.gcd(a, b), c)
     return s*x, s*y, t
 
 

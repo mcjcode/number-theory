@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from math import sqrt, floor
+from math import sqrt, floor, gcd
 import numpy as np
 from base_complex import infj
-from utilities import gcd, bezout
+from utilities import bezout
 
 
 def _rectangle_n_points(n):

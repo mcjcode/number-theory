@@ -2,11 +2,11 @@
 
 import numpy as np
 
+from math import gcd
 from utilities import (
     primitive_root,
     isprime,
     modpow,
-    gcd,
     squarefree,
 )
 from quadratic_extensions import legendre_ch

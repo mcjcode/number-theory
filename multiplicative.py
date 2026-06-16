@@ -7,10 +7,10 @@ and their summations.
 import numpy as np
 
 from roots import sqrtInt
+from math import gcd
 from utilities import (
     prod,
     factorize2,
-    gcd,
 )
 
 from factoring import factorize

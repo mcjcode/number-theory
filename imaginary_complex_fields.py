@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from math import sqrt
+from math import sqrt, gcd
 from fractions import Fraction
 import numpy as np
 from roots import sqrtInt, issq
 from utilities import (
-    gcd,
     isprime,
 )
 from itertools import islice

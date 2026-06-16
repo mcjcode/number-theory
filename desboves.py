@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from fractions import Fraction
+from math import gcd
 
 __all__ = ['desbovesp', 'DesbovesCurvePoint']
-
-
-def gcd(a, b):
-    while b != 0:
-        a, b = b, a-(a//b)*b
-    return a
 
 
 def desboves_tangent(x, y, z):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import itertools
-from math import atan, sin, cos, floor, sqrt
+from math import atan, sin, cos, floor, sqrt, gcd
 import numpy as np
 
 try:
@@ -14,7 +14,6 @@ except ImportError:
     plt = None
 
 from utilities import (
-    gcd,
     factorize,
 )
 
