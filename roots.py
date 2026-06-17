@@ -66,6 +66,16 @@ for pe in _issq_pe:
     _sqlowbits[pe] = bits
 
 
+def cardano(p: float, q: float) -> float:
+    """
+    return the real root of t**3 + p*t + q = 0.
+    Provided that D>0.
+    """
+    D = q**2/4 + p**3/27
+    a = -q/2
+    return math.cbrt(a + math.sqrt(D)) + math.cbrt(a - math.sqrt(D))
+
+
 def issq(n: int) -> bool:
     # first check that n is plausibly a square by
     # checking that it is a square mod p**e for
