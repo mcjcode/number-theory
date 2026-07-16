@@ -1,10 +1,11 @@
 from itertools import pairwise
 import numpy as np
+import sympy
 from sympy import (
     resultant, symbols, Matrix, degree, sqf_list, expand
 )
 
-from utilities import fastpow, prod
+from utilities import listtake, fastpow, prod
 
 
 def _matrix_modpow(a, k, p):
@@ -42,6 +43,7 @@ def lrs(cs, xs):
     Yield the terms of the linear recursive sequence
     with initial terms xs and coefficients cs
     """
+    xs = xs.copy()
     rcs = list(reversed(cs))
     while True:
         yield xs[0]
@@ -197,6 +199,38 @@ def power_lrs(cs, k):
     power_cs = list(reversed([-x for x in power_cs][:-1]))
     return power_cs
 
+
+def decimate_lrs(cs, xs, m):
+    """
+    Return the coefficents of the linear recurrence satisfied
+    by the 'every m element' decimations of the linear recurrence
+    with the given coefficients cs and initial elements xs.
+    """
+    d = len(cs)
+    #
+    # compute all of the terms of the sequence that
+    # we will need for the matrix
+    #
+    f = listtake((d-1)+d*m+1, lrs(cs, xs))
+    #
+    # now build the d x (d+1) matrix
+    #
+    M = np.array([[f[d0 + d1*m] for d1 in range(d+1)]
+                                for d0 in range(d)], dtype=object)
+
+    new_cs = []
+    for i in range(M.shape[1]):
+        minor =  sympy.Matrix(np.delete(M, i, axis=1))
+        c = (-1)**i * sympy.det(minor) # round(np.linalg.det(minor))
+        new_cs.append(c)
+
+    denom = new_cs[-1]
+    assert all(new_c % denom == 0 for new_c in new_cs)
+    new_cs = np.array(new_cs[:-1], dtype=object)
+    new_cs //= denom
+    return list(-new_cs)[::-1]
+
+
 # Here are some examples of using this to get various
 # sequences:
 
@@ -229,6 +263,25 @@ def power_lrs(cs, k):
 # Sums of cubes of fibonacci numbers
 #
 # [fastfib(i,10**6,[4,3,-9,2,1],[0,1,2,10,37]) for i in range(13)]
+
+#
+# Sums of cubes of the arithmetic subsequence of fibonacci
+# numbers: F11, F35, F59, F83, F107, F131, ...
+#
+# Here are the coefficents and initial values for the sequence
+# of cubes of Fibonacci numbers:
+#
+# cs = [3, 6,-3,-1]
+# xs = [0, 1, 1, 8]
+#
+# Here we compute the coeffs and initial values
+# for the decimated sequence:
+#
+# xs2 = listtake(100, lrs(cs, xs))[11:84:24]
+# cs2 = decimate_lrs(cs, xs, 24)
+#
+# xs3, cs3 = cumulative_lrs(xs2, cs2)
+#
 
 # from math import sqrt, log, ceil
 
@@ -282,3 +335,4 @@ def power_lrs(cs, k):
 #         zstr += '-'*(z-zprev)+'*'
 #         zprev=z+1
 #     return zstr
+

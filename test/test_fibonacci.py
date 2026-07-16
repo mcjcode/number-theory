@@ -1,5 +1,5 @@
 from itertools import accumulate
-from utilities import take
+from utilities import take, listtake
 
 
 from fibonacci import (
@@ -15,6 +15,7 @@ from fibonacci import (
     cumulative_lrs,
     lrs,
     power_lrs,
+    decimate_lrs,
 )
 
 
@@ -155,3 +156,27 @@ def test_power_lrs():
         xs2.append(sum(x*c for (x, c) in xcs))
 
     assert xs2==xs
+
+
+def test_decimate_lrs():
+
+    xs = [0, 1, 1, 8]
+    cs = power_lrs([1, 1], 3)
+
+    xs2 = listtake(100, lrs(cs, xs))[11:84:24]
+    cs2 = decimate_lrs(cs, xs, 24)
+
+    cs3, xs3 = cumulative_lrs(cs2, xs2)
+
+    g = lrs(cs3, xs3)
+
+    a, b, i = 0, 1, 0
+    nout = 0
+    cumsum = 0
+    while nout < 20:
+        if i%24==11:
+            cumsum += a**3
+            assert cumsum==next(g)
+            nout += 1
+        a, b = b, a+b
+        i += 1
