@@ -5,7 +5,7 @@ from sympy import (
     resultant, symbols, Matrix, degree, sqf_list, expand
 )
 
-from utilities import listtake, fastpow, prod
+from utilities import listmap, listtake, fastpow, prod
 
 
 def _matrix_modpow(a, k, p):
@@ -183,6 +183,13 @@ def cumulative_lrs(cs, xs):
 
 
 def power_lrs(cs, k):
+    """
+    Return the coefficients of the linear recurrence satisfied
+    by the k^{th} powers of a sequence whose coefficients are
+    given by cs. (the initial segment of values is not needed)
+    """
+    if k==0:
+        return [1]
 
     def radical(P):
         return prod(fact for fact, mult in sqf_list(P)[1])
@@ -197,7 +204,7 @@ def power_lrs(cs, k):
 
     power_cs = [expand(P).coeff(x, i) for i in range(degree(P)+1)]
     power_cs = list(reversed([-x for x in power_cs][:-1]))
-    return power_cs
+    return listmap(int, power_cs)
 
 
 def decimate_lrs(cs, xs, m):
@@ -228,7 +235,7 @@ def decimate_lrs(cs, xs, m):
     assert all(new_c % denom == 0 for new_c in new_cs)
     new_cs = np.array(new_cs[:-1], dtype=object)
     new_cs //= denom
-    return list(-new_cs)[::-1]
+    return listmap(int, list(-new_cs)[::-1])
 
 
 # Here are some examples of using this to get various
